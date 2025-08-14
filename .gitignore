@@ -1,0 +1,27 @@
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Xcode
+DerivedData/
+*.xcuserstate
+*.xccheckout
+*.xcscmblueprint
+**/xcuserdata/
+*.xcworkspace/xcuserdata/
+*.xcworkspace/xcshareddata/WorkspaceSettings.xcsettings
+
+# SwiftPM
+.swiftpm/
+.build/
+.xcresult/
+
+# Binaries/Secrets
+*.crx
+*.pem
+
+# Logs
+*.log
+
+# Other
+*.swp

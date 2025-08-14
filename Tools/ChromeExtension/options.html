@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>IDMMac Interceptor Options</title>
+  <style>
+    body { font-family: -apple-system, system-ui, sans-serif; padding: 16px; }
+  </style>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const toggle = document.getElementById('enable');
+      const { enabled } = await chrome.storage.sync.get({ enabled: true });
+      toggle.checked = enabled;
+      toggle.addEventListener('change', async () => {
+        await chrome.storage.sync.set({ enabled: toggle.checked });
+      });
+    });
+    chrome.downloads.onCreated.addListener(async (item) => {
+      const { enabled } = await chrome.storage.sync.get({ enabled: true });
+      if (!enabled) return;
+    });
+  </script>
+  </head>
+  <body>
+    <h1>IDMMac Interceptor</h1>
+    <label>
+      <input type="checkbox" id="enable" checked>
+      Enable interception of downloads and send to IDMMac
+    </label>
+    <p>To load: chrome://extensions → Enable Developer Mode → Load unpacked → choose this folder.</p>
+  </body>
+</html>
+
+

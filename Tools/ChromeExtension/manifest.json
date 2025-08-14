@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "IDMMac Interceptor",
+  "version": "0.1.0",
+  "description": "Intercept downloads and hand off to IDMMac app.",
+  "permissions": ["downloads", "downloads.shelf", "storage", "notifications", "tabs", "contextMenus"],
+  "background": {
+    "service_worker": "worker.js"
+  },
+  "options_page": "options.html",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png",
+    "256": "icons/icon256.png",
+    "512": "icons/icon512.png"
+  },
+  "action": {
+    "default_icon": "icons/icon32.png",
+    "default_title": "IDMMac Interceptor"
+  }
+}
+
+

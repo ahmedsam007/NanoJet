@@ -1,0 +1,445 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 63;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		09B3F4785E1E432C3C754164 /* worker.js in Resources */ = {isa = PBXBuildFile; fileRef = 8888B2F143452BA355959E84 /* worker.js */; };
+		A1F8835F1137EA314AC31F61 /* options.html in Resources */ = {isa = PBXBuildFile; fileRef = 4554B75328F54E7FDCC2A04A /* options.html */; };
+		AC8CD272E48F78B72D3709A5 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A3C31EF74C337AD9285451 /* ContentView.swift */; };
+		C1D2E3F40718293A4B5C6D7E /* ConnectionDiagnostics.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0A1B2C3D4E5F60718293A4B /* ConnectionDiagnostics.swift */; };
+		B351E6E8D480B254C08375F2 /* DownloadEngine in Frameworks */ = {isa = PBXBuildFile; productRef = 51DE30766D101E1CB0F7A516 /* DownloadEngine */; };
+		BEEF0919DAE431633C96E61F /* AppViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31461FF779BDBD6BF4603567 /* AppViewModel.swift */; };
+		C6947F47A05D14DDBD3023D9 /* manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = 930A03BC3BA2CCFBFA5F4C27 /* manifest.json */; };
+		D52CF4D2E903D35A264ADF07 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43B9A4F97EB3BD57E8CB7998 /* SettingsView.swift */; };
+		D7E8F9010A0B0C1D2E3F4051 /* ConnectionDiagnosticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718293A4B5C /* ConnectionDiagnosticsView.swift */; };
+		0B1C2D3E4F5061728394A5B6 /* TestConnectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1C2D3E4F5061728394A5B6C /* TestConnectionView.swift */; };
+		FFEE3241CBD186644294641F /* IDMMacApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3059278119E37E720CB4345C /* IDMMacApp.swift */; };
+		B16B00B5FACEFEEDCAFED00D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1C0FFEE0BADBEEFDEADBEEF /* Assets.xcassets */; };
+        
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		0A3D384F12FE71FECA789109 /* IDMMacApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = IDMMacApp.entitlements; sourceTree = "<group>"; };
+		11AEFEE73A1AD3487A63E4F5 /* IDMMacApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = IDMMacApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		3059278119E37E720CB4345C /* IDMMacApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IDMMacApp.swift; sourceTree = "<group>"; };
+		31461FF779BDBD6BF4603567 /* AppViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppViewModel.swift; sourceTree = "<group>"; };
+		43B9A4F97EB3BD57E8CB7998 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		4554B75328F54E7FDCC2A04A /* options.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = options.html; sourceTree = "<group>"; };
+		81A3C31EF74C337AD9285451 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		B1C2D3E4F5061728394A5B6C /* TestConnectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestConnectionView.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F60718293A4B5C /* ConnectionDiagnosticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionDiagnosticsView.swift; sourceTree = "<group>"; };
+		8888B2F143452BA355959E84 /* worker.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = worker.js; sourceTree = "<group>"; };
+		930A03BC3BA2CCFBFA5F4C27 /* manifest.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = manifest.json; sourceTree = "<group>"; };
+		C0A4D0BE0D4587494A7E80B0 /* DownloadEngine */ = {isa = PBXFileReference; lastKnownFileType = folder; path = DownloadEngine; sourceTree = SOURCE_ROOT; };
+		E9DD7243F6719F3DC9F2462B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		F0A1B2C3D4E5F60718293A4B /* ConnectionDiagnostics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionDiagnostics.swift; sourceTree = "<group>"; };
+		A1C0FFEE0BADBEEFDEADBEEF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+        
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		39189A2B618F6FB213FD6427 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B351E6E8D480B254C08375F2 /* DownloadEngine in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		14A961D4BCE75A407E3B33D6 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				31461FF779BDBD6BF4603567 /* AppViewModel.swift */,
+				0A3D384F12FE71FECA789109 /* IDMMacApp.entitlements */,
+				3059278119E37E720CB4345C /* IDMMacApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		2A4E7A6828AB66E3EF72DA28 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				11AEFEE73A1AD3487A63E4F5 /* IDMMacApp.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		6BF9D8619A300AC4FD37A667 /* Packages */ = {
+			isa = PBXGroup;
+			children = (
+				C0A4D0BE0D4587494A7E80B0 /* DownloadEngine */,
+			);
+			name = Packages;
+			sourceTree = "<group>";
+		};
+		92BDBCEDE58B111086205B1B /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				E9DD7243F6719F3DC9F2462B /* Info.plist */,
+				A1C0FFEE0BADBEEFDEADBEEF /* Assets.xcassets */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		CDB3CE87C10BC5BA6E3381B8 /* Tools */ = {
+			isa = PBXGroup;
+			children = (
+				CE60F1BD5EF4B9C5490EBBC2 /* ChromeExtension */,
+			);
+			path = Tools;
+			sourceTree = "<group>";
+		};
+		CE60F1BD5EF4B9C5490EBBC2 /* ChromeExtension */ = {
+			isa = PBXGroup;
+			children = (
+				930A03BC3BA2CCFBFA5F4C27 /* manifest.json */,
+				4554B75328F54E7FDCC2A04A /* options.html */,
+				8888B2F143452BA355959E84 /* worker.js */,
+			);
+			path = ChromeExtension;
+			sourceTree = "<group>";
+		};
+		D401A8BCC6A76C8F1619CD86 /* UI */ = {
+			isa = PBXGroup;
+			children = (
+				81A3C31EF74C337AD9285451 /* ContentView.swift */,
+				B1C2D3E4F5061728394A5B6C /* TestConnectionView.swift */,
+				A1B2C3D4E5F60718293A4B5C /* ConnectionDiagnosticsView.swift */,
+                43B9A4F97EB3BD57E8CB7998 /* SettingsView.swift */,
+			);
+			path = UI;
+			sourceTree = "<group>";
+		};
+		DF7E49D8574910BBC354A266 = {
+			isa = PBXGroup;
+			children = (
+				F23774C7B6232E00617543F1 /* IDMMacApp */,
+				6BF9D8619A300AC4FD37A667 /* Packages */,
+				CDB3CE87C10BC5BA6E3381B8 /* Tools */,
+				2A4E7A6828AB66E3EF72DA28 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		F23774C7B6232E00617543F1 /* IDMMacApp */ = {
+			isa = PBXGroup;
+			children = (
+				14A961D4BCE75A407E3B33D6 /* App */,
+				92BDBCEDE58B111086205B1B /* Resources */,
+				D401A8BCC6A76C8F1619CD86 /* UI */,
+				F1E2D3C4B5A6978877665544 /* Utilities */,
+			);
+			path = IDMMacApp;
+			sourceTree = "<group>";
+		};
+		F1E2D3C4B5A6978877665544 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				F0A1B2C3D4E5F60718293A4B /* ConnectionDiagnostics.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		C9DEA8E0B93B9C96DB317BF8 /* IDMMacApp */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 1A5BD376B6714584B14CE5DA /* Build configuration list for PBXNativeTarget "IDMMacApp" */;
+			buildPhases = (
+				FBC86C3F1B5BFE92F7882EB8 /* Sources */,
+				D90641E1956A2DFE0B35206D /* Resources */,
+				39189A2B618F6FB213FD6427 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = IDMMacApp;
+			packageProductDependencies = (
+				51DE30766D101E1CB0F7A516 /* DownloadEngine */,
+			);
+			productName = IDMMacApp;
+			productReference = 11AEFEE73A1AD3487A63E4F5 /* IDMMacApp.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		295F93FDCEB2CC6940A2634E /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1640;
+				TargetAttributes = {
+					C9DEA8E0B93B9C96DB317BF8 = {
+						DevelopmentTeam = "";
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 7A1675D386095B7032EF3074 /* Build configuration list for PBXProject "IDMMac" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = DF7E49D8574910BBC354A266;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				6724675CB73D5305C0933C6E /* XCLocalSwiftPackageReference "/Users/ahmed/Documents/IDMMac/DownloadEngine" */,
+			);
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				C9DEA8E0B93B9C96DB317BF8 /* IDMMacApp */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		D90641E1956A2DFE0B35206D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C6947F47A05D14DDBD3023D9 /* manifest.json in Resources */,
+				A1F8835F1137EA314AC31F61 /* options.html in Resources */,
+				09B3F4785E1E432C3C754164 /* worker.js in Resources */,
+				B16B00B5FACEFEEDCAFED00D /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		FBC86C3F1B5BFE92F7882EB8 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BEEF0919DAE431633C96E61F /* AppViewModel.swift in Sources */,
+				C1D2E3F40718293A4B5C6D7E /* ConnectionDiagnostics.swift in Sources */,
+				AC8CD272E48F78B72D3709A5 /* ContentView.swift in Sources */,
+				FFEE3241CBD186644294641F /* IDMMacApp.swift in Sources */,
+				D7E8F9010A0B0C1D2E3F4051 /* ConnectionDiagnosticsView.swift in Sources */,
+				0B1C2D3E4F5061728394A5B6 /* TestConnectionView.swift in Sources */,
+                D52CF4D2E903D35A264ADF07 /* SettingsView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		6B78ABB96938A3F981A33D28 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MARKETING_VERSION = 0.1.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.idmmac;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Release;
+		};
+		D3D637B87900F2ED715501DF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = IDMMacApp/App/IDMMacApp.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEAD_CODE_STRIPPING = YES;
+				INFOPLIST_FILE = IDMMacApp/Resources/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		FD4157C82F49DD59CD243BC2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = IDMMacApp/App/IDMMacApp.entitlements;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEAD_CODE_STRIPPING = YES;
+				INFOPLIST_FILE = IDMMacApp/Resources/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		FF04AF5294FC45A105EA576C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_STYLE = Automatic;
+				COPY_PHASE_STRIP = NO;
+				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MARKETING_VERSION = 0.1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.example.idmmac;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		1A5BD376B6714584B14CE5DA /* Build configuration list for PBXNativeTarget "IDMMacApp" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D3D637B87900F2ED715501DF /* Debug */,
+				FD4157C82F49DD59CD243BC2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		7A1675D386095B7032EF3074 /* Build configuration list for PBXProject "IDMMac" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FF04AF5294FC45A105EA576C /* Debug */,
+				6B78ABB96938A3F981A33D28 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCLocalSwiftPackageReference section */
+		6724675CB73D5305C0933C6E /* XCLocalSwiftPackageReference "/Users/ahmed/Documents/IDMMac/DownloadEngine" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = /Users/ahmed/Documents/IDMMac/DownloadEngine;
+		};
+/* End XCLocalSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		51DE30766D101E1CB0F7A516 /* DownloadEngine */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = DownloadEngine;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 295F93FDCEB2CC6940A2634E /* Project object */;
+}
