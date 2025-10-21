@@ -1299,53 +1299,45 @@ private struct DownloadRow: View {
                         .frame(width: DownloadColumns.resumable, alignment: .leading)
                 }
                 // Progress (always visible)
-                Group {
+                HStack(spacing: 6) {
                     if item.status == .completed {
-                        HStack(spacing: 6) {
-                            Text("100%")
-                                .font(.caption)
-                                .monospacedDigit()
-                                .foregroundStyle(.secondary)
-                                .frame(width: 40, alignment: .trailing)
-                            Circle()
-                                .fill(Color.clear)
-                                .frame(width: 16, height: 16)
-                        }
+                        Text("100%")
+                            .font(.caption)
+                            .monospacedDigit()
+                            .foregroundStyle(.secondary)
+                            .frame(width: 40, alignment: .trailing)
+                        Circle()
+                            .fill(Color.clear)
+                            .frame(width: 16, height: 16)
                     } else if (item.status == .downloading || item.status == .paused), let total = item.totalBytes, total > 0 {
-                        HStack(spacing: 6) {
-                            Text(formatPercent(received: min(item.receivedBytes, total), total: total))
-                                .font(.caption)
-                                .monospacedDigit()
-                                .foregroundStyle(.secondary)
-                                .frame(width: 40, alignment: .trailing)
-                            ProgressView(value: Double(item.receivedBytes), total: Double(total))
-                                .progressViewStyle(.circular)
-                                .controlSize(.small)
-                                .frame(width: 16, height: 16)
-                        }
+                        Text(formatPercent(received: min(item.receivedBytes, total), total: total))
+                            .font(.caption)
+                            .monospacedDigit()
+                            .foregroundStyle(.secondary)
+                            .frame(width: 40, alignment: .trailing)
+                        ProgressView(value: Double(item.receivedBytes), total: Double(total))
+                            .progressViewStyle(.circular)
+                            .controlSize(.small)
+                            .frame(width: 16, height: 16)
                     } else if (item.status == .downloading || item.status == .paused) {
-                        HStack(spacing: 6) {
-                            // Reserve space so the circle is aligned even when percentage is unknown
-                            Text("100%")
-                                .font(.caption)
-                                .monospacedDigit()
-                                .foregroundStyle(.clear)
-                                .frame(width: 40, alignment: .trailing)
-                            ProgressView()
-                                .progressViewStyle(.circular)
-                                .controlSize(.small)
-                                .frame(width: 16, height: 16)
-                        }
+                        // Reserve space so the circle is aligned even when percentage is unknown
+                        Text("100%")
+                            .font(.caption)
+                            .monospacedDigit()
+                            .foregroundStyle(.clear)
+                            .frame(width: 40, alignment: .trailing)
+                        ProgressView()
+                            .progressViewStyle(.circular)
+                            .controlSize(.small)
+                            .frame(width: 16, height: 16)
                     } else {
-                        HStack(spacing: 6) {
-                            Text("—")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                                .frame(width: 40, alignment: .trailing)
-                            Circle()
-                                .fill(Color.clear)
-                                .frame(width: 16, height: 16)
-                        }
+                        Text("—")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .frame(width: 40, alignment: .trailing)
+                        Circle()
+                            .fill(Color.clear)
+                            .frame(width: 16, height: 16)
                     }
                 }
                 .frame(width: DownloadColumns.progress, alignment: .leading)
