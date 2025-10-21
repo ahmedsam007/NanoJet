@@ -27,8 +27,8 @@ VERSION="${1:-0.1.0}"
 echo -e "${BLUE}📦 Version: ${VERSION}${NC}"
 echo
 
-# Create output directory on Desktop
-OUTPUT_DIR="$HOME/Desktop/IDMMac-v${VERSION}"
+# Create output directory in Documents/IDMMac
+OUTPUT_DIR="$HOME/Documents/IDMMac/builds/IDMMac-v${VERSION}"
 mkdir -p "$OUTPUT_DIR"
 
 echo -e "${YELLOW}⚙️  Step 1: Building app...${NC}"

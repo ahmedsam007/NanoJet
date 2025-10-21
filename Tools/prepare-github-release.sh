@@ -46,7 +46,7 @@ echo
 # Step 2: Sign for Sparkle
 echo -e "${YELLOW}⚙️  Step 2: Generating Sparkle signature...${NC}"
 
-ZIP_FILE="$HOME/Desktop/IDMMac-v${VERSION}/IDMMacApp-v${VERSION}.zip"
+ZIP_FILE="$HOME/Documents/IDMMac/builds/IDMMac-v${VERSION}/IDMMacApp-v${VERSION}.zip"
 
 if [ ! -f "$ZIP_FILE" ]; then
     echo -e "${RED}❌ Zip file not found: $ZIP_FILE${NC}"
@@ -83,7 +83,7 @@ echo
 FILE_SIZE=$(stat -f%z "$ZIP_FILE" 2>/dev/null || stat -c%s "$ZIP_FILE" 2>/dev/null)
 FILE_SIZE_HR=$(du -h "$ZIP_FILE" | cut -f1)
 
-OUTPUT_DIR="$HOME/Desktop/IDMMac-v${VERSION}"
+OUTPUT_DIR="$HOME/Documents/IDMMac/builds/IDMMac-v${VERSION}"
 
 # Generate appcast entry
 echo -e "${YELLOW}⚙️  Step 3: Generating deployment files...${NC}"

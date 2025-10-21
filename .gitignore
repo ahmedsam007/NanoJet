@@ -25,3 +25,9 @@ DerivedData/
 
 # Other
 *.swp
+
+# Build outputs
+builds/
+
+# Sparkle Framework (managed by SPM)
+Sparkle.framework/
