@@ -2,15 +2,34 @@
 <rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
     <channel>
         <title>IDMMac Updates</title>
-        <link>https://ahmedsam.com/idmmac/appcast.xml</link>
+        <link>https://ahmedsam007.github.io/idmmac-releases/appcast.xml</link>
         <description>Most recent updates for IDMMac - Fast, lightweight macOS download manager</description>
         <language>en</language>
         
-        <!-- 
-            Example update entry - replace with your actual release information.
-            Use Tools/sign_update.sh to generate signed entries automatically.
-        -->
+        <!-- Version 0.1.1 - Re-download feature and improvements -->
+        <item>
+            <title>Version 0.1.1</title>
+            <description><![CDATA[
+                <h3>What's New in IDMMac 0.1.1</h3>
+                <ul>
+                    <li>✨ Added "Re-Download File" feature for completed downloads - perfect for corrupted or damaged files</li>
+                    <li>🔄 Added retry functionality for failed downloads with one-click re-download option</li>
+                    <li>🎯 Fixed Progress column header alignment in the downloads list</li>
+                    <li>💡 Improved user experience with clear action buttons and context menus</li>
+                </ul>
+            ]]></description>
+            <pubDate>Tue, 21 Oct 2025 17:03:12 +0300</pubDate>
+            <sparkle:version>0.1.1</sparkle:version>
+            <sparkle:shortVersionString>0.1.1</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
+            <enclosure 
+                url="https://github.com/ahmedsam007/idmmac-releases/releases/download/v0.1.1/IDMMacApp-v0.1.1.zip"
+                length="7327115"
+                type="application/octet-stream"
+                sparkle:edSignature="X3WOYUHmnifAed8ZNdwp0tF4P/h7kQJqbrNozy57qy4UTVoq1HVbMQZtXYINcVwApJZaAnR3RdnVzHK48Q5bCg==" />
+        </item>
         
+        <!-- Version 0.1.0 - Initial release -->
         <item>
             <title>Version 0.1.0</title>
             <description><![CDATA[
@@ -50,4 +69,3 @@
         
     </channel>
 </rss>
-
