@@ -5,14 +5,17 @@ options:
   createIntermediateGroups: true
 packages:
   DownloadEngine:
-    path: /Users/ahmed/Documents/IDMMac/DownloadEngine
+    path: ./DownloadEngine
+  Sparkle:
+    url: https://github.com/sparkle-project/Sparkle
+    exactVersion: 2.6.4
 settings:
   base:
-    PRODUCT_BUNDLE_IDENTIFIER: com.example.idmmac
+    PRODUCT_BUNDLE_IDENTIFIER: com.ahmedsam.idmmac
     DEVELOPMENT_TEAM: ""
     SWIFT_VERSION: 5.9
-    CURRENT_PROJECT_VERSION: 1
-    MARKETING_VERSION: 0.1.0
+    CURRENT_PROJECT_VERSION: 2
+    MARKETING_VERSION: 0.1.1
     CODE_SIGN_STYLE: Automatic
 targets:
   IDMMacApp:
@@ -24,10 +27,15 @@ targets:
     dependencies:
       - package: DownloadEngine
         product: DownloadEngine
+      - package: Sparkle
+        product: Sparkle
     settings:
       base:
         INFOPLIST_FILE: IDMMacApp/Resources/Info.plist
         CODE_SIGN_ENTITLEMENTS: IDMMacApp/App/IDMMacApp.entitlements
+      configs:
+        Release:
+          ENABLE_HARDENED_RUNTIME: YES
         
     scheme:
       testTargets: []

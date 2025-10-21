@@ -3,42 +3,75 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 63;
+	objectVersion = 77;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0702F1F1F666B4AD27101525 /* idmmac_chrome_0.2.2.zip in Resources */ = {isa = PBXBuildFile; fileRef = 3AC0DE7F0B3E8838473DA9F4 /* idmmac_chrome_0.2.2.zip */; };
+		094D30EDD4018B1E2B079D37 /* icon512.png in Resources */ = {isa = PBXBuildFile; fileRef = 2A2E43F47097C21FA408B29C /* icon512.png */; };
 		09B3F4785E1E432C3C754164 /* worker.js in Resources */ = {isa = PBXBuildFile; fileRef = 8888B2F143452BA355959E84 /* worker.js */; };
+		0E386CA0EA3BDCAAD6BCED1A /* idmmac_chrome_0.2.1.zip in Resources */ = {isa = PBXBuildFile; fileRef = 45BD7129EC4152B3C04AD1D2 /* idmmac_chrome_0.2.1.zip */; };
+		0F36946AAE21950CD433DDB7 /* content.css in Resources */ = {isa = PBXBuildFile; fileRef = D5ABA1349A6916694A1CB921 /* content.css */; };
+		1A7EAA949E59E532FF5D0246 /* icon256.png in Resources */ = {isa = PBXBuildFile; fileRef = D88AC83C81A2868C9108A556 /* icon256.png */; };
+		22C73DAC974E4C8E48AF9473 /* options.js in Resources */ = {isa = PBXBuildFile; fileRef = C27E7CC470C107CEF42BFFDA /* options.js */; };
+		2F07C1D8D0EF190247500E16 /* TestConnectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89FFADDCC46827773D22AAE3 /* TestConnectionView.swift */; };
+		3304BB311A3327DF0076F284 /* YTDLPManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A17E4DDD24A7DE8845AB31D /* YTDLPManager.swift */; };
+		52E75535B3DB21269D54057D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0C1322B1F554B552460BB558 /* Assets.xcassets */; };
+		5B1F6D9FAA3185EE9D54ED49 /* UpdaterManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E89951DFE1C9B1D63A9B62DB /* UpdaterManager.swift */; };
+		690CAF9119B69E60248DFC13 /* content.js in Resources */ = {isa = PBXBuildFile; fileRef = 5CE8D12150475ECD374648F2 /* content.js */; };
+		98FA3B763DFB91C4CD076ED6 /* pageHook.js in Resources */ = {isa = PBXBuildFile; fileRef = 45A4AF29D20E45E8B7E49D68 /* pageHook.js */; };
 		A1F8835F1137EA314AC31F61 /* options.html in Resources */ = {isa = PBXBuildFile; fileRef = 4554B75328F54E7FDCC2A04A /* options.html */; };
 		AC8CD272E48F78B72D3709A5 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81A3C31EF74C337AD9285451 /* ContentView.swift */; };
-		C1D2E3F40718293A4B5C6D7E /* ConnectionDiagnostics.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0A1B2C3D4E5F60718293A4B /* ConnectionDiagnostics.swift */; };
 		B351E6E8D480B254C08375F2 /* DownloadEngine in Frameworks */ = {isa = PBXBuildFile; productRef = 51DE30766D101E1CB0F7A516 /* DownloadEngine */; };
+		BD53E88D1BC47C6B0E8FCE71 /* YouTubeSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C285C8FC16ED3413CC0E7610 /* YouTubeSetupView.swift */; };
 		BEEF0919DAE431633C96E61F /* AppViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 31461FF779BDBD6BF4603567 /* AppViewModel.swift */; };
 		C6947F47A05D14DDBD3023D9 /* manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = 930A03BC3BA2CCFBFA5F4C27 /* manifest.json */; };
+		CF2FE1CE2159F3DDDEB120C7 /* icon16.png in Resources */ = {isa = PBXBuildFile; fileRef = 981959766CC7DF2DD9D7B635 /* icon16.png */; };
+		D3CA35CE0953C991D76164D4 /* ConnectionDiagnostics.swift in Sources */ = {isa = PBXBuildFile; fileRef = 09C44CAFED7A08632A8D7007 /* ConnectionDiagnostics.swift */; };
 		D52CF4D2E903D35A264ADF07 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 43B9A4F97EB3BD57E8CB7998 /* SettingsView.swift */; };
-		D7E8F9010A0B0C1D2E3F4051 /* ConnectionDiagnosticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F60718293A4B5C /* ConnectionDiagnosticsView.swift */; };
-		0B1C2D3E4F5061728394A5B6 /* TestConnectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1C2D3E4F5061728394A5B6C /* TestConnectionView.swift */; };
+		D77827A470B2BE0B71F81CE7 /* icon32.png in Resources */ = {isa = PBXBuildFile; fileRef = E9FC36630BD5C1D4BAFDB763 /* icon32.png */; };
+		E1F0DBB573AAA4F82149F953 /* Sparkle in Frameworks */ = {isa = PBXBuildFile; productRef = 04479933B16A8D52555373F4 /* Sparkle */; };
+		E34D94E772C2B4829D8CB40D /* icon48.png in Resources */ = {isa = PBXBuildFile; fileRef = CA6A79E19478B035966E071D /* icon48.png */; };
+		E785602C9268C711CD5FA423 /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FE9BEC122A09309007584353 /* AboutView.swift */; };
+		ED56512E7451B2B6D281E886 /* icon24.png in Resources */ = {isa = PBXBuildFile; fileRef = 2FB3674663131F157E1ECBE9 /* icon24.png */; };
+		FDBDED4FF246CA0C3CC38D45 /* icon128.png in Resources */ = {isa = PBXBuildFile; fileRef = F936075B5A6D55F9520C04B0 /* icon128.png */; };
+		FF8214609DCDE321999306E9 /* ConnectionDiagnosticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4D3E677C13F924B9B006169 /* ConnectionDiagnosticsView.swift */; };
 		FFEE3241CBD186644294641F /* IDMMacApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3059278119E37E720CB4345C /* IDMMacApp.swift */; };
-		B16B00B5FACEFEEDCAFED00D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1C0FFEE0BADBEEFDEADBEEF /* Assets.xcassets */; };
-        
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		09C44CAFED7A08632A8D7007 /* ConnectionDiagnostics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionDiagnostics.swift; sourceTree = "<group>"; };
+		0A17E4DDD24A7DE8845AB31D /* YTDLPManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YTDLPManager.swift; sourceTree = "<group>"; };
 		0A3D384F12FE71FECA789109 /* IDMMacApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = IDMMacApp.entitlements; sourceTree = "<group>"; };
+		0C1322B1F554B552460BB558 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		11AEFEE73A1AD3487A63E4F5 /* IDMMacApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = IDMMacApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		2A2E43F47097C21FA408B29C /* icon512.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon512.png; sourceTree = "<group>"; };
+		2FB3674663131F157E1ECBE9 /* icon24.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon24.png; sourceTree = "<group>"; };
 		3059278119E37E720CB4345C /* IDMMacApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IDMMacApp.swift; sourceTree = "<group>"; };
 		31461FF779BDBD6BF4603567 /* AppViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppViewModel.swift; sourceTree = "<group>"; };
+		3AC0DE7F0B3E8838473DA9F4 /* idmmac_chrome_0.2.2.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = idmmac_chrome_0.2.2.zip; sourceTree = "<group>"; };
 		43B9A4F97EB3BD57E8CB7998 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		4554B75328F54E7FDCC2A04A /* options.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = options.html; sourceTree = "<group>"; };
+		45A4AF29D20E45E8B7E49D68 /* pageHook.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = pageHook.js; sourceTree = "<group>"; };
+		45BD7129EC4152B3C04AD1D2 /* idmmac_chrome_0.2.1.zip */ = {isa = PBXFileReference; lastKnownFileType = archive.zip; path = idmmac_chrome_0.2.1.zip; sourceTree = "<group>"; };
+		5CE8D12150475ECD374648F2 /* content.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = content.js; sourceTree = "<group>"; };
 		81A3C31EF74C337AD9285451 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
-		B1C2D3E4F5061728394A5B6C /* TestConnectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestConnectionView.swift; sourceTree = "<group>"; };
-		A1B2C3D4E5F60718293A4B5C /* ConnectionDiagnosticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionDiagnosticsView.swift; sourceTree = "<group>"; };
 		8888B2F143452BA355959E84 /* worker.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = worker.js; sourceTree = "<group>"; };
+		89FFADDCC46827773D22AAE3 /* TestConnectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestConnectionView.swift; sourceTree = "<group>"; };
 		930A03BC3BA2CCFBFA5F4C27 /* manifest.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = manifest.json; sourceTree = "<group>"; };
-		C0A4D0BE0D4587494A7E80B0 /* DownloadEngine */ = {isa = PBXFileReference; lastKnownFileType = folder; path = DownloadEngine; sourceTree = SOURCE_ROOT; };
+		981959766CC7DF2DD9D7B635 /* icon16.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon16.png; sourceTree = "<group>"; };
+		B4D3E677C13F924B9B006169 /* ConnectionDiagnosticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionDiagnosticsView.swift; sourceTree = "<group>"; };
+		C0A4D0BE0D4587494A7E80B0 /* DownloadEngine */ = {isa = PBXFileReference; lastKnownFileType = folder; name = DownloadEngine; path = DownloadEngine; sourceTree = SOURCE_ROOT; };
+		C27E7CC470C107CEF42BFFDA /* options.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = options.js; sourceTree = "<group>"; };
+		C285C8FC16ED3413CC0E7610 /* YouTubeSetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YouTubeSetupView.swift; sourceTree = "<group>"; };
+		CA6A79E19478B035966E071D /* icon48.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon48.png; sourceTree = "<group>"; };
+		D5ABA1349A6916694A1CB921 /* content.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = content.css; sourceTree = "<group>"; };
+		D88AC83C81A2868C9108A556 /* icon256.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon256.png; sourceTree = "<group>"; };
+		E89951DFE1C9B1D63A9B62DB /* UpdaterManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdaterManager.swift; sourceTree = "<group>"; };
 		E9DD7243F6719F3DC9F2462B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		F0A1B2C3D4E5F60718293A4B /* ConnectionDiagnostics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionDiagnostics.swift; sourceTree = "<group>"; };
-		A1C0FFEE0BADBEEFDEADBEEF /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-        
+		E9FC36630BD5C1D4BAFDB763 /* icon32.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon32.png; sourceTree = "<group>"; };
+		F936075B5A6D55F9520C04B0 /* icon128.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon128.png; sourceTree = "<group>"; };
+		FE9BEC122A09309007584353 /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -47,6 +80,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B351E6E8D480B254C08375F2 /* DownloadEngine in Frameworks */,
+				E1F0DBB573AAA4F82149F953 /* Sparkle in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -71,6 +105,15 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		59C1844B9BBBDEFC61F73B82 /* artifacts */ = {
+			isa = PBXGroup;
+			children = (
+				45BD7129EC4152B3C04AD1D2 /* idmmac_chrome_0.2.1.zip */,
+				3AC0DE7F0B3E8838473DA9F4 /* idmmac_chrome_0.2.2.zip */,
+			);
+			path = artifacts;
+			sourceTree = "<group>";
+		};
 		6BF9D8619A300AC4FD37A667 /* Packages */ = {
 			isa = PBXGroup;
 			children = (
@@ -79,11 +122,25 @@
 			name = Packages;
 			sourceTree = "<group>";
 		};
+		75923DBC60A0787F3D3D92CA /* icons */ = {
+			isa = PBXGroup;
+			children = (
+				981959766CC7DF2DD9D7B635 /* icon16.png */,
+				2FB3674663131F157E1ECBE9 /* icon24.png */,
+				E9FC36630BD5C1D4BAFDB763 /* icon32.png */,
+				CA6A79E19478B035966E071D /* icon48.png */,
+				F936075B5A6D55F9520C04B0 /* icon128.png */,
+				D88AC83C81A2868C9108A556 /* icon256.png */,
+				2A2E43F47097C21FA408B29C /* icon512.png */,
+			);
+			path = icons;
+			sourceTree = "<group>";
+		};
 		92BDBCEDE58B111086205B1B /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				0C1322B1F554B552460BB558 /* Assets.xcassets */,
 				E9DD7243F6719F3DC9F2462B /* Info.plist */,
-				A1C0FFEE0BADBEEFDEADBEEF /* Assets.xcassets */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -99,9 +156,15 @@
 		CE60F1BD5EF4B9C5490EBBC2 /* ChromeExtension */ = {
 			isa = PBXGroup;
 			children = (
+				D5ABA1349A6916694A1CB921 /* content.css */,
+				5CE8D12150475ECD374648F2 /* content.js */,
 				930A03BC3BA2CCFBFA5F4C27 /* manifest.json */,
 				4554B75328F54E7FDCC2A04A /* options.html */,
+				C27E7CC470C107CEF42BFFDA /* options.js */,
+				45A4AF29D20E45E8B7E49D68 /* pageHook.js */,
 				8888B2F143452BA355959E84 /* worker.js */,
+				59C1844B9BBBDEFC61F73B82 /* artifacts */,
+				75923DBC60A0787F3D3D92CA /* icons */,
 			);
 			path = ChromeExtension;
 			sourceTree = "<group>";
@@ -109,10 +172,12 @@
 		D401A8BCC6A76C8F1619CD86 /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				FE9BEC122A09309007584353 /* AboutView.swift */,
+				B4D3E677C13F924B9B006169 /* ConnectionDiagnosticsView.swift */,
 				81A3C31EF74C337AD9285451 /* ContentView.swift */,
-				B1C2D3E4F5061728394A5B6C /* TestConnectionView.swift */,
-				A1B2C3D4E5F60718293A4B5C /* ConnectionDiagnosticsView.swift */,
-                43B9A4F97EB3BD57E8CB7998 /* SettingsView.swift */,
+				43B9A4F97EB3BD57E8CB7998 /* SettingsView.swift */,
+				89FFADDCC46827773D22AAE3 /* TestConnectionView.swift */,
+				C285C8FC16ED3413CC0E7610 /* YouTubeSetupView.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -127,23 +192,25 @@
 			);
 			sourceTree = "<group>";
 		};
+		E715E98B85756F6ED241B458 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				09C44CAFED7A08632A8D7007 /* ConnectionDiagnostics.swift */,
+				E89951DFE1C9B1D63A9B62DB /* UpdaterManager.swift */,
+				0A17E4DDD24A7DE8845AB31D /* YTDLPManager.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
 		F23774C7B6232E00617543F1 /* IDMMacApp */ = {
 			isa = PBXGroup;
 			children = (
 				14A961D4BCE75A407E3B33D6 /* App */,
 				92BDBCEDE58B111086205B1B /* Resources */,
 				D401A8BCC6A76C8F1619CD86 /* UI */,
-				F1E2D3C4B5A6978877665544 /* Utilities */,
+				E715E98B85756F6ED241B458 /* Utilities */,
 			);
 			path = IDMMacApp;
-			sourceTree = "<group>";
-		};
-		F1E2D3C4B5A6978877665544 /* Utilities */ = {
-			isa = PBXGroup;
-			children = (
-				F0A1B2C3D4E5F60718293A4B /* ConnectionDiagnostics.swift */,
-			);
-			path = Utilities;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -164,6 +231,7 @@
 			name = IDMMacApp;
 			packageProductDependencies = (
 				51DE30766D101E1CB0F7A516 /* DownloadEngine */,
+				04479933B16A8D52555373F4 /* Sparkle */,
 			);
 			productName = IDMMacApp;
 			productReference = 11AEFEE73A1AD3487A63E4F5 /* IDMMacApp.app */;
@@ -176,7 +244,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
-				LastUpgradeCheck = 1640;
+				LastUpgradeCheck = 1430;
 				TargetAttributes = {
 					C9DEA8E0B93B9C96DB317BF8 = {
 						DevelopmentTeam = "";
@@ -195,8 +263,10 @@
 			mainGroup = DF7E49D8574910BBC354A266;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				6724675CB73D5305C0933C6E /* XCLocalSwiftPackageReference "/Users/ahmed/Documents/IDMMac/DownloadEngine" */,
+				491EFC0E72AE40B29D987603 /* XCRemoteSwiftPackageReference "Sparkle" */,
+				E76B71BDF187C6472D84AD39 /* XCLocalSwiftPackageReference "DownloadEngine" */,
 			);
+			preferredProjectObjectVersion = 77;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -210,10 +280,23 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				52E75535B3DB21269D54057D /* Assets.xcassets in Resources */,
+				0F36946AAE21950CD433DDB7 /* content.css in Resources */,
+				690CAF9119B69E60248DFC13 /* content.js in Resources */,
+				FDBDED4FF246CA0C3CC38D45 /* icon128.png in Resources */,
+				CF2FE1CE2159F3DDDEB120C7 /* icon16.png in Resources */,
+				ED56512E7451B2B6D281E886 /* icon24.png in Resources */,
+				1A7EAA949E59E532FF5D0246 /* icon256.png in Resources */,
+				D77827A470B2BE0B71F81CE7 /* icon32.png in Resources */,
+				E34D94E772C2B4829D8CB40D /* icon48.png in Resources */,
+				094D30EDD4018B1E2B079D37 /* icon512.png in Resources */,
+				0E386CA0EA3BDCAAD6BCED1A /* idmmac_chrome_0.2.1.zip in Resources */,
+				0702F1F1F666B4AD27101525 /* idmmac_chrome_0.2.2.zip in Resources */,
 				C6947F47A05D14DDBD3023D9 /* manifest.json in Resources */,
 				A1F8835F1137EA314AC31F61 /* options.html in Resources */,
+				22C73DAC974E4C8E48AF9473 /* options.js in Resources */,
+				98FA3B763DFB91C4CD076ED6 /* pageHook.js in Resources */,
 				09B3F4785E1E432C3C754164 /* worker.js in Resources */,
-				B16B00B5FACEFEEDCAFED00D /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -224,13 +307,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E785602C9268C711CD5FA423 /* AboutView.swift in Sources */,
 				BEEF0919DAE431633C96E61F /* AppViewModel.swift in Sources */,
-				C1D2E3F40718293A4B5C6D7E /* ConnectionDiagnostics.swift in Sources */,
+				D3CA35CE0953C991D76164D4 /* ConnectionDiagnostics.swift in Sources */,
+				FF8214609DCDE321999306E9 /* ConnectionDiagnosticsView.swift in Sources */,
 				AC8CD272E48F78B72D3709A5 /* ContentView.swift in Sources */,
 				FFEE3241CBD186644294641F /* IDMMacApp.swift in Sources */,
-				D7E8F9010A0B0C1D2E3F4051 /* ConnectionDiagnosticsView.swift in Sources */,
-				0B1C2D3E4F5061728394A5B6 /* TestConnectionView.swift in Sources */,
-                D52CF4D2E903D35A264ADF07 /* SettingsView.swift in Sources */,
+				D52CF4D2E903D35A264ADF07 /* SettingsView.swift in Sources */,
+				2F07C1D8D0EF190247500E16 /* TestConnectionView.swift in Sources */,
+				5B1F6D9FAA3185EE9D54ED49 /* UpdaterManager.swift in Sources */,
+				3304BB311A3327DF0076F284 /* YTDLPManager.swift in Sources */,
+				BD53E88D1BC47C6B0E8FCE71 /* YouTubeSetupView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -272,13 +359,11 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
-				DEAD_CODE_STRIPPING = YES;
+				CURRENT_PROJECT_VERSION = 2;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = "";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -288,10 +373,10 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 0.1.0;
+				MARKETING_VERSION = 0.1.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.idmmac;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ahmedsam.idmmac;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SWIFT_COMPILATION_MODE = wholemodule;
@@ -306,9 +391,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = IDMMacApp/App/IDMMacApp.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEAD_CODE_STRIPPING = YES;
 				INFOPLIST_FILE = IDMMacApp/Resources/Info.plist;
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -323,9 +406,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = IDMMacApp/App/IDMMacApp.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEAD_CODE_STRIPPING = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = IDMMacApp/Resources/Info.plist;
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.productivity";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -369,13 +451,11 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				CODE_SIGN_STYLE = Automatic;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1;
-				DEAD_CODE_STRIPPING = YES;
+				CURRENT_PROJECT_VERSION = 2;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -391,11 +471,11 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 0.1.0;
+				MARKETING_VERSION = 0.1.1;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.example.idmmac;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ahmedsam.idmmac;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
@@ -428,13 +508,29 @@
 /* End XCConfigurationList section */
 
 /* Begin XCLocalSwiftPackageReference section */
-		6724675CB73D5305C0933C6E /* XCLocalSwiftPackageReference "/Users/ahmed/Documents/IDMMac/DownloadEngine" */ = {
+		E76B71BDF187C6472D84AD39 /* XCLocalSwiftPackageReference "DownloadEngine" */ = {
 			isa = XCLocalSwiftPackageReference;
-			relativePath = /Users/ahmed/Documents/IDMMac/DownloadEngine;
+			relativePath = DownloadEngine;
 		};
 /* End XCLocalSwiftPackageReference section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		491EFC0E72AE40B29D987603 /* XCRemoteSwiftPackageReference "Sparkle" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/sparkle-project/Sparkle";
+			requirement = {
+				kind = exactVersion;
+				version = 2.6.4;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
+		04479933B16A8D52555373F4 /* Sparkle */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 491EFC0E72AE40B29D987603 /* XCRemoteSwiftPackageReference "Sparkle" */;
+			productName = Sparkle;
+		};
 		51DE30766D101E1CB0F7A516 /* DownloadEngine */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = DownloadEngine;
