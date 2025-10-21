@@ -45,7 +45,7 @@
 	<key>UILaunchScreen</key>
 	<string></string>
 	<key>SUFeedURL</key>
-	<string>https://ahmedsam007.github.io/idmmac-releases/appcast.xml</string>
+	<string>https://ahmedsam007.github.io/IdmMac/appcast.xml</string>
 	<key>SUPublicEDKey</key>
 	<string>yV8yqP+FQ12R82ya1T/khpSwar0R9JadjTK9ITUbCkY=</string>
 	<key>SUEnableAutomaticChecks</key>
