@@ -18,8 +18,11 @@ final class AppViewModel: ObservableObject {
     @Published var isShutdownCountdownActive: Bool = false
     @Published var shutdownCountdownRemaining: Int = 0
     @Published var shutdownError: String?
+    @Published var scheduledStartAt: Date?
+    @Published var scheduledStopAt: Date?
     private var clipboardTimer: Timer?
     private var reconnectTimer: Timer?
+    private var scheduleTimer: Timer?
     private var cancellables: Set<AnyCancellable> = []
     private let pathMonitor = NWPathMonitor()
     private let pathMonitorQueue = DispatchQueue(label: "ConnectivityMonitor")
@@ -27,14 +30,23 @@ final class AppViewModel: ObservableObject {
     private var shutdownArmed: Bool = false
     private var shutdownTimer: Timer?
     private var didJustComplete: Bool = false
+    // Track items the user explicitly paused so scheduling/auto-resume does not override
+    private var userPausedIds: Set<UUID> = []
 
     private let coordinator = DownloadCoordinator.shared
 
     init() {
         self.shutdownWhenDone = UserDefaults.standard.bool(forKey: "shutdownWhenDone")
+        if let startTs = UserDefaults.standard.object(forKey: "scheduledStartAt") as? TimeInterval {
+            self.scheduledStartAt = Date(timeIntervalSince1970: startTs)
+        }
+        if let stopTs = UserDefaults.standard.object(forKey: "scheduledStopAt") as? TimeInterval {
+            self.scheduledStopAt = Date(timeIntervalSince1970: stopTs)
+        }
         startClipboardWatcher()
         startConnectivityMonitor()
         startAutoReconnectWatcher()
+        startScheduleWatcher()
         Task { [weak self] in
             guard let self else { return }
             await coordinator.restoreFromDisk()
@@ -61,13 +73,247 @@ final class AppViewModel: ObservableObject {
             .store(in: &cancellables)
     }
 
-    func enqueue(urlString: String) {
+    func enqueue(urlString: String, headers: [String: String]? = nil, extras: [String: Any]? = nil, allowDuplicate: Bool = false, completion: ((Bool, String?) -> Void)? = nil) {
         let trimmed = urlString.trimmingCharacters(in: .whitespacesAndNewlines)
         guard let url = Self.validDownloadURL(from: trimmed) else { return }
         Task {
-            _ = await coordinator.enqueue(url: url)
+            // Avoid enqueueing duplicates if same URL is already queued or downloading (unless forced)
+            if !allowDuplicate {
+                let existing = await coordinator.allItems()
+                let isDuplicateActive = existing.contains { item in
+                    item.url == url && [.queued, .fetchingMetadata, .downloading, .reconnecting].contains(item.status)
+                }
+                guard !isDuplicateActive else { return }
+            }
+            // For YouTube/Telegram pages, try resolving a direct media URL via yt-dlp first
+            let host = url.host?.lowercased() ?? ""
+            if host.contains("youtube.com") || host.contains("youtu.be") || host.contains("web.telegram.org") {
+                // If a specific itag was requested (from our picker), ask yt-dlp for that itag
+                if let itag = (extras?["itag"] as? NSNumber)?.intValue ?? (extras?["itag"] as? Int) {
+                    if let resolved = await resolveBestURLViaYTDLP(for: url, headers: headers, itag: itag) {
+                        DownloadLogger.log(itemId: UUID(), "yt-dlp resolved itag=\(itag): \(resolved.absoluteString)")
+                        let newItem = await coordinator.enqueue(url: resolved, headers: headers)
+                        if let bookmark = UserDefaults.standard.data(forKey: "downloadDirectoryBookmark") {
+                            var updated = newItem
+                            updated.destinationDirBookmark = bookmark
+                            await coordinator.handleProgressUpdate(updated)
+                        }
+                        self.items = await coordinator.allItems()
+                        await MainActor.run { completion?(true, nil) }
+                        return
+                    }
+                }
+                if let resolved = await resolveBestURLViaYTDLP(for: url, headers: headers) {
+                    DownloadLogger.log(itemId: UUID(), "yt-dlp resolved: \(resolved.absoluteString)")
+                    let newItem = await coordinator.enqueue(url: resolved, headers: headers)
+                    // Attach default folder if present
+                    if let bookmark = UserDefaults.standard.data(forKey: "downloadDirectoryBookmark") {
+                        var updated = newItem
+                        updated.destinationDirBookmark = bookmark
+                        await coordinator.handleProgressUpdate(updated)
+                    }
+                    self.items = await coordinator.allItems()
+                    return
+                }
+                // If yt-dlp failed, fallback to the direct target URL provided by the extension (if any)
+                if let targetStr = extras?["target"] as? String, let targetURL = URL(string: targetStr) {
+                    DownloadLogger.log(itemId: UUID(), "yt-dlp failed; using extension-provided target URL: \(targetURL.absoluteString)")
+                    let newItem = await coordinator.enqueue(url: targetURL, headers: headers)
+                    if let bookmark = UserDefaults.standard.data(forKey: "downloadDirectoryBookmark") {
+                        var updated = newItem
+                        updated.destinationDirBookmark = bookmark
+                        await coordinator.handleProgressUpdate(updated)
+                    }
+                    self.items = await coordinator.allItems()
+                    return
+                }
+                // Finally, try resolving again without headers to get a public signed URL from yt-dlp
+                if let resolvedNoHdr = await resolveBestURLViaYTDLP(for: url, headers: nil) {
+                    DownloadLogger.log(itemId: UUID(), "yt-dlp resolved (no-headers): \(resolvedNoHdr.absoluteString)")
+                    let newItem = await coordinator.enqueue(url: resolvedNoHdr, headers: headers)
+                    if let bookmark = UserDefaults.standard.data(forKey: "downloadDirectoryBookmark") {
+                        var updated = newItem
+                        updated.destinationDirBookmark = bookmark
+                        await coordinator.handleProgressUpdate(updated)
+                    }
+                    self.items = await coordinator.allItems()
+                    return
+                }
+                // yt-dlp failed - gather a detailed error message and provide helpful guidance
+                DownloadLogger.log(itemId: UUID(), "yt-dlp failed to resolve and no target provided; not enqueueing page URL: \(url.absoluteString)")
+                let ytdlpInstalled = findYTDLPBinary() != nil
+                var detailedError: String? = nil
+                if ytdlpInstalled {
+                    let (_, err) = await resolveBestURLViaYTDLPDetailed(for: url, headers: headers)
+                    detailedError = err
+                }
+                let errorMsg: String = {
+                    if !ytdlpInstalled {
+                        return "yt-dlp not found. YouTube downloads require yt-dlp. Click 'Install Now' to set it up automatically."
+                    }
+                    if let d = detailedError, !d.isEmpty {
+                        return "YouTube: \(d)"
+                    }
+                    return "YouTube: Unable to resolve a downloadable stream. Try updating yt-dlp, or sign in via browser and use the extension so cookies are passed."
+                }()
+                await MainActor.run { completion?(false, errorMsg) }
+                return
+            }
+            // If we received a direct googlevideo link but we have a YouTube Referer header,
+            // attempt to resolve using the Referer watch URL instead (to get a signed stream URL)
+            if host.contains("googlevideo.com") {
+                if let ref = headers?.first(where: { $0.key.caseInsensitiveCompare("Referer") == .orderedSame })?.value,
+                   let refURL = URL(string: ref), (refURL.host?.contains("youtube.com") ?? false) {
+                    if let itag = (extras?["itag"] as? NSNumber)?.intValue ?? (extras?["itag"] as? Int), let resolved = await resolveBestURLViaYTDLP(for: refURL, headers: headers, itag: itag) {
+                        DownloadLogger.log(itemId: UUID(), "yt-dlp resolved from referer itag=\(itag): \(resolved.absoluteString)")
+                        let newItem = await coordinator.enqueue(url: resolved, headers: headers)
+                        if let bookmark = UserDefaults.standard.data(forKey: "downloadDirectoryBookmark") {
+                            var updated = newItem
+                            updated.destinationDirBookmark = bookmark
+                            await coordinator.handleProgressUpdate(updated)
+                        }
+                        self.items = await coordinator.allItems()
+                        await MainActor.run { completion?(true, nil) }
+                        return
+                    }
+                    if let resolved = await resolveBestURLViaYTDLP(for: refURL, headers: headers) {
+                        DownloadLogger.log(itemId: UUID(), "yt-dlp resolved from referer: \(resolved.absoluteString)")
+                        let newItem = await coordinator.enqueue(url: resolved, headers: headers)
+                        if let bookmark = UserDefaults.standard.data(forKey: "downloadDirectoryBookmark") {
+                            var updated = newItem
+                            updated.destinationDirBookmark = bookmark
+                            await coordinator.handleProgressUpdate(updated)
+                        }
+                        self.items = await coordinator.allItems()
+                        await MainActor.run { completion?(true, nil) }
+                        return
+                    }
+                    // If resolving from referer failed, resolve from the watch URL without headers to get a public signed URL
+                    if let itag = (extras?["itag"] as? NSNumber)?.intValue ?? (extras?["itag"] as? Int), let resolved2 = await resolveBestURLViaYTDLP(for: refURL, headers: nil, itag: itag) {
+                        DownloadLogger.log(itemId: UUID(), "yt-dlp resolved (no-headers) from referer itag=\(itag): \(resolved2.absoluteString)")
+                        let newItem = await coordinator.enqueue(url: resolved2, headers: headers)
+                        if let bookmark = UserDefaults.standard.data(forKey: "downloadDirectoryBookmark") {
+                            var updated = newItem
+                            updated.destinationDirBookmark = bookmark
+                            await coordinator.handleProgressUpdate(updated)
+                        }
+                        self.items = await coordinator.allItems()
+                        await MainActor.run { completion?(true, nil) }
+                        return
+                    }
+                    if let resolved2 = await resolveBestURLViaYTDLP(for: refURL, headers: nil) {
+                        DownloadLogger.log(itemId: UUID(), "yt-dlp resolved (no-headers) from referer: \(resolved2.absoluteString)")
+                        let newItem = await coordinator.enqueue(url: resolved2, headers: headers)
+                        if let bookmark = UserDefaults.standard.data(forKey: "downloadDirectoryBookmark") {
+                            var updated = newItem
+                            updated.destinationDirBookmark = bookmark
+                            await coordinator.handleProgressUpdate(updated)
+                        }
+                        self.items = await coordinator.allItems()
+                        await MainActor.run { completion?(true, nil) }
+                        return
+                    }
+                }
+            }
+            // Fallback: enqueue the original URL
+            let newItem = await coordinator.enqueue(url: url, headers: headers)
+            // If user selected a default download directory, attach it to the new item
+            if let bookmark = UserDefaults.standard.data(forKey: "downloadDirectoryBookmark") {
+                var updated = newItem
+                updated.destinationDirBookmark = bookmark
+                await coordinator.handleProgressUpdate(updated)
+            }
             self.items = await coordinator.allItems()
+            await MainActor.run { completion?(true, nil) }
         }
+    }
+
+    // MARK: - yt-dlp integration (best-effort)
+    private func resolveBestURLViaYTDLP(for pageURL: URL, headers: [String: String]?, itag: Int? = nil) async -> URL? {
+        let (url, _) = await resolveBestURLViaYTDLPDetailed(for: pageURL, headers: headers, itag: itag)
+        return url
+    }
+
+    // Detailed resolver that also returns a concise stderr-derived error if resolution fails
+    private func resolveBestURLViaYTDLPDetailed(for pageURL: URL, headers: [String: String]?, itag: Int? = nil) async -> (URL?, String?) {
+        guard let bin = findYTDLPBinary() else { return (nil, "yt-dlp not found") }
+        var args: [String] = ["-g"]
+        if let itag { args += ["-f", "itag==\(itag)"] } else { args += ["-f", "best"] }
+        args.append(pageURL.absoluteString)
+        if let headers, !headers.isEmpty {
+            for (k, v) in headers {
+                args.insert(contentsOf: ["--add-header", "\(k): \(v)"], at: 0)
+            }
+        }
+        do {
+            let result = try runProcess(bin: bin, arguments: args)
+            if result.status == 0 {
+                let lines = result.out
+                    .split(whereSeparator: { $0 == "\n" || $0 == "\r\n" })
+                    .map { String($0) }
+                    .filter { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+                if let first = lines.first, let url = URL(string: first) { return (url, nil) }
+                return (nil, parseYTDLPErrorMessage(result.err.isEmpty ? result.out : result.err))
+            } else {
+                return (nil, parseYTDLPErrorMessage(result.err))
+            }
+        } catch {
+            return (nil, error.localizedDescription)
+        }
+    }
+
+    private func findYTDLPBinary() -> String? {
+        // Use YTDLPManager to find yt-dlp
+        return YTDLPManager.shared.getYTDLPPath()
+    }
+
+    private func runProcess(bin: String, arguments: [String]) throws -> (out: String, err: String, status: Int32) {
+        let proc = Process()
+        proc.executableURL = URL(fileURLWithPath: bin)
+        proc.arguments = arguments
+        let out = Pipe()
+        let err = Pipe()
+        proc.standardOutput = out
+        proc.standardError = err
+        try proc.run()
+        proc.waitUntilExit()
+        let outData = out.fileHandleForReading.readDataToEndOfFile()
+        let errData = err.fileHandleForReading.readDataToEndOfFile()
+        let outStr = String(data: outData, encoding: .utf8) ?? ""
+        let errStr = String(data: errData, encoding: .utf8) ?? ""
+        return (outStr, errStr, proc.terminationStatus)
+    }
+
+    private func parseYTDLPErrorMessage(_ raw: String) -> String {
+        let s = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        if s.isEmpty { return "Unknown error from yt-dlp" }
+        let lower = s.lowercased()
+        if lower.contains("age") || lower.contains("sign in") || lower.contains("cookies") || lower.contains("consent") {
+            return "Age verification or login required. Sign in on YouTube and use the browser extension so cookies are passed."
+        }
+        if lower.contains("members-only") || lower.contains("member only") {
+            return "Members-only content. Download requires membership (sign in and retry via browser extension)."
+        }
+        if lower.contains("private video") || lower.contains("private") {
+            return "Video is private or access-restricted."
+        }
+        if lower.contains("premiere") || lower.contains("live") {
+            return "Live or premiere content may not be downloadable yet."
+        }
+        if lower.contains("unsupported url") || lower.contains("no video formats") {
+            return "Unsupported or no downloadable formats found for this URL."
+        }
+        if lower.contains("http error 429") || lower.contains("too many requests") {
+            return "YouTube rate-limited this device (HTTP 429). Retry later or use your account via the extension."
+        }
+        if lower.contains("403") {
+            return "Access forbidden (HTTP 403). Sign in or try another format."
+        }
+        // Fallback: surface the first error line succinctly
+        if let line = s.components(separatedBy: "\n").first(where: { !$0.trimmingCharacters(in: .whitespaces).isEmpty }) {
+            return line.replacingOccurrences(of: "ERROR: ", with: "")
+        }
+        return s
     }
 
     private func handleStatusTransitions(oldItems: [DownloadItem], newItems: [DownloadItem]) {
@@ -108,6 +354,9 @@ final class AppViewModel: ObservableObject {
     func pause(item: DownloadItem) {
         Task { [weak self] in
             guard let self else { return }
+            // Remember the user's intent so schedule/auto-resume won't restart it
+            await MainActor.run { self.userPausedIds.insert(item.id) }
+            DownloadLogger.log(itemId: item.id, "user action: pause")
             await coordinator.pause(id: item.id)
             self.items = await coordinator.allItems()
             self.updateDockTileProgress(with: self.items)
@@ -117,6 +366,8 @@ final class AppViewModel: ObservableObject {
     func resume(item: DownloadItem) {
         Task { [weak self] in
             guard let self else { return }
+            await MainActor.run { self.userPausedIds.remove(item.id) }
+            DownloadLogger.log(itemId: item.id, "user action: resume")
             await coordinator.resume(id: item.id)
             self.items = await coordinator.allItems()
             self.updateDockTileProgress(with: self.items)
@@ -126,6 +377,7 @@ final class AppViewModel: ObservableObject {
     func cancel(item: DownloadItem) {
         Task { [weak self] in
             guard let self else { return }
+            DownloadLogger.log(itemId: item.id, "user action: cancel")
             await coordinator.cancel(id: item.id)
             self.items = await coordinator.allItems()
             self.updateDockTileProgress(with: self.items)
@@ -159,6 +411,37 @@ final class AppViewModel: ObservableObject {
         }
     }
 
+    func retryDownload(item: DownloadItem) {
+        Task { [weak self] in
+            guard let self else { return }
+            DownloadLogger.log(itemId: item.id, "user action: retry download - removing old and starting fresh")
+            
+            // Remove the old completed item first
+            await coordinator.remove(id: item.id)
+            
+            // Enqueue a fresh download with the same URL, headers, and suggested filename
+            let newItem = await coordinator.enqueue(
+                url: item.url,
+                suggestedFileName: item.finalFileName,
+                headers: item.requestHeaders
+            )
+            
+            // Preserve the destination directory if set
+            // IMPORTANT: Get the latest version from coordinator to preserve any metadata updates
+            if let bookmark = item.destinationDirBookmark {
+                // Give the session manager a moment to start and fetch initial metadata
+                try? await Task.sleep(nanoseconds: 50_000_000) // 0.05 seconds
+                // Get the latest version of the item (which may have metadata updates)
+                if var latestItem = await coordinator.getItem(id: newItem.id) {
+                    // Only update the bookmark, keeping all other fields intact
+                    latestItem.destinationDirBookmark = bookmark
+                    await coordinator.handleProgressUpdate(latestItem)
+                }
+            }
+            self.items = await coordinator.allItems()
+        }
+    }
+
     func clearHistory() {
         Task { [weak self] in
             guard let self else { return }
@@ -172,24 +455,57 @@ final class AppViewModel: ObservableObject {
         }
     }
 
+    func clearCompleted() {
+        Task { [weak self] in
+            guard let self else { return }
+            let items = await coordinator.allItems()
+            let completedOnly = items.filter { $0.status == .completed }
+            for item in completedOnly {
+                await coordinator.remove(id: item.id)
+            }
+            self.items = await coordinator.allItems()
+            self.updateDockTileProgress(with: self.items)
+        }
+    }
+
     // MARK: - File Utilities
     func openDownloadedFile(item: DownloadItem) {
-        if let url = resolveFileURL(for: item) {
-            NSWorkspace.shared.open(url)
-            return
+        let fileName = (item.finalFileName?.isEmpty == false ? item.finalFileName! : item.url.lastPathComponent)
+        var started = false
+        var dirURL: URL? = nil
+        if let bookmark = item.destinationDirBookmark {
+            var isStale = false
+            if let resolved = try? URL(resolvingBookmarkData: bookmark, options: [.withSecurityScope], relativeTo: nil, bookmarkDataIsStale: &isStale) {
+                started = resolved.startAccessingSecurityScopedResource()
+                dirURL = resolved
+            }
         }
-        if let dirURL = resolveDestinationDirectory(for: item) {
-            NSWorkspace.shared.open(dirURL)
+        let base = dirURL ?? FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first
+        if let base {
+            let fileURL = base.appendingPathComponent(fileName)
+            NSWorkspace.shared.open(fileURL)
+            if started { base.stopAccessingSecurityScopedResource() }
+            return
         }
     }
 
     func revealDownloadedFile(item: DownloadItem) {
-        if let url = resolveFileURL(for: item) {
-            NSWorkspace.shared.activateFileViewerSelecting([url])
-            return
+        let fileName = (item.finalFileName?.isEmpty == false ? item.finalFileName! : item.url.lastPathComponent)
+        var started = false
+        var dirURL: URL? = nil
+        if let bookmark = item.destinationDirBookmark {
+            var isStale = false
+            if let resolved = try? URL(resolvingBookmarkData: bookmark, options: [.withSecurityScope], relativeTo: nil, bookmarkDataIsStale: &isStale) {
+                started = resolved.startAccessingSecurityScopedResource()
+                dirURL = resolved
+            }
         }
-        if let dirURL = resolveDestinationDirectory(for: item) {
-            NSWorkspace.shared.open(dirURL)
+        let base = dirURL ?? FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first
+        if let base {
+            let fileURL = base.appendingPathComponent(fileName)
+            NSWorkspace.shared.activateFileViewerSelecting([fileURL])
+            if started { base.stopAccessingSecurityScopedResource() }
+            return
         }
     }
 
@@ -231,14 +547,28 @@ final class AppViewModel: ObservableObject {
                 switch path.status {
                 case .satisfied:
                     self.connectionStatus = .online
+                    // Log online event for active items
+                    Task {
+                        let items = await self.coordinator.allItems()
+                        for it in items where [.downloading, .reconnecting, .queued, .fetchingMetadata].contains(it.status) {
+                            DownloadLogger.log(itemId: it.id, "network: online")
+                        }
+                    }
                     // Attempt to auto-resume any reconnecting items whenever we observe online
                     let items = await self.coordinator.allItems()
-                    for item in items where item.status == .reconnecting {
+                    for item in items where item.status == .reconnecting && !self.userPausedIds.contains(item.id) {
                         await self.coordinator.resume(id: item.id)
                     }
                     self.items = await self.coordinator.allItems()
                 case .unsatisfied, .requiresConnection:
                     self.connectionStatus = .offline
+                    // Log offline event for active items
+                    Task {
+                        let items = await self.coordinator.allItems()
+                        for it in items where [.downloading, .reconnecting, .queued, .fetchingMetadata].contains(it.status) {
+                            DownloadLogger.log(itemId: it.id, "network: offline")
+                        }
+                    }
                 @unknown default:
                     self.connectionStatus = .offline
                 }
@@ -256,7 +586,8 @@ final class AppViewModel: ObservableObject {
                 let isOnline = await MainActor.run { self.connectionStatus == .online }
                 guard isOnline else { return }
                 let items = await self.coordinator.allItems()
-                let reconnecting = items.filter { $0.status == .reconnecting }
+                let pausedIds = await MainActor.run { self.userPausedIds }
+                let reconnecting = items.filter { $0.status == .reconnecting && !pausedIds.contains($0.id) }
                 guard !reconnecting.isEmpty else { return }
                 for item in reconnecting { await self.coordinator.resume(id: item.id) }
                 let updated = await self.coordinator.allItems()
@@ -264,6 +595,64 @@ final class AppViewModel: ObservableObject {
             }
         }
         RunLoop.main.add(reconnectTimer!, forMode: .common)
+    }
+
+    // MARK: - Scheduling
+    private func startScheduleWatcher() {
+        scheduleTimer?.invalidate()
+        scheduleTimer = Timer.scheduledTimer(withTimeInterval: 5.0, repeats: true) { [weak self] _ in
+            self?.evaluateSchedule()
+        }
+        if let scheduleTimer { RunLoop.main.add(scheduleTimer, forMode: .common) }
+    }
+
+    private func evaluateSchedule() {
+        guard let start = scheduledStartAt, let stop = scheduledStopAt, stop > start else { return }
+        let now = Date()
+        if now >= stop {
+            // Time window ended → pause active and clear schedule
+            Task { [weak self] in
+                guard let self else { return }
+                let items = await coordinator.allItems()
+                for item in items where [.downloading, .reconnecting, .fetchingMetadata, .queued].contains(item.status) {
+                    await coordinator.pause(id: item.id)
+                }
+                let updated = await self.coordinator.allItems()
+                await MainActor.run {
+                    self.items = updated
+                    self.clearSchedule()
+                }
+            }
+        } else if now >= start {
+            // Inside window → resume paused/reconnecting items and ensure queued start
+            Task { [weak self] in
+                guard let self else { return }
+                let items = await coordinator.allItems()
+                let pausedIds = await MainActor.run { self.userPausedIds }
+                for item in items where [.paused, .reconnecting, .failed].contains(item.status) && !pausedIds.contains(item.id) {
+                    await coordinator.resume(id: item.id)
+                }
+                let updated = await self.coordinator.allItems()
+                await MainActor.run { self.items = updated }
+            }
+        }
+    }
+
+    func setSchedule(start: Date, stop: Date) {
+        guard stop > start else { return }
+        scheduledStartAt = start
+        scheduledStopAt = stop
+        UserDefaults.standard.set(start.timeIntervalSince1970, forKey: "scheduledStartAt")
+        UserDefaults.standard.set(stop.timeIntervalSince1970, forKey: "scheduledStopAt")
+        startScheduleWatcher()
+        evaluateSchedule()
+    }
+
+    func clearSchedule() {
+        scheduledStartAt = nil
+        scheduledStopAt = nil
+        UserDefaults.standard.removeObject(forKey: "scheduledStartAt")
+        UserDefaults.standard.removeObject(forKey: "scheduledStopAt")
     }
 
     // MARK: - Auto Shutdown
@@ -350,20 +739,20 @@ final class AppViewModel: ObservableObject {
         var lastError: String? = nil
         // 1) Try Finder (usually running)
         let finderScript = "tell application \"Finder\" to shut down"
-        let finderResult = runAppleScriptViaCLI(finderScript)
+        let finderResult = await runAppleScriptOnMain(finderScript)
         if finderResult.success { return true }
         lastError = finderResult.error ?? lastError
 
         // 2) Try System Events (launch if needed)
         await launchSystemEventsIfNeededOnMain()
         let seScript = "tell application \"System Events\" to shut down"
-        let seResult = runAppleScriptViaCLI(seScript)
+        let seResult = await runAppleScriptOnMain(seScript)
         if seResult.success { return true }
         lastError = seResult.error ?? lastError
 
         // 3) Try sending the shutdown Apple event directly to loginwindow
         let lwScript = "ignoring application responses\n tell application id \"com.apple.loginwindow\" to «event aevtrsdn»\nend ignoring"
-        let lwResult = runAppleScriptViaCLI(lwScript)
+        let lwResult = await runAppleScriptOnMain(lwScript)
         if lwResult.success { return true }
         lastError = lwResult.error ?? lastError
 
@@ -372,8 +761,26 @@ final class AppViewModel: ObservableObject {
     }
 
     private func runAppleScript(_ script: String) -> (success: Bool, error: String?) {
-        // Use osascript exclusively to avoid in-process AppleScript issues in sandbox
+        // Prefer sending Apple Events from this app process to surface Automation permissions.
+        let inProc = runAppleScriptInProcess(script)
+        if inProc.success { return inProc }
+        // Fallback to CLI if in-process fails (e.g., compilation error)
         return runAppleScriptViaCLI(script)
+    }
+
+    private func runAppleScriptInProcess(_ script: String) -> (success: Bool, error: String?) {
+        guard let appleScript = NSAppleScript(source: script) else {
+            return (false, "Failed to create AppleScript")
+        }
+        var errorInfo: NSDictionary? = nil
+        _ = appleScript.executeAndReturnError(&errorInfo)
+        if let errorInfo {
+            // Extract a useful error message if available
+            let message = (errorInfo[NSAppleScript.errorMessage] as? String)
+                ?? errorInfo.description
+            return (false, message)
+        }
+        return (true, nil)
     }
 
     private func runAppleScriptViaCLI(_ script: String) -> (success: Bool, error: String?) {
@@ -445,6 +852,14 @@ final class AppViewModel: ObservableObject {
     func openAutomationPrivacyPane() {
         if let url = URL(string: "x-apple.systempreferences:com.apple.preference.security?Privacy_Automation") {
             NSWorkspace.shared.open(url)
+        }
+    }
+
+    func requestAutomationPermission() {
+        // Trigger the Automation consent dialog by sending a harmless Apple Event
+        Task { [weak self] in
+            guard let self else { return }
+            _ = await self.runAppleScriptOnMain("tell application \"System Events\" to count processes")
         }
     }
 
