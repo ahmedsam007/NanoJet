@@ -1298,46 +1298,26 @@ private struct DownloadRow: View {
                         .foregroundStyle(item.supportsRanges ? .green : .secondary)
                         .frame(width: DownloadColumns.resumable, alignment: .leading)
                 }
-                // Progress (always visible)
-                HStack(spacing: 6) {
+                // Progress (always visible) - text only
+                Group {
                     if item.status == .completed {
                         Text("100%")
                             .font(.caption)
                             .monospacedDigit()
                             .foregroundStyle(.secondary)
-                            .frame(width: 40, alignment: .leading)
-                        Circle()
-                            .fill(Color.clear)
-                            .frame(width: 16, height: 16)
                     } else if (item.status == .downloading || item.status == .paused), let total = item.totalBytes, total > 0 {
                         Text(formatPercent(received: min(item.receivedBytes, total), total: total))
                             .font(.caption)
                             .monospacedDigit()
                             .foregroundStyle(.secondary)
-                            .frame(width: 40, alignment: .leading)
-                        ProgressView(value: Double(item.receivedBytes), total: Double(total))
-                            .progressViewStyle(.circular)
-                            .controlSize(.small)
-                            .frame(width: 16, height: 16)
-                    } else if (item.status == .downloading || item.status == .paused) {
-                        // Reserve space so the circle is aligned even when percentage is unknown
-                        Text("100%")
+                    } else if item.status == .downloading || item.status == .paused {
+                        Text("—")
                             .font(.caption)
-                            .monospacedDigit()
-                            .foregroundStyle(.clear)
-                            .frame(width: 40, alignment: .leading)
-                        ProgressView()
-                            .progressViewStyle(.circular)
-                            .controlSize(.small)
-                            .frame(width: 16, height: 16)
+                            .foregroundStyle(.secondary)
                     } else {
                         Text("—")
                             .font(.caption)
                             .foregroundStyle(.secondary)
-                            .frame(width: 40, alignment: .leading)
-                        Circle()
-                            .fill(Color.clear)
-                            .frame(width: 16, height: 16)
                     }
                 }
                 .frame(width: DownloadColumns.progress, alignment: .leading)
