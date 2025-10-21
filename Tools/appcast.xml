@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
+    <channel>
+        <title>IDMMac Updates</title>
+        <link>https://ahmedsam.com/idmmac/appcast.xml</link>
+        <description>Most recent updates for IDMMac - Fast, lightweight macOS download manager</description>
+        <language>en</language>
+        
+        <!-- 
+            Example update entry - replace with your actual release information.
+            Use Tools/sign_update.sh to generate signed entries automatically.
+        -->
+        
+        <item>
+            <title>Version 0.1.0</title>
+            <description><![CDATA[
+                <h3>What's New in IDMMac 0.1.0</h3>
+                <ul>
+                    <li>🚀 Initial release</li>
+                    <li>⚡ Segmented multi-connection downloads for maximum speed</li>
+                    <li>⏸️ Pause, resume, and cancel downloads</li>
+                    <li>✅ SHA-256 file integrity verification</li>
+                    <li>📊 Real-time speed, ETA, and progress tracking</li>
+                    <li>🔄 Auto-reconnect on network issues</li>
+                    <li>🌐 Chrome & Firefox extension integration</li>
+                    <li>📥 YouTube video download support (via yt-dlp)</li>
+                    <li>⏰ Schedule downloads for later</li>
+                    <li>🔔 Download completion notifications</li>
+                    <li>🔐 Automatic updates with Sparkle 2</li>
+                </ul>
+                
+                <h4>System Requirements</h4>
+                <ul>
+                    <li>macOS 13.0 (Ventura) or later</li>
+                    <li>Apple Silicon or Intel processor</li>
+                </ul>
+            ]]></description>
+            <pubDate>Mon, 20 Oct 2025 10:00:00 +0000</pubDate>
+            <sparkle:version>1</sparkle:version>
+            <sparkle:shortVersionString>0.1.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
+            <enclosure 
+                url="https://ahmedsam.com/idmmac/downloads/IDMMacApp-0.1.0.zip"
+                length="REPLACE_WITH_FILE_SIZE"
+                type="application/octet-stream"
+                sparkle:edSignature="REPLACE_WITH_SIGNATURE_FROM_SIGN_UPDATE" />
+        </item>
+        
+        <!-- Add future releases here, most recent first -->
+        
+    </channel>
+</rss>
+
