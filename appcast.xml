@@ -36,9 +36,9 @@
             <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
             <enclosure 
                 url="https://github.com/ahmedsam007/IdmMac/releases/download/v0.2.1/IDMMacApp-v0.2.1.zip"
-                length="6477063"
+                length="6494558"
                 type="application/octet-stream"
-                sparkle:edSignature="fv4AVXip917MsRj1qEDl04K+jdtFmglCMxkrDqeaNAvLfkzJCPbnFDDki+9ao8+vblAWstIiBAt6IfBIr2pWBg==" />
+                sparkle:edSignature="b9cG+FWlMQ7xOvetj0pLY65QeaZuW6nzP2xC0UZ6v/V1DPEbjgifFLaW1RISN8jHarSPgP5Z5F/J8Y9chm2mAw==" />
         </item>
         
         <!-- Version 0.2.0 - Critical Bug Fixes & Improvements -->
