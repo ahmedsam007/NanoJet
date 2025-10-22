@@ -206,9 +206,43 @@ struct ContentView: View {
                         openWindow(id: "test-connection", value: def)
                     }) {
                         if appModel.connectionStatus == .checking {
-                            ProgressView().controlSize(.small)
+                            HStack(spacing: 6) {
+                                ProgressView().controlSize(.small)
+                                Text("Test Connection")
+                            }
                         } else {
-                            Text("Test Connection")
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("Test Connection")
+                                    .font(.caption)
+                                if appModel.networkDownloadSpeed > 0 || appModel.networkUploadSpeed > 0 {
+                                    HStack(spacing: 6) {
+                                        if appModel.networkDownloadSpeed > 0 {
+                                            HStack(spacing: 2) {
+                                                Image(systemName: "arrow.down")
+                                                    .font(.system(size: 8))
+                                                Text(NetworkSpeedMonitor.formatSpeedCompact(appModel.networkDownloadSpeed))
+                                                    .font(.system(size: 9))
+                                                    .monospacedDigit()
+                                            }
+                                            .foregroundStyle(.green)
+                                        }
+                                        if appModel.networkUploadSpeed > 0 {
+                                            HStack(spacing: 2) {
+                                                Image(systemName: "arrow.up")
+                                                    .font(.system(size: 8))
+                                                Text(NetworkSpeedMonitor.formatSpeedCompact(appModel.networkUploadSpeed))
+                                                    .font(.system(size: 9))
+                                                    .monospacedDigit()
+                                            }
+                                            .foregroundStyle(.blue)
+                                        }
+                                    }
+                                } else {
+                                    Text("No traffic")
+                                        .font(.system(size: 9))
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
                         }
                     }
                     .keyboardShortcut("t", modifiers: [.command])

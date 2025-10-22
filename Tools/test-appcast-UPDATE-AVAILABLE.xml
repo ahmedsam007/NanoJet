@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
+    <channel>
+        <title>IDMMac Updates - TEST</title>
+        <link>http://localhost:8000/test-appcast-UPDATE-AVAILABLE.xml</link>
+        <description>Test appcast for IDMMac - UPDATE AVAILABLE scenario</description>
+        <language>en</language>
+        
+        <!-- This version (0.2.0) is NEWER than your current version (0.1.0) -->
+        <item>
+            <title>Version 0.2.0 - Test Update</title>
+            <description><![CDATA[
+                <h3>🎉 What's New in IDMMac 0.2.0</h3>
+                <ul>
+                    <li>✨ <b>New Feature</b>: Dark mode support added</li>
+                    <li>🔄 <b>Improvement</b>: Sparkle 2 automatic updates</li>
+                    <li>🎨 <b>UI Enhancement</b>: App icon in title bar</li>
+                    <li>🐛 <b>Bug Fix</b>: Various stability improvements</li>
+                </ul>
+                
+                <h4>This is a TEST update</h4>
+                <p><b>Note:</b> This is only for testing the update UI. No actual download will occur.</p>
+            ]]></description>
+            <pubDate>Mon, 21 Oct 2025 10:00:00 +0000</pubDate>
+            <sparkle:version>2</sparkle:version>
+            <sparkle:shortVersionString>0.2.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
+            <enclosure 
+                url="http://localhost:8000/test-update.zip"
+                length="411"
+                type="application/octet-stream"
+                sparkle:edSignature="I23mPfo8A1pG8QYv2YiWCHLMRhhD6O5Y3RzAXiaZr0Ujv7gBCitO78JTJyEHDgDY3305e2SLdOpgz9AFF4FNAg==" />
+        </item>
+        
+    </channel>
+</rss>
+

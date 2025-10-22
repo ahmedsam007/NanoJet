@@ -1,0 +1,163 @@
+╔══════════════════════════════════════════════════════════════════╗
+║            How Automatic Updates Work - Visual Flow             ║
+╚══════════════════════════════════════════════════════════════════╝
+
+┌─────────────────────────────────────────────────────────────────┐
+│                    YOUR FRIEND (Has v0.1.0)                     │
+└─────────────────────────────────────────────────────────────────┘
+
+    Day 1: Downloads IDMMacApp-v0.1.0.zip from you
+           Installs it on their Mac
+           Uses it normally ✅
+
+
+┌─────────────────────────────────────────────────────────────────┐
+│                   YOU (Release v0.2.0)                          │
+└─────────────────────────────────────────────────────────────────┘
+
+    1. Update version in Xcode (0.1.0 → 0.2.0)
+    
+    2. Run: ./Tools/create-update.sh 0.2.0
+       → Builds, signs, packages everything
+    
+    3. Upload to your server:
+       → IDMMacApp-0.2.0.zip
+       → appcast.xml (updated)
+    
+    ✅ DONE! Now wait...
+
+
+┌─────────────────────────────────────────────────────────────────┐
+│              YOUR FRIEND (Opens app later)                      │
+└─────────────────────────────────────────────────────────────────┘
+
+    App checks: https://ahmedsam.com/idmmac/appcast.xml
+                ↓
+    Finds: Version 0.2.0 available!
+           Current: 0.1.0
+           New:     0.2.0
+                ↓
+    Shows notification:
+    ┌─────────────────────────────────────────┐
+    │  A new version of IDMMac is available!  │
+    │                                         │
+    │  Version 0.2.0 is now available.        │
+    │  You have version 0.1.0.                │
+    │                                         │
+    │     [Skip This Version]  [Install]      │
+    └─────────────────────────────────────────┘
+                ↓
+    Friend clicks "Install"
+                ↓
+    App downloads: IDMMacApp-0.2.0.zip
+    Verifies signature (secure!)
+    Extracts and installs
+    Relaunches app
+                ↓
+    Friend now has v0.2.0 ✅
+
+
+╔══════════════════════════════════════════════════════════════════╗
+║                    WITHOUT A DEVELOPER ACCOUNT                   ║
+╚══════════════════════════════════════════════════════════════════╝
+
+⚠️  Note: Without Apple Developer account ($99/year):
+
+✅ What WORKS:
+   • Automatic updates (via Sparkle) ✓
+   • Local testing ✓
+   • Sharing with friends ✓
+   • Code signing (ad-hoc) ✓
+
+❌ What DOESN'T work:
+   • Notarization (Apple verification) ✗
+   • Mac App Store distribution ✗
+   • Gatekeeper bypass (users must right-click → Open) ✗
+
+So your friends need to:
+1. First launch: Right-click → Open → Click "Open"
+2. After that: Updates install automatically!
+
+
+╔══════════════════════════════════════════════════════════════════╗
+║                         QUICK COMMANDS                           ║
+╚══════════════════════════════════════════════════════════════════╝
+
+# For NEW users (direct download)
+./Tools/export-for-sharing.sh 0.2.0
+→ Share: IDMMacApp-v0.2.0.zip
+
+# For EXISTING users (automatic updates)
+./Tools/create-update.sh 0.2.0
+→ Upload to server
+
+# You can do BOTH!
+# Share new version directly AND enable auto-updates
+
+
+╔══════════════════════════════════════════════════════════════════╗
+║                    WHERE TO HOST FILES                           ║
+╚══════════════════════════════════════════════════════════════════╝
+
+You need to host 2 files somewhere public:
+
+1. appcast.xml
+   → This is the "update feed"
+   → Users' apps check this for new versions
+
+2. IDMMacApp-0.2.0.zip
+   → The actual app download
+   → Referenced in appcast.xml
+
+Options for hosting:
+• Your own website (ahmedsam.com) ✓
+• GitHub Releases (free, easy) ✓
+• Dropbox/Google Drive (public links) ✓
+• AWS S3 / CloudFront ✓
+
+
+╔══════════════════════════════════════════════════════════════════╗
+║                          EXAMPLE URLS                            ║
+╚══════════════════════════════════════════════════════════════════╝
+
+Your Info.plist currently has:
+https://ahmedsam.com/idmmac/appcast.xml
+
+This means you need:
+https://ahmedsam.com/idmmac/appcast.xml              (feed)
+https://ahmedsam.com/idmmac/downloads/IDMMacApp-0.1.0.zip
+https://ahmedsam.com/idmmac/downloads/IDMMacApp-0.2.0.zip
+https://ahmedsam.com/idmmac/downloads/IDMMacApp-0.3.0.zip
+...etc...
+
+
+╔══════════════════════════════════════════════════════════════════╗
+║                            CHECKLIST                             ║
+╚══════════════════════════════════════════════════════════════════╝
+
+For v0.1.0 (Initial Release):
+☐ Share IDMMacApp-v0.1.0.zip with friends
+☐ Upload appcast.xml and zip to your server
+☐ Friends install and use
+
+For v0.2.0 (Update):
+☐ Update version in Xcode
+☐ Run: ./Tools/create-update.sh 0.2.0
+☐ Update appcast.xml with new entry
+☐ Upload new zip to server
+☐ Upload updated appcast.xml
+☐ (Optional) Share v0.2.0 zip for new users
+
+╔══════════════════════════════════════════════════════════════════╗
+║                           TESTING TIP                            ║
+╚══════════════════════════════════════════════════════════════════╝
+
+Before releasing to everyone:
+
+1. Install v0.1.0 on a test Mac
+2. Upload your v0.2.0 files
+3. Open v0.1.0 and check for updates
+4. Verify the update installs correctly
+5. Then tell your friends it's ready!
+
+

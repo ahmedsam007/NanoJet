@@ -16,8 +16,9 @@
 		1A7EAA949E59E532FF5D0246 /* icon256.png in Resources */ = {isa = PBXBuildFile; fileRef = D88AC83C81A2868C9108A556 /* icon256.png */; };
 		22C73DAC974E4C8E48AF9473 /* options.js in Resources */ = {isa = PBXBuildFile; fileRef = C27E7CC470C107CEF42BFFDA /* options.js */; };
 		2F07C1D8D0EF190247500E16 /* TestConnectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 89FFADDCC46827773D22AAE3 /* TestConnectionView.swift */; };
-		3304BB311A3327DF0076F284 /* YTDLPManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A17E4DDD24A7DE8845AB31D /* YTDLPManager.swift */; };
-		52E75535B3DB21269D54057D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0C1322B1F554B552460BB558 /* Assets.xcassets */; };
+	3304BB311A3327DF0076F284 /* YTDLPManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A17E4DDD24A7DE8845AB31D /* YTDLPManager.swift */; };
+	52E75535B3DB21269D54057D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0C1322B1F554B552460BB558 /* Assets.xcassets */; };
+	AAAA1111BBBB2222CCCC3333 /* NetworkSpeedMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDDD4444EEEE5555FFFF6666 /* NetworkSpeedMonitor.swift */; };
 		5B1F6D9FAA3185EE9D54ED49 /* UpdaterManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E89951DFE1C9B1D63A9B62DB /* UpdaterManager.swift */; };
 		690CAF9119B69E60248DFC13 /* content.js in Resources */ = {isa = PBXBuildFile; fileRef = 5CE8D12150475ECD374648F2 /* content.js */; };
 		98FA3B763DFB91C4CD076ED6 /* pageHook.js in Resources */ = {isa = PBXBuildFile; fileRef = 45A4AF29D20E45E8B7E49D68 /* pageHook.js */; };
@@ -44,8 +45,9 @@
 
 /* Begin PBXFileReference section */
 		09C44CAFED7A08632A8D7007 /* ConnectionDiagnostics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionDiagnostics.swift; sourceTree = "<group>"; };
-		0A17E4DDD24A7DE8845AB31D /* YTDLPManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YTDLPManager.swift; sourceTree = "<group>"; };
-		0A3D384F12FE71FECA789109 /* IDMMacApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = IDMMacApp.entitlements; sourceTree = "<group>"; };
+	0A17E4DDD24A7DE8845AB31D /* YTDLPManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YTDLPManager.swift; sourceTree = "<group>"; };
+	0A3D384F12FE71FECA789109 /* IDMMacApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = IDMMacApp.entitlements; sourceTree = "<group>"; };
+	DDDD4444EEEE5555FFFF6666 /* NetworkSpeedMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkSpeedMonitor.swift; sourceTree = "<group>"; };
 		0C1322B1F554B552460BB558 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		11AEFEE73A1AD3487A63E4F5 /* IDMMacApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = IDMMacApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2A2E43F47097C21FA408B29C /* icon512.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon512.png; sourceTree = "<group>"; };
@@ -205,6 +207,7 @@
 			isa = PBXGroup;
 			children = (
 				09C44CAFED7A08632A8D7007 /* ConnectionDiagnostics.swift */,
+				DDDD4444EEEE5555FFFF6666 /* NetworkSpeedMonitor.swift */,
 				E89951DFE1C9B1D63A9B62DB /* UpdaterManager.swift */,
 				0A17E4DDD24A7DE8845AB31D /* YTDLPManager.swift */,
 			);
@@ -325,6 +328,7 @@
 				FF8214609DCDE321999306E9 /* ConnectionDiagnosticsView.swift in Sources */,
 				AC8CD272E48F78B72D3709A5 /* ContentView.swift in Sources */,
 				FFEE3241CBD186644294641F /* IDMMacApp.swift in Sources */,
+				AAAA1111BBBB2222CCCC3333 /* NetworkSpeedMonitor.swift in Sources */,
 				D52CF4D2E903D35A264ADF07 /* SettingsView.swift in Sources */,
 				2F07C1D8D0EF190247500E16 /* TestConnectionView.swift in Sources */,
 				5B1F6D9FAA3185EE9D54ED49 /* UpdaterManager.swift in Sources */,

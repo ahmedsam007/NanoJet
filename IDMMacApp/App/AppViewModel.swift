@@ -20,6 +20,8 @@ final class AppViewModel: ObservableObject {
     @Published var shutdownError: String?
     @Published var scheduledStartAt: Date?
     @Published var scheduledStopAt: Date?
+    @Published var networkDownloadSpeed: Double = 0.0
+    @Published var networkUploadSpeed: Double = 0.0
     private var clipboardTimer: Timer?
     private var reconnectTimer: Timer?
     private var scheduleTimer: Timer?
@@ -34,6 +36,7 @@ final class AppViewModel: ObservableObject {
     private var userPausedIds: Set<UUID> = []
 
     private let coordinator = DownloadCoordinator.shared
+    private let speedMonitor = NetworkSpeedMonitor.shared
 
     init() {
         self.shutdownWhenDone = UserDefaults.standard.bool(forKey: "shutdownWhenDone")
@@ -47,6 +50,7 @@ final class AppViewModel: ObservableObject {
         startConnectivityMonitor()
         startAutoReconnectWatcher()
         startScheduleWatcher()
+        startNetworkSpeedMonitoring()
         Task { [weak self] in
             guard let self else { return }
             await coordinator.restoreFromDisk()
@@ -560,6 +564,26 @@ final class AppViewModel: ObservableObject {
             self?.evaluateSchedule()
         }
         if let scheduleTimer { RunLoop.main.add(scheduleTimer, forMode: .common) }
+    }
+
+    // MARK: - Network Speed Monitoring
+    private func startNetworkSpeedMonitoring() {
+        speedMonitor.startMonitoring()
+        
+        // Observe speed changes and update our published properties
+        speedMonitor.$downloadSpeed
+            .receive(on: RunLoop.main)
+            .sink { [weak self] speed in
+                self?.networkDownloadSpeed = speed
+            }
+            .store(in: &cancellables)
+        
+        speedMonitor.$uploadSpeed
+            .receive(on: RunLoop.main)
+            .sink { [weak self] speed in
+                self?.networkUploadSpeed = speed
+            }
+            .store(in: &cancellables)
     }
 
     private func evaluateSchedule() {
