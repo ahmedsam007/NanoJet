@@ -1,13 +1,9 @@
 {
-  "manifest_version": 3,
+  "manifest_version": 2,
   "name": "IDMMac Interceptor",
   "version": "0.2.3",
   "description": "Intercept downloads and hand off to IDMMac app.",
   "permissions": ["downloads", "storage", "notifications", "tabs", "contextMenus", "cookies"],
-  "host_permissions": ["<all_urls>"],
-  "background": {
-    "service_worker": "worker.js"
-  },
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
@@ -15,20 +11,20 @@
       "css": ["content.css"],
       "run_at": "document_idle",
       "all_frames": true
-    },
-    {
-      "matches": ["<all_urls>"],
-      "js": ["pageHook.js"],
-      "run_at": "document_start",
-      "all_frames": true,
-      "world": "MAIN"
     }
   ],
-  "options_page": "options.html",
+  "background": {
+    "scripts": ["worker.js"],
+    "persistent": true
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
   "browser_specific_settings": {
     "gecko": {
       "id": "idmmac@local",
-      "strict_min_version": "109.0"
+      "strict_min_version": "78.0"
     }
   },
   "icons": {
@@ -39,10 +35,9 @@
     "256": "icons/icon256.png",
     "512": "icons/icon512.png"
   },
-  "action": {
+  "browser_action": {
     "default_icon": "icons/icon32.png",
     "default_title": "IDMMac Interceptor"
   }
 }
-
 

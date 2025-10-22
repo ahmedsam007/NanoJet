@@ -1,4 +1,4 @@
-// Use browser.* if available (Firefox), otherwise fall back to chrome.*
+// Firefox MV2 uses browser.*
 const api = (typeof browser !== 'undefined' ? browser : chrome);
 
 // Intercept new downloads and redirect to idmmac:// scheme
@@ -54,7 +54,7 @@ api.contextMenus.onClicked.addListener(async (info, tab) => {
   }
 });
 
-// Handle cookie/header requests from content scripts
+// Handle cookie/header requests and lightweight HEAD size probe from content scripts
 api.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (!message || !message.type) return;
   if (message.type === 'idmmac_getCookies' && message.url) {
@@ -62,18 +62,6 @@ api.runtime.onMessage.addListener((message, sender, sendResponse) => {
       sendResponse({ cookie: cookieHeader });
     }).catch(() => sendResponse({ cookie: '' }));
     return true; // keep the channel open for async response
-  }
-  if (message.type === 'idmmac_open' && message.url) {
-    try {
-      const u = encodeURIComponent(message.url);
-      const h = message.headersB64 ? `&headers=${encodeURIComponent(message.headersB64)}` : '';
-      const x = message.extras ? `&x=${encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(message.extras)))))}` : '';
-      api.tabs.create({ url: `idmmac://add?url=${u}${h}${x}` });
-      sendResponse({ ok: true });
-    } catch (e) {
-      sendResponse({ ok: false, error: String(e) });
-    }
-    return true;
   }
   if (message.type === 'idmmac_head' && message.url) {
     (async () => {
@@ -86,7 +74,6 @@ api.runtime.onMessage.addListener((message, sender, sendResponse) => {
         let res = await fetch(message.url, { method: 'HEAD', redirect: 'follow', cache: 'no-store', headers });
         let len = res.headers.get('content-length');
         if (!len || parseInt(len, 10) <= 0) {
-          // Fallback: tiny ranged GET to extract total from Content-Range
           headers.set('Range', 'bytes=0-0');
           res = await fetch(message.url, { method: 'GET', redirect: 'follow', cache: 'no-store', headers });
           const cr = res.headers.get('Content-Range');
@@ -116,11 +103,11 @@ async function buildHeadersForUrl(targetUrl, referer) {
 
 async function buildCookieHeader(targetUrl) {
   try {
-    const url = new URL(targetUrl);
-    const cookies = await api.cookies.getAll({ url: url.origin });
+    const u = new URL(targetUrl);
+    const cookies = await api.cookies.getAll({ url: u.origin });
     if (!cookies || cookies.length === 0) return '';
     const pairs = cookies
-      .filter(c => !c.hostOnly || url.hostname.endsWith(c.domain.replace(/^\./, '')))
+      .filter(c => !c.hostOnly || u.hostname.endsWith(c.domain.replace(/^\./, '')))
       .map(c => `${c.name}=${c.value}`);
     return pairs.join('; ');
   } catch (e) {
