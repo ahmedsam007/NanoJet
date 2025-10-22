@@ -6,6 +6,41 @@
         <description>Most recent updates for IDMMac - Fast, lightweight macOS download manager</description>
         <language>en</language>
         
+        <!-- Version 0.2.1 - Network Speed Monitor Feature -->
+        <item>
+            <title>Version 0.2.1</title>
+            <description><![CDATA[
+                <h3>What's New in IDMMac 0.2.1</h3>
+                <p><strong>New Feature:</strong> Real-time network speed monitoring to help you understand your download performance!</p>
+                
+                <h4>🚀 New Features</h4>
+                <ul>
+                    <li><strong>Network Speed Monitor</strong> - View your current upload and download speeds in real-time</li>
+                    <li><strong>Network Interface Detection</strong> - Automatically detects and monitors all active network interfaces</li>
+                    <li><strong>Performance Insights</strong> - See how your downloads perform relative to your maximum network capacity</li>
+                    <li><strong>Clean UI Integration</strong> - Speed monitor seamlessly integrates into the app interface</li>
+                </ul>
+                
+                <h4>✨ Improvements</h4>
+                <ul>
+                    <li>Enhanced network diagnostics for troubleshooting slow downloads</li>
+                    <li>Better visibility into network performance during active downloads</li>
+                    <li>Optimized memory usage for network monitoring</li>
+                </ul>
+                
+                <p><em>This update adds powerful network monitoring capabilities to help you get the most out of your downloads.</em></p>
+            ]]></description>
+            <pubDate>Wed, 23 Oct 2025 00:00:00 +0300</pubDate>
+            <sparkle:version>4</sparkle:version>
+            <sparkle:shortVersionString>0.2.1</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
+            <enclosure 
+                url="https://github.com/ahmedsam007/IdmMac/releases/download/v0.2.1/IDMMacApp-v0.2.1.zip"
+                length="6477063"
+                type="application/octet-stream"
+                sparkle:edSignature="fv4AVXip917MsRj1qEDl04K+jdtFmglCMxkrDqeaNAvLfkzJCPbnFDDki+9ao8+vblAWstIiBAt6IfBIr2pWBg==" />
+        </item>
+        
         <!-- Version 0.2.0 - Critical Bug Fixes & Improvements -->
         <item>
             <title>Version 0.2.0</title>
