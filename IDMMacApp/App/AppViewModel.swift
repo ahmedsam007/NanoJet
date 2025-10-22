@@ -89,15 +89,11 @@ final class AppViewModel: ObservableObject {
             let host = url.host?.lowercased() ?? ""
             if host.contains("youtube.com") || host.contains("youtu.be") || host.contains("web.telegram.org") {
                 // If a specific itag was requested (from our picker), ask yt-dlp for that itag
+                let bookmark = UserDefaults.standard.data(forKey: "downloadDirectoryBookmark")
                 if let itag = (extras?["itag"] as? NSNumber)?.intValue ?? (extras?["itag"] as? Int) {
                     if let resolved = await resolveBestURLViaYTDLP(for: url, headers: headers, itag: itag) {
                         DownloadLogger.log(itemId: UUID(), "yt-dlp resolved itag=\(itag): \(resolved.absoluteString)")
-                        let newItem = await coordinator.enqueue(url: resolved, headers: headers)
-                        if let bookmark = UserDefaults.standard.data(forKey: "downloadDirectoryBookmark") {
-                            var updated = newItem
-                            updated.destinationDirBookmark = bookmark
-                            await coordinator.handleProgressUpdate(updated)
-                        }
+                        await coordinator.enqueueWithBookmark(url: resolved, headers: headers, bookmark: bookmark)
                         self.items = await coordinator.allItems()
                         await MainActor.run { completion?(true, nil) }
                         return
@@ -105,37 +101,21 @@ final class AppViewModel: ObservableObject {
                 }
                 if let resolved = await resolveBestURLViaYTDLP(for: url, headers: headers) {
                     DownloadLogger.log(itemId: UUID(), "yt-dlp resolved: \(resolved.absoluteString)")
-                    let newItem = await coordinator.enqueue(url: resolved, headers: headers)
-                    // Attach default folder if present
-                    if let bookmark = UserDefaults.standard.data(forKey: "downloadDirectoryBookmark") {
-                        var updated = newItem
-                        updated.destinationDirBookmark = bookmark
-                        await coordinator.handleProgressUpdate(updated)
-                    }
+                    await coordinator.enqueueWithBookmark(url: resolved, headers: headers, bookmark: bookmark)
                     self.items = await coordinator.allItems()
                     return
                 }
                 // If yt-dlp failed, fallback to the direct target URL provided by the extension (if any)
                 if let targetStr = extras?["target"] as? String, let targetURL = URL(string: targetStr) {
                     DownloadLogger.log(itemId: UUID(), "yt-dlp failed; using extension-provided target URL: \(targetURL.absoluteString)")
-                    let newItem = await coordinator.enqueue(url: targetURL, headers: headers)
-                    if let bookmark = UserDefaults.standard.data(forKey: "downloadDirectoryBookmark") {
-                        var updated = newItem
-                        updated.destinationDirBookmark = bookmark
-                        await coordinator.handleProgressUpdate(updated)
-                    }
+                    await coordinator.enqueueWithBookmark(url: targetURL, headers: headers, bookmark: bookmark)
                     self.items = await coordinator.allItems()
                     return
                 }
                 // Finally, try resolving again without headers to get a public signed URL from yt-dlp
                 if let resolvedNoHdr = await resolveBestURLViaYTDLP(for: url, headers: nil) {
                     DownloadLogger.log(itemId: UUID(), "yt-dlp resolved (no-headers): \(resolvedNoHdr.absoluteString)")
-                    let newItem = await coordinator.enqueue(url: resolvedNoHdr, headers: headers)
-                    if let bookmark = UserDefaults.standard.data(forKey: "downloadDirectoryBookmark") {
-                        var updated = newItem
-                        updated.destinationDirBookmark = bookmark
-                        await coordinator.handleProgressUpdate(updated)
-                    }
+                    await coordinator.enqueueWithBookmark(url: resolvedNoHdr, headers: headers, bookmark: bookmark)
                     self.items = await coordinator.allItems()
                     return
                 }
@@ -164,26 +144,17 @@ final class AppViewModel: ObservableObject {
             if host.contains("googlevideo.com") {
                 if let ref = headers?.first(where: { $0.key.caseInsensitiveCompare("Referer") == .orderedSame })?.value,
                    let refURL = URL(string: ref), (refURL.host?.contains("youtube.com") ?? false) {
+                    let bookmark = UserDefaults.standard.data(forKey: "downloadDirectoryBookmark")
                     if let itag = (extras?["itag"] as? NSNumber)?.intValue ?? (extras?["itag"] as? Int), let resolved = await resolveBestURLViaYTDLP(for: refURL, headers: headers, itag: itag) {
                         DownloadLogger.log(itemId: UUID(), "yt-dlp resolved from referer itag=\(itag): \(resolved.absoluteString)")
-                        let newItem = await coordinator.enqueue(url: resolved, headers: headers)
-                        if let bookmark = UserDefaults.standard.data(forKey: "downloadDirectoryBookmark") {
-                            var updated = newItem
-                            updated.destinationDirBookmark = bookmark
-                            await coordinator.handleProgressUpdate(updated)
-                        }
+                        await coordinator.enqueueWithBookmark(url: resolved, headers: headers, bookmark: bookmark)
                         self.items = await coordinator.allItems()
                         await MainActor.run { completion?(true, nil) }
                         return
                     }
                     if let resolved = await resolveBestURLViaYTDLP(for: refURL, headers: headers) {
                         DownloadLogger.log(itemId: UUID(), "yt-dlp resolved from referer: \(resolved.absoluteString)")
-                        let newItem = await coordinator.enqueue(url: resolved, headers: headers)
-                        if let bookmark = UserDefaults.standard.data(forKey: "downloadDirectoryBookmark") {
-                            var updated = newItem
-                            updated.destinationDirBookmark = bookmark
-                            await coordinator.handleProgressUpdate(updated)
-                        }
+                        await coordinator.enqueueWithBookmark(url: resolved, headers: headers, bookmark: bookmark)
                         self.items = await coordinator.allItems()
                         await MainActor.run { completion?(true, nil) }
                         return
@@ -191,24 +162,14 @@ final class AppViewModel: ObservableObject {
                     // If resolving from referer failed, resolve from the watch URL without headers to get a public signed URL
                     if let itag = (extras?["itag"] as? NSNumber)?.intValue ?? (extras?["itag"] as? Int), let resolved2 = await resolveBestURLViaYTDLP(for: refURL, headers: nil, itag: itag) {
                         DownloadLogger.log(itemId: UUID(), "yt-dlp resolved (no-headers) from referer itag=\(itag): \(resolved2.absoluteString)")
-                        let newItem = await coordinator.enqueue(url: resolved2, headers: headers)
-                        if let bookmark = UserDefaults.standard.data(forKey: "downloadDirectoryBookmark") {
-                            var updated = newItem
-                            updated.destinationDirBookmark = bookmark
-                            await coordinator.handleProgressUpdate(updated)
-                        }
+                        await coordinator.enqueueWithBookmark(url: resolved2, headers: headers, bookmark: bookmark)
                         self.items = await coordinator.allItems()
                         await MainActor.run { completion?(true, nil) }
                         return
                     }
                     if let resolved2 = await resolveBestURLViaYTDLP(for: refURL, headers: nil) {
                         DownloadLogger.log(itemId: UUID(), "yt-dlp resolved (no-headers) from referer: \(resolved2.absoluteString)")
-                        let newItem = await coordinator.enqueue(url: resolved2, headers: headers)
-                        if let bookmark = UserDefaults.standard.data(forKey: "downloadDirectoryBookmark") {
-                            var updated = newItem
-                            updated.destinationDirBookmark = bookmark
-                            await coordinator.handleProgressUpdate(updated)
-                        }
+                        await coordinator.enqueueWithBookmark(url: resolved2, headers: headers, bookmark: bookmark)
                         self.items = await coordinator.allItems()
                         await MainActor.run { completion?(true, nil) }
                         return
@@ -216,13 +177,9 @@ final class AppViewModel: ObservableObject {
                 }
             }
             // Fallback: enqueue the original URL
-            let newItem = await coordinator.enqueue(url: url, headers: headers)
-            // If user selected a default download directory, attach it to the new item
-            if let bookmark = UserDefaults.standard.data(forKey: "downloadDirectoryBookmark") {
-                var updated = newItem
-                updated.destinationDirBookmark = bookmark
-                await coordinator.handleProgressUpdate(updated)
-            }
+            // Pass the bookmark upfront to avoid race conditions
+            let bookmark = UserDefaults.standard.data(forKey: "downloadDirectoryBookmark")
+            await coordinator.enqueueWithBookmark(url: url, headers: headers, bookmark: bookmark)
             self.items = await coordinator.allItems()
             await MainActor.run { completion?(true, nil) }
         }
@@ -347,7 +304,7 @@ final class AppViewModel: ObservableObject {
 
     func addFromClipboard() {
         if let str = NSPasteboard.general.string(forType: .string) {
-            enqueue(urlString: str)
+            enqueue(urlString: str, allowDuplicate: true)
         }
     }
 
@@ -420,24 +377,14 @@ final class AppViewModel: ObservableObject {
             await coordinator.remove(id: item.id)
             
             // Enqueue a fresh download with the same URL, headers, and suggested filename
-            let newItem = await coordinator.enqueue(
+            // Pass the bookmark upfront to avoid race conditions
+            await coordinator.enqueueWithBookmark(
                 url: item.url,
                 suggestedFileName: item.finalFileName,
-                headers: item.requestHeaders
+                headers: item.requestHeaders,
+                bookmark: item.destinationDirBookmark
             )
             
-            // Preserve the destination directory if set
-            // IMPORTANT: Get the latest version from coordinator to preserve any metadata updates
-            if let bookmark = item.destinationDirBookmark {
-                // Give the session manager a moment to start and fetch initial metadata
-                try? await Task.sleep(nanoseconds: 50_000_000) // 0.05 seconds
-                // Get the latest version of the item (which may have metadata updates)
-                if var latestItem = await coordinator.getItem(id: newItem.id) {
-                    // Only update the bookmark, keeping all other fields intact
-                    latestItem.destinationDirBookmark = bookmark
-                    await coordinator.handleProgressUpdate(latestItem)
-                }
-            }
             self.items = await coordinator.allItems()
         }
     }
@@ -455,11 +402,20 @@ final class AppViewModel: ObservableObject {
         }
     }
 
-    func clearCompleted() {
+    func clearCompleted(selectedIds: Set<UUID> = []) {
         Task { [weak self] in
             guard let self else { return }
             let items = await coordinator.allItems()
-            let completedOnly = items.filter { $0.status == .completed }
+            let completedOnly: [DownloadItem]
+            
+            if selectedIds.isEmpty {
+                // No selection - clear all completed items
+                completedOnly = items.filter { $0.status == .completed }
+            } else {
+                // Clear only selected completed items
+                completedOnly = items.filter { $0.status == .completed && selectedIds.contains($0.id) }
+            }
+            
             for item in completedOnly {
                 await coordinator.remove(id: item.id)
             }

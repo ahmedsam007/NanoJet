@@ -1,10 +1,10 @@
 import Foundation
 
-public enum DownloadStatus: String, Codable, Hashable {
+public enum DownloadStatus: String, Codable, Hashable, Sendable {
     case queued, fetchingMetadata, downloading, paused, reconnecting, completed, failed, canceled, deleted
 }
 
-public struct Segment: Codable, Hashable {
+public struct Segment: Codable, Hashable, Sendable {
     public var index: Int
     public var rangeStart: Int64
     public var rangeEnd: Int64 // inclusive
@@ -20,7 +20,7 @@ public struct Segment: Codable, Hashable {
     }
 }
 
-public struct DownloadItem: Identifiable, Codable, Hashable {
+public struct DownloadItem: Identifiable, Codable, Hashable, Sendable {
     public var id: UUID
     public var url: URL
     public var finalFileName: String?
@@ -38,6 +38,7 @@ public struct DownloadItem: Identifiable, Codable, Hashable {
     public var priority: Int
     public var lastError: String?
     public var previousStatusBeforeDeletion: DownloadStatus?
+    public var requestHeaders: [String: String]?
 
     public init(
         id: UUID = UUID(),
@@ -56,7 +57,8 @@ public struct DownloadItem: Identifiable, Codable, Hashable {
         segments: [Segment]? = nil,
         priority: Int = 0,
         lastError: String? = nil,
-        previousStatusBeforeDeletion: DownloadStatus? = nil
+        previousStatusBeforeDeletion: DownloadStatus? = nil,
+        requestHeaders: [String: String]? = nil
     ) {
         self.id = id
         self.url = url
@@ -75,6 +77,7 @@ public struct DownloadItem: Identifiable, Codable, Hashable {
         self.priority = priority
         self.lastError = lastError
         self.previousStatusBeforeDeletion = previousStatusBeforeDeletion
+        self.requestHeaders = requestHeaders
     }
 }
 

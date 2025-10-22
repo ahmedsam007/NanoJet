@@ -26,6 +26,10 @@ struct SettingsView: View {
         panel.begin { response in
             if response == .OK, let url = panel.url {
                 downloadDirectoryPath = url.path
+                // Persist a security-scoped bookmark for sandboxed access
+                if let bookmark = try? url.bookmarkData(options: [.withSecurityScope], includingResourceValuesForKeys: nil, relativeTo: nil) {
+                    UserDefaults.standard.set(bookmark, forKey: "downloadDirectoryBookmark")
+                }
             }
         }
     }

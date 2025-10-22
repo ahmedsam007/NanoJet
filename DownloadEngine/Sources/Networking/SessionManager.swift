@@ -27,9 +27,27 @@ public final class BackgroundSessionManager: NSObject, URLSessionManaging {
     }
 
     public func startDownload(for item: DownloadItem) async {
+        DownloadLogger.log(itemId: item.id, "startDownload: url=\(item.url)")
         var req = URLRequest(url: item.url)
         req.httpMethod = "GET"
         req.setValue("identity", forHTTPHeaderField: "Accept-Encoding")
+        // YouTube direct links (googlevideo.com) often require Referer=origin and a realistic User-Agent
+        if let host = item.url.host?.lowercased(), host.contains("googlevideo.com") {
+            if req.value(forHTTPHeaderField: "Referer") == nil {
+                // Best-effort referer to YouTube watch page if present in headers; otherwise fallback to https://www.youtube.com
+                let ref = item.requestHeaders?.first(where: { $0.key.caseInsensitiveCompare("Referer") == .orderedSame })?.value ?? "https://www.youtube.com"
+                req.setValue(ref, forHTTPHeaderField: "Referer")
+            }
+            if req.value(forHTTPHeaderField: "User-Agent") == nil {
+                req.setValue("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36", forHTTPHeaderField: "User-Agent")
+            }
+        }
+        if let headers = item.requestHeaders {
+            for (k, v) in headers { req.setValue(v, forHTTPHeaderField: k) }
+            let cookiePresent = headers.keys.contains(where: { $0.caseInsensitiveCompare("Cookie") == .orderedSame })
+            let referer = headers.first(where: { $0.key.caseInsensitiveCompare("Referer") == .orderedSame })?.value ?? ""
+            DownloadLogger.log(itemId: item.id, "using headers: Referer=\(referer.isEmpty ? "<none>" : referer) Cookie=\(cookiePresent ? "present" : "absent")")
+        }
         let task = session.downloadTask(with: req)
         taskIdToItemId[task.taskIdentifier] = item.id
         itemIdToSpeedMeter[item.id] = SpeedMeter()
@@ -37,6 +55,7 @@ public final class BackgroundSessionManager: NSObject, URLSessionManaging {
     }
 
     public func pauseDownload(for item: DownloadItem) async {
+        DownloadLogger.log(itemId: item.id, "pauseDownload")
         // For background tasks, use cancellation with resume data (async API)
         for (tid, iid) in taskIdToItemId where iid == item.id {
             if let task = taskFor(identifier: tid) as? URLSessionDownloadTask {
@@ -51,6 +70,7 @@ public final class BackgroundSessionManager: NSObject, URLSessionManaging {
     }
 
     public func resumeDownload(for item: DownloadItem) async {
+        DownloadLogger.log(itemId: item.id, "resumeDownload")
         if let data = itemIdToResumeData[item.id] {
             let task = session.downloadTask(withResumeData: data)
             taskIdToItemId[task.taskIdentifier] = item.id
@@ -63,6 +83,7 @@ public final class BackgroundSessionManager: NSObject, URLSessionManaging {
     }
 
     public func cancelDownload(for item: DownloadItem) async {
+        DownloadLogger.log(itemId: item.id, "cancelDownload")
         for (tid, iid) in taskIdToItemId where iid == item.id {
             taskFor(identifier: tid)?.cancel()
         }
@@ -82,9 +103,33 @@ public final class BackgroundSessionManager: NSObject, URLSessionManaging {
 
 extension BackgroundSessionManager: URLSessionDownloadDelegate {
     public func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
-        // Move to Downloads folder as a safe default
+        if let itemId = taskIdToItemId[downloadTask.taskIdentifier] {
+            DownloadLogger.log(itemId: itemId, "didFinishDownloadingTo: temp=\(location.path)")
+        }
+        // Move to user-preferred folder if available, else Downloads
         let fileName = downloadTask.response?.suggestedFilename
-        let finalURL = try? FileMover.moveToDownloads(location: location, suggestedFileName: fileName)
+        // Resolve preferred directory without prematurely closing security scope
+        var preferredDir: URL? = nil
+        if let itemId = taskIdToItemId[downloadTask.taskIdentifier] {
+            let semaphore = DispatchSemaphore(value: 0)
+            Task {
+                if let coord = self.coordinatorRef, let item = await coord.getItem(id: itemId), let bookmark = item.destinationDirBookmark {
+                    var isStale = false
+                    if let dir = try? URL(resolvingBookmarkData: bookmark, options: [.withSecurityScope], relativeTo: nil, bookmarkDataIsStale: &isStale) {
+                        preferredDir = dir
+                    }
+                }
+                semaphore.signal()
+            }
+            semaphore.wait()
+        }
+        // Perform move while security scope is active
+        let started = preferredDir?.startAccessingSecurityScopedResource() ?? false
+        let finalURL = try? FileMover.move(location: location, suggestedFileName: fileName, preferredDirectory: preferredDir)
+        if started { preferredDir?.stopAccessingSecurityScopedResource() }
+        if let itemId = taskIdToItemId[downloadTask.taskIdentifier] {
+            if let finalURL { DownloadLogger.log(itemId: itemId, "movedTo: \(finalURL.path)") } else { DownloadLogger.log(itemId: itemId, "moveFailed") }
+        }
         if let itemId = taskIdToItemId[downloadTask.taskIdentifier] {
             Task {
                 if let coordinator = coordinatorRef, var item = await coordinator.getItem(id: itemId) {
@@ -126,6 +171,7 @@ extension BackgroundSessionManager: URLSessionDownloadDelegate {
                     // If already completed earlier (e.g. file moved and state saved), do not override
                     if item.status == .completed { await coordinator.handleProgressUpdate(item); return }
                     if let error {
+                        DownloadLogger.log(itemId: itemId, "task completed with error: \(error.localizedDescription)")
                         if let urlError = error as? URLError, urlError.code == .cancelled {
                             // Distinguish user pause vs cancel. If paused, keep paused. Otherwise mark as canceled.
                             if item.status != .paused {
@@ -137,6 +183,7 @@ extension BackgroundSessionManager: URLSessionDownloadDelegate {
                             // Transient connectivity errors → show reconnecting
                             item.status = .reconnecting
                             item.lastError = urlError.localizedDescription
+                            DownloadLogger.log(itemId: itemId, "reconnecting due to network error: \(urlError.code.rawValue)")
                         } else {
                             item.status = .failed
                             item.lastError = error.localizedDescription

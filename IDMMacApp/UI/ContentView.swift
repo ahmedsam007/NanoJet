@@ -279,9 +279,14 @@ struct ContentView: View {
                     .fixedSize()
                     if historyFilter == .completed {
                         Button(role: .destructive) {
-                            appModel.clearCompleted()
+                            appModel.clearCompleted(selectedIds: selectedItemIds)
+                            selectedItemIds.removeAll()  // Clear selection after action
                         } label: {
-                            Label("Clear Finished", systemImage: "trash")
+                            if selectedItemIds.isEmpty {
+                                Label("Clear Finished", systemImage: "trash")
+                            } else {
+                                Label("Clear Selected", systemImage: "trash")
+                            }
                         }
                         .controlSize(.small)
                     }
@@ -740,25 +745,8 @@ private extension ContentView {
     func submitURL() {
         let trimmed = inputURL.trimmingCharacters(in: .whitespacesAndNewlines)
         guard let url = AppViewModel.validDownloadURL(from: trimmed) else { return }
-        let isDuplicateActive = appModel.items.contains { $0.url == url && [.queued, .fetchingMetadata, .downloading, .reconnecting].contains($0.status) }
-        
-        if isDuplicateActive {
-            let continueAction = NotificationAction(
-                title: "Continue Anyway",
-                style: .primary
-            ) {
-                self.appModel.enqueue(urlString: url.absoluteString, allowDuplicate: true) { _, _ in
-                    self.inputURL = ""
-                }
-            }
-            
-            NotificationManager.shared.showWarning(
-                title: "Duplicate Download",
-                message: "This link is already queued or downloading.",
-                actions: [continueAction]
-            )
-        } else {
-            appModel.enqueue(urlString: url.absoluteString) { success, errorMsg in
+        // Always allow duplicate downloads - user may want to download same file multiple times
+        appModel.enqueue(urlString: url.absoluteString, allowDuplicate: true) { success, errorMsg in
                 if !success, let errorMsg = errorMsg {
                     // Determine notification type and actions based on error message
                     if errorMsg.lowercased().contains("yt-dlp not found") {
@@ -795,9 +783,8 @@ private extension ContentView {
                             message: errorMsg
                         )
                     }
-                } else {
-                    inputURL = ""
-                }
+            } else {
+                inputURL = ""
             }
         }
     }

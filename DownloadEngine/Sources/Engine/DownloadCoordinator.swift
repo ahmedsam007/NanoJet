@@ -24,12 +24,26 @@ public actor DownloadCoordinator {
 
     // MARK: Item lifecycle
     @discardableResult
-    public func enqueue(url: URL, suggestedFileName: String? = nil) async -> DownloadItem {
-        let item = DownloadItem(url: url, finalFileName: suggestedFileName)
+    public func enqueue(url: URL, suggestedFileName: String? = nil, headers: [String: String]? = nil) async -> DownloadItem {
+        return await enqueueWithBookmark(url: url, suggestedFileName: suggestedFileName, headers: headers, bookmark: nil)
+    }
+    
+    @discardableResult
+    public func enqueueWithBookmark(url: URL, suggestedFileName: String? = nil, headers: [String: String]? = nil, bookmark: Data? = nil) async -> DownloadItem {
+        var item = DownloadItem(url: url, finalFileName: suggestedFileName)
+        item.requestHeaders = headers
+        item.destinationDirBookmark = bookmark
+        // Set status to fetchingMetadata so UI shows "Preparing..." instead of "Queued"
+        // This prevents users from clicking resume before startDownload completes
+        item.status = .fetchingMetadata
         items[item.id] = item
         await save()
+        NotificationCenter.default.post(name: .downloadItemsDidChange, object: nil)
         await sessionManager.startDownload(for: item)
-        return item
+        
+        // After startDownload completes, ensure we return the updated item with current status
+        // This prevents race conditions where the returned item has stale state
+        return items[item.id] ?? item
     }
 
     public func pause(id: UUID) async {
@@ -102,8 +116,10 @@ public actor DownloadCoordinator {
         items[updated.id] = updated
         await save()
         NotificationCenter.default.post(name: .downloadItemsDidChange, object: nil)
-        // Ensure other queued items are not blocked by failures; auto-start them
-        await ensureQueuedStarted()
+        // Auto-start queued items only when an item completes or fails (not on every progress update)
+        if updated.status == .completed || updated.status == .failed || updated.status == .canceled {
+            await ensureQueuedStarted()
+        }
     }
 
     // MARK: - Restore persisted items
@@ -112,6 +128,8 @@ public actor DownloadCoordinator {
             let loaded = try await persistence.load()
             items = Dictionary(uniqueKeysWithValues: loaded.map { ($0.id, $0) })
             NotificationCenter.default.post(name: .downloadItemsDidChange, object: nil)
+            // Auto-start any queued items from previous session
+            await ensureQueuedStarted()
         } catch {
             print("Failed to load downloads: \(error)")
         }
