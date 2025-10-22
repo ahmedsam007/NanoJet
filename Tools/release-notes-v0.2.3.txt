@@ -1,0 +1,46 @@
+🐛 Critical Bug Fix - Extension Context Invalidation
+
+This release fixes the "Extension context invalidated" error that occurred when the extension was reloaded or updated while browser tabs were still open.
+
+What's Fixed:
+✅ Extension now gracefully handles being reloaded/updated
+✅ No need to refresh browser tabs after extension updates
+✅ Graceful fallback when background script connection is lost
+✅ Clear, helpful error messages instead of cryptic failures
+
+Technical Improvements:
+- Added isExtensionContextValid() function to detect invalid extension context
+- Added buildAndOpenDirect() fallback function for graceful degradation
+- Added chrome.runtime.lastError checks in all message callbacks
+- Made optional features (file size enrichment) fail silently when context is invalid
+- Enhanced error handling throughout the extension
+
+Impact:
+Before: Extension would completely fail after being reloaded, requiring users to reload all open web pages.
+After: Extension continues to work with graceful degradation, providing a seamless user experience.
+
+---
+
+📥 Installation:
+
+Chrome/Edge/Brave/Opera:
+1. Download idmmac_chrome_0.2.3.zip
+2. Extract and go to chrome://extensions/
+3. Enable Developer mode, remove old extension
+4. Click "Load unpacked" and select extracted folder
+
+Firefox:
+1. Download idmmac_firefox_0.2.3.xpi
+2. Go to about:addons
+3. Remove old extension
+4. Click gear icon → "Install Add-on From File..."
+
+---
+
+📚 Documentation:
+- Installation Guide: Tools/INSTALL_EXTENSION_UPDATE.md
+- Technical Details: Tools/EXTENSION_CONTEXT_FIX.md
+- Changelog: Tools/ChromeExtension/CHANGELOG.md
+
+Upgrade is highly recommended for all users!
+
