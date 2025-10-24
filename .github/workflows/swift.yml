@@ -27,4 +27,4 @@ jobs:
       run: xcodegen generate
     
     - name: Build Xcode Project
-      run: xcodebuild -project NanoJet.xcodeproj -scheme NanoJetApp -configuration Release -destination 'platform=macOS' build
+      run: xcodebuild -project NanoJet.xcodeproj -scheme NanoJetApp -configuration Release -destination 'platform=macOS' CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO build
