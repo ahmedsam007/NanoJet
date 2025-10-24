@@ -1,5 +1,7 @@
 # NanoJet
 
+[![Build NanoJet](https://github.com/ahmedsam007/NanoJet/actions/workflows/swift.yml/badge.svg)](https://github.com/ahmedsam007/NanoJet/actions/workflows/swift.yml)
+
 A fast, lightweight macOS download manager with segmented downloading, pause/resume, and a simple Chrome extension handoff.
 
 ## Features
