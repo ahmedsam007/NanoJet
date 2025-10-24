@@ -6,7 +6,7 @@
 │                    YOUR FRIEND (Has v0.1.0)                     │
 └─────────────────────────────────────────────────────────────────┘
 
-    Day 1: Downloads IDMMacApp-v0.1.0.zip from you
+    Day 1: Downloads NanoJetApp-v0.1.0.zip from you
            Installs it on their Mac
            Uses it normally ✅
 
@@ -21,7 +21,7 @@
        → Builds, signs, packages everything
     
     3. Upload to your server:
-       → IDMMacApp-0.2.0.zip
+       → NanoJetApp-0.2.0.zip
        → appcast.xml (updated)
     
     ✅ DONE! Now wait...
@@ -31,7 +31,7 @@
 │              YOUR FRIEND (Opens app later)                      │
 └─────────────────────────────────────────────────────────────────┘
 
-    App checks: https://ahmedsam.com/idmmac/appcast.xml
+    App checks: https://ahmedsam.com/nanojet/appcast.xml
                 ↓
     Finds: Version 0.2.0 available!
            Current: 0.1.0
@@ -39,7 +39,7 @@
                 ↓
     Shows notification:
     ┌─────────────────────────────────────────┐
-    │  A new version of IDMMac is available!  │
+    │  A new version of NanoJet is available!  │
     │                                         │
     │  Version 0.2.0 is now available.        │
     │  You have version 0.1.0.                │
@@ -49,7 +49,7 @@
                 ↓
     Friend clicks "Install"
                 ↓
-    App downloads: IDMMacApp-0.2.0.zip
+    App downloads: NanoJetApp-0.2.0.zip
     Verifies signature (secure!)
     Extracts and installs
     Relaunches app
@@ -85,7 +85,7 @@ So your friends need to:
 
 # For NEW users (direct download)
 ./Tools/export-for-sharing.sh 0.2.0
-→ Share: IDMMacApp-v0.2.0.zip
+→ Share: NanoJetApp-v0.2.0.zip
 
 # For EXISTING users (automatic updates)
 ./Tools/create-update.sh 0.2.0
@@ -105,7 +105,7 @@ You need to host 2 files somewhere public:
    → This is the "update feed"
    → Users' apps check this for new versions
 
-2. IDMMacApp-0.2.0.zip
+2. NanoJetApp-0.2.0.zip
    → The actual app download
    → Referenced in appcast.xml
 
@@ -125,9 +125,9 @@ https://ahmedsam.com/idmmac/appcast.xml
 
 This means you need:
 https://ahmedsam.com/idmmac/appcast.xml              (feed)
-https://ahmedsam.com/idmmac/downloads/IDMMacApp-0.1.0.zip
-https://ahmedsam.com/idmmac/downloads/IDMMacApp-0.2.0.zip
-https://ahmedsam.com/idmmac/downloads/IDMMacApp-0.3.0.zip
+https://ahmedsam.com/nanojet/downloads/NanoJetApp-0.1.0.zip
+https://ahmedsam.com/nanojet/downloads/NanoJetApp-0.2.0.zip
+https://ahmedsam.com/nanojet/downloads/NanoJetApp-0.3.0.zip
 ...etc...
 
 
@@ -136,7 +136,7 @@ https://ahmedsam.com/idmmac/downloads/IDMMacApp-0.3.0.zip
 ╚══════════════════════════════════════════════════════════════════╝
 
 For v0.1.0 (Initial Release):
-☐ Share IDMMacApp-v0.1.0.zip with friends
+☐ Share NanoJetApp-v0.1.0.zip with friends
 ☐ Upload appcast.xml and zip to your server
 ☐ Friends install and use
 

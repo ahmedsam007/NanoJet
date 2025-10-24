@@ -1,7 +1,7 @@
 import AppKit
 import Foundation
 
-let inPath = "/Users/ahmed/Documents/IDMMac/IDMMacApp/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon.png"
+let inPath = "/Users/ahmed/Documents/NanoJet/NanoJetApp/Resources/Assets.xcassets/AppIcon.appiconset/AppIcon.png"
 let outPath = inPath // overwrite
 let targetSize: CGFloat = 1024
 let cornerRadius: CGFloat = 196 // approx macOS squircle corner radius
