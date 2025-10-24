@@ -11,14 +11,9 @@
     <key>uploadSymbols</key>
     <true/>
     <key>signingStyle</key>
-    <string>manual</string>
-    <key>provisioningProfiles</key>
-    <dict>
-        <key>com.ahmedsam.nanojet</key>
-        <string>NanoJet App Store Profile</string>
-    </dict>
+    <string>automatic</string>
     <key>signingCertificate</key>
-    <string>3rd Party Mac Developer Application</string>
+    <string>Apple Distribution</string>
 </dict>
 </plist>
 
