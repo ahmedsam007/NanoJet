@@ -14,8 +14,8 @@
     <string>manual</string>
     <key>provisioningProfiles</key>
     <dict>
-        <key>com.ahmedsam.idmmac</key>
-        <string>IDMMac App Store Profile</string>
+        <key>com.ahmedsam.nanojet</key>
+        <string>NanoJet App Store Profile</string>
     </dict>
     <key>signingCertificate</key>
     <string>3rd Party Mac Developer Application</string>
