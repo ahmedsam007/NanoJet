@@ -4,7 +4,7 @@
 
 ```bash
 # 1. Start local server (if not running)
-cd /Users/ahmed/Documents/IDMMac/Tools
+cd /Users/ahmed/Documents/NanoJet/Tools
 python3 -m http.server 8000 &
 
 # 2. Build and test
@@ -18,7 +18,7 @@ python3 -m http.server 8000 &
 ### 📦 Automated (Recommended)
 
 ```bash
-cd /Users/ahmed/Documents/IDMMac
+cd /Users/ahmed/Documents/NanoJet
 
 # Build, sign, and package in one command
 ./Tools/release.sh 0.2.0
@@ -33,13 +33,13 @@ cd /Users/ahmed/Documents/IDMMac
 # Product → Archive → Distribute App → Copy App
 
 # 2. Sign
-cd /Users/ahmed/Documents/IDMMac
+cd /Users/ahmed/Documents/NanoJet
 ./Tools/sign_update.sh ~/Desktop/YourApp.app 0.2.0
 
 # 3. Copy the signature output and update appcast.xml
 
 # 4. Upload to server
-scp IDMMacApp-0.2.0.zip user@ahmedsam.com:/idmmac/downloads/
+scp NanoJetApp-0.2.0.zip user@ahmedsam.com:/idmmac/downloads/
 scp Tools/appcast.xml user@ahmedsam.com:/idmmac/appcast.xml
 ```
 
@@ -78,7 +78,7 @@ scp Tools/appcast.xml user@ahmedsam.com:/idmmac/appcast.xml
 
 # Check version in app
 /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" \
-  /Applications/IDMMacApp.app/Contents/Info.plist
+  /Applications/NanoJetApp.app/Contents/Info.plist
 
 # Validate XML
 xmllint --noout Tools/appcast.xml

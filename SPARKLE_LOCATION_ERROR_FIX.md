@@ -2,9 +2,9 @@
 
 ## The Problem
 
-Users downloading IDMMacApp from GitHub may encounter this error when trying to update:
+Users downloading NanoJetApp from GitHub may encounter this error when trying to update:
 
-> **"IDMMacApp can't be updated if it's running from the location it was downloaded to."**
+> **"NanoJetApp can't be updated if it's running from the location it was downloaded to."**
 
 ## Root Cause
 
@@ -22,18 +22,18 @@ This safeguard prevents:
 
 Tell your users to follow these steps:
 
-1. **Quit IDMMacApp** completely
+1. **Quit NanoJetApp** completely
 2. **Move the app to Applications folder**:
    - Open Finder → Downloads
-   - Drag `IDMMacApp.app` to Applications folder
+   - Drag `NanoJetApp.app` to Applications folder
 3. **Open from Applications**
-4. **Check for updates** (IDMMac menu → Check for Updates...)
+4. **Check for updates** (NanoJet menu → Check for Updates...)
 
 Updates will now work properly!
 
 ## Prevention: Update Your Release Documentation
 
-### Files Updated in `/builds/IDMMac-v0.2.0/`:
+### Files Updated in `/builds/NanoJet-v0.2.0/`:
 
 1. ✅ **INSTALLATION_GUIDE.md** - Complete installation instructions
 2. ✅ **UPDATE_TROUBLESHOOTING.md** - Detailed troubleshooting for this specific error
@@ -49,11 +49,11 @@ When creating GitHub releases, **always include these instructions** in the rele
 ```markdown
 ## 📥 Installation
 
-**IMPORTANT**: You MUST install IDMMacApp in your Applications folder!
+**IMPORTANT**: You MUST install NanoJetApp in your Applications folder!
 
-1. Download `IDMMacApp-v0.2.0.zip`
+1. Download `NanoJetApp-v0.2.0.zip`
 2. Unzip the file
-3. Drag `IDMMacApp.app` to your **Applications folder**
+3. Drag `NanoJetApp.app` to your **Applications folder**
 4. Open the app from Applications
 5. If macOS shows a security warning, right-click and choose "Open"
 
@@ -77,12 +77,12 @@ Copy and send this message:
 ```
 Hi! To fix the update error:
 
-1. Quit IDMMacApp
+1. Quit NanoJetApp
 2. Open Finder → Downloads folder
-3. Find IDMMacApp.app
+3. Find NanoJetApp.app
 4. Drag it to Applications folder (in the sidebar)
 5. Open the app from Applications
-6. Now try: IDMMac menu → Check for Updates
+6. Now try: NanoJet menu → Check for Updates
 
 That's it! The updater needs the app in Applications folder for security reasons.
 ```
@@ -125,8 +125,8 @@ func checkInstallLocation() {
     if isInDownloads {
         DispatchQueue.main.async {
             let alert = NSAlert()
-            alert.messageText = "⚠️ Please Move IDMMacApp to Applications"
-            alert.informativeText = "IDMMacApp is running from your Downloads folder. For automatic updates to work properly, please move the app to your Applications folder.\n\n1. Quit this app\n2. Drag IDMMacApp to Applications\n3. Open it from Applications"
+            alert.messageText = "⚠️ Please Move NanoJetApp to Applications"
+            alert.informativeText = "NanoJetApp is running from your Downloads folder. For automatic updates to work properly, please move the app to your Applications folder.\n\n1. Quit this app\n2. Drag NanoJetApp to Applications\n3. Open it from Applications"
             alert.alertStyle = .warning
             alert.addButton(withTitle: "I'll Move It")
             alert.addButton(withTitle: "Remind Me Later")

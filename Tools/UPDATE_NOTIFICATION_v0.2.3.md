@@ -1,4 +1,4 @@
-# 🚨 Important Update: IDMMac Extension v0.2.3 Available
+# 🚨 Important Update: NanoJet Extension v0.2.3 Available
 
 ## Critical Bug Fix - Please Update!
 
@@ -18,13 +18,13 @@ We've fixed a critical bug that was causing the **"Extension context invalidated
 
 ### Chrome/Edge/Brave
 1. Go to `chrome://extensions/` (or `edge://extensions/`)
-2. Find "IDMMac Interceptor"
+2. Find "NanoJet Interceptor"
 3. Look at the version number under the extension name
 4. If it's **older than 0.2.3**, please update!
 
 ### Firefox
 1. Go to `about:addons`
-2. Find "IDMMac Interceptor"
+2. Find "NanoJet Interceptor"
 3. Click on it to see the version
 4. If it's **older than 0.2.3**, please update!
 
@@ -38,7 +38,7 @@ We've fixed a critical bug that was causing the **"Extension context invalidated
 1. Download: [idmmac_chrome_0.2.3.zip](https://github.com/ahmedsam007/IdmMac/raw/main/Tools/ChromeExtension/artifacts/idmmac_chrome_0.2.3.zip)
 2. Extract the ZIP file
 3. Go to `chrome://extensions/`
-4. Remove the old "IDMMac Interceptor" extension
+4. Remove the old "NanoJet Interceptor" extension
 5. Enable "Developer mode" (top-right toggle)
 6. Click "Load unpacked"
 7. Select the extracted folder
@@ -47,7 +47,7 @@ We've fixed a critical bug that was causing the **"Extension context invalidated
 **For Firefox:**
 1. Download: [idmmac_firefox_0.2.3.xpi](https://github.com/ahmedsam007/IdmMac/raw/main/Tools/FirefoxExtension/artifacts-firefox/idmmac_firefox_0.2.3.xpi)
 2. Go to `about:addons`
-3. Remove the old "IDMMac Interceptor" extension
+3. Remove the old "NanoJet Interceptor" extension
 4. Click the gear icon ⚙️ → "Install Add-on From File..."
 5. Select the downloaded .xpi file
 6. Click "Add" to confirm
@@ -91,7 +91,7 @@ Then follow the installation steps above using the files from:
 If you encounter any issues:
 
 1. **Check the browser console** (F12 → Console tab) for error messages
-2. **Make sure IDMMac app is running**
+2. **Make sure NanoJet app is running**
 3. **Try reloading the page** after installing the update
 4. **Report issues** on GitHub: [github.com/ahmedsam007/IdmMac/issues](https://github.com/ahmedsam007/IdmMac/issues)
 
@@ -103,5 +103,5 @@ See [CHANGELOG.md](https://github.com/ahmedsam007/IdmMac/blob/main/Tools/ChromeE
 
 ---
 
-**Thank you for using IDMMac!** 🙏
+**Thank you for using NanoJet!** 🙏
 

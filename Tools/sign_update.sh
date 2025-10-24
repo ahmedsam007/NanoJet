@@ -15,8 +15,8 @@ VERSION="$1"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 SIGN_UPDATE="$PROJECT_DIR/bin/sign_update"
-APP_PATH="IDMMacApp.app"
-ZIP_NAME="IDMMacApp-${VERSION}.zip"
+APP_PATH="NanoJetApp.app"
+ZIP_NAME="NanoJetApp-${VERSION}.zip"
 
 echo "🔐 Signing update for version ${VERSION}..."
 echo ""
@@ -67,7 +67,7 @@ cat << EOF
 <item>
     <title>Version ${VERSION}</title>
     <description><![CDATA[
-        <h3>What's New in IDMMac ${VERSION}</h3>
+        <h3>What's New in NanoJet ${VERSION}</h3>
         <ul>
             <li>Add your changes here</li>
         </ul>

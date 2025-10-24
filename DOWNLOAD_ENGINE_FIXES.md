@@ -331,7 +331,7 @@ The app now allows downloading the same URL multiple times simultaneously. This 
 
 **Files changed:**
 - `ContentView.swift` (line 744): Always passes `allowDuplicate: true` when submitting URLs
-- `IDMMacApp.swift` (line 39): Browser extension downloads now allow duplicates
+- `NanoJetApp.swift` (line 39): Browser extension downloads now allow duplicates
 - `AppViewModel.swift` (line 350): Clipboard downloads now allow duplicates
 
 Previously, the app would show a "Duplicate Download" warning if you tried to download a URL that was already queued or downloading. Now it allows multiple concurrent downloads of the same URL without any warnings.

@@ -1,15 +1,15 @@
-# IDMMac - Installation Instructions
+# NanoJet - Installation Instructions
 
-Welcome! Thank you for trying IDMMac.
+Welcome! Thank you for trying NanoJet.
 
-## What is IDMMac?
+## What is NanoJet?
 
-IDMMac is a download manager for macOS that helps you download files faster and more efficiently.
+NanoJet is a download manager for macOS that helps you download files faster and more efficiently.
 
 ## Installation Steps
 
 ### 1. Extract the App
-- Locate the `IDMMacApp.app` file you downloaded
+- Locate the `NanoJetApp.app` file you downloaded
 - Drag it to your **Applications** folder (optional but recommended)
 
 ### 2. First Launch (Important!)
@@ -17,7 +17,7 @@ IDMMac is a download manager for macOS that helps you download files faster and 
 ⚠️ **Because this app is not notarized by Apple, you need to follow these steps:**
 
 **Method 1: Right-Click to Open (Recommended)**
-1. Right-click (or Control+Click) on `IDMMacApp.app`
+1. Right-click (or Control+Click) on `NanoJetApp.app`
 2. Select **"Open"** from the menu
 3. Click **"Open"** in the dialog that appears
 4. The app will now launch and be trusted for future launches
@@ -28,17 +28,17 @@ IDMMac is a download manager for macOS that helps you download files faster and 
 3. Scroll down and click **"Open Anyway"**
 4. Confirm by clicking **"Open"**
 
-### 3. Start Using IDMMac!
+### 3. Start Using NanoJet!
 
 After the first successful launch, you can open the app normally like any other application.
 
 ## Browser Extension
 
-IDMMac works with browser extensions for Chrome and Firefox to automatically capture downloads.
+NanoJet works with browser extensions for Chrome and Firefox to automatically capture downloads.
 
 The extensions are bundled inside the app. To install them:
 
-1. Open IDMMac
+1. Open NanoJet
 2. Go to Settings
 3. Follow the instructions to install the browser extension
 
@@ -49,12 +49,12 @@ The extensions are bundled inside the app. To install them:
 
 ## Having Issues?
 
-### "IDMMacApp.app is damaged and can't be opened"
+### "NanoJetApp.app is damaged and can't be opened"
 
 This happens due to macOS Gatekeeper. Run this command in Terminal:
 
 ```bash
-xattr -cr /Applications/IDMMacApp.app
+xattr -cr /Applications/NanoJetApp.app
 ```
 
 Then try the right-click → Open method again.
@@ -83,5 +83,5 @@ See the LICENSE file included with the app for terms of use.
 
 ---
 
-Enjoy using IDMMacApp! 🚀
+Enjoy using NanoJetApp! 🚀
 

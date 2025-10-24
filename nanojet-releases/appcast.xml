@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
+    <channel>
+        <title>NanoJet Updates</title>
+        <link>https://ahmedsam007.github.io/IdmMac/appcast.xml</link>
+        <description>Most recent updates for NanoJet - Fast, lightweight macOS download manager</description>
+        <language>en</language>
+        
+        <!-- Version 0.2.0 - Critical Bug Fixes & Improvements -->
+        <item>
+            <title>Version 0.2.0</title>
+            <description><![CDATA[
+                <h3>What's New in NanoJet 0.2.0</h3>
+                <p><strong>This update fixes critical bugs that caused file corruption and UI issues.</strong> We strongly recommend all users update immediately.</p>
+                
+                <h4>🔧 Critical Bug Fixes</h4>
+                <ul>
+                    <li><strong>Fixed file corruption on pause/resume</strong> - Files would become corrupted when pausing and resuming downloads</li>
+                    <li><strong>Fixed file corruption after network loss</strong> - Downloads that were interrupted by network issues would complete but produce corrupted files</li>
+                    <li><strong>Fixed progress stuck at 0%</strong> - UI would show "0%" and "Preparing..." while downloads actually progressed in the background</li>
+                    <li><strong>Fixed duplicate tasks on resume</strong> - Multiple pause/resume cycles would create hundreds of duplicate download tasks</li>
+                </ul>
+                
+                <h4>✨ Improvements</h4>
+                <ul>
+                    <li><strong>Better error messages</strong> - Clear explanations when downloads fail due to expired links or server issues</li>
+                    <li><strong>File integrity validation</strong> - Automatically validates file size before finalizing downloads to prevent corruption</li>
+                    <li><strong>Improved resume reliability</strong> - Downloads now properly resume from the exact byte position where they were paused</li>
+                    <li><strong>Allow duplicate downloads</strong> - You can now download the same URL multiple times simultaneously</li>
+                </ul>
+                
+                <h4>🛡️ Enhanced Safety</h4>
+                <ul>
+                    <li>Added range rejection tracking to detect and handle servers with broken resume support</li>
+                    <li>Segment progress is now properly saved and restored during pause/resume cycles</li>
+                    <li>Downloads fail gracefully with clear error messages instead of silently producing corrupted files</li>
+                    <li>Prevents data loss when download links expire during pause</li>
+                </ul>
+                
+                <p><em>This update represents significant improvements to download reliability and data integrity. If you experienced any corrupted downloads with version 0.1.1, please update immediately.</em></p>
+            ]]></description>
+            <pubDate>Wed, 22 Oct 2025 19:00:00 +0300</pubDate>
+            <sparkle:version>3</sparkle:version>
+            <sparkle:shortVersionString>0.2.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
+            <enclosure 
+                url="https://github.com/ahmedsam007/IdmMac/releases/download/v0.2.0/NanoJetApp-v0.2.0.zip"
+                length="6416101"
+                type="application/octet-stream"
+                sparkle:edSignature="Ze8Piq8MeIUIQaGYjHnkdO2TfgPZW3ls9+3VUIRAYJvuvuQsnwwWrwOj0WkBCgzLPuF8B0sNCUrPS9o5xcruAw==" />
+        </item>
+        
+        <!-- Version 0.1.1 - Re-download feature and improvements -->
+        <item>
+            <title>Version 0.1.1</title>
+            <description><![CDATA[
+                <h3>What's New in NanoJet 0.1.1</h3>
+                <ul>
+                    <li>✨ Added "Re-Download File" feature for completed downloads - perfect for corrupted or damaged files</li>
+                    <li>🔄 Added retry functionality for failed downloads with one-click re-download option</li>
+                    <li>🎯 Fixed Progress column header alignment in the downloads list</li>
+                    <li>💡 Improved user experience with clear action buttons and context menus</li>
+                </ul>
+            ]]></description>
+            <pubDate>Tue, 21 Oct 2025 17:03:12 +0300</pubDate>
+            <sparkle:version>0.1.1</sparkle:version>
+            <sparkle:shortVersionString>0.1.1</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
+            <enclosure 
+                url="https://github.com/ahmedsam007/IdmMac/releases/download/v0.1.1/NanoJetApp-v0.1.1.zip"
+                length="7327115"
+                type="application/octet-stream"
+                sparkle:edSignature="X3WOYUHmnifAed8ZNdwp0tF4P/h7kQJqbrNozy57qy4UTVoq1HVbMQZtXYINcVwApJZaAnR3RdnVzHK48Q5bCg==" />
+        </item>
+        
+        <!-- Version 0.1.0 - Initial release -->
+        <item>
+            <title>Version 0.1.0</title>
+            <description><![CDATA[
+                <h3>What's New in NanoJet 0.1.0</h3>
+                <ul>
+                    <li>🚀 Initial release</li>
+                    <li>⚡ Segmented multi-connection downloads for maximum speed</li>
+                    <li>⏸️ Pause, resume, and cancel downloads</li>
+                    <li>✅ SHA-256 file integrity verification</li>
+                    <li>📊 Real-time speed, ETA, and progress tracking</li>
+                    <li>🔄 Auto-reconnect on network issues</li>
+                    <li>🌐 Chrome & Firefox extension integration</li>
+                    <li>📥 YouTube video download support (via yt-dlp)</li>
+                    <li>⏰ Schedule downloads for later</li>
+                    <li>🔔 Download completion notifications</li>
+                    <li>🔐 Automatic updates with Sparkle 2</li>
+                </ul>
+                
+                <h4>System Requirements</h4>
+                <ul>
+                    <li>macOS 13.0 (Ventura) or later</li>
+                    <li>Apple Silicon or Intel processor</li>
+                </ul>
+            ]]></description>
+            <pubDate>Mon, 20 Oct 2025 10:00:00 +0000</pubDate>
+            <sparkle:version>1</sparkle:version>
+            <sparkle:shortVersionString>0.1.0</sparkle:shortVersionString>
+            <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
+            <enclosure 
+                url="https://ahmedsam.com/idmmac/downloads/NanoJetApp-0.1.0.zip"
+                length="REPLACE_WITH_FILE_SIZE"
+                type="application/octet-stream"
+                sparkle:edSignature="REPLACE_WITH_SIGNATURE_FROM_SIGN_UPDATE" />
+        </item>
+        
+        <!-- Add future releases here, most recent first -->
+        
+    </channel>
+</rss>

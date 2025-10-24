@@ -3,7 +3,7 @@ import Foundation
 public enum DownloadLogger {
     private static func logsDirectory() -> URL {
         let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
-        let dir = appSupport.appendingPathComponent("IDMMac/logs", isDirectory: true)
+        let dir = appSupport.appendingPathComponent("NanoJet/logs", isDirectory: true)
         try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
         return dir
     }

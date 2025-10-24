@@ -2,7 +2,7 @@
 
 ## Release Title
 ```
-IDMMac Browser Extension v0.2.3 - Critical Bug Fix
+NanoJet Browser Extension v0.2.3 - Critical Bug Fix
 ```
 
 ## Release Tag
@@ -49,14 +49,14 @@ This release fixes the **"Extension context invalidated"** error that occurred w
 2. Extract the ZIP file to a folder
 3. Open `chrome://extensions/` (or equivalent for your browser)
 4. Enable "Developer mode" (toggle in top-right)
-5. Remove old IDMMac extension if installed
+5. Remove old NanoJet extension if installed
 6. Click "Load unpacked" and select the extracted folder
 
 ### Firefox
 
 1. Download `idmmac_firefox_0.2.3.xpi` below
 2. Open `about:addons`
-3. Remove old IDMMac extension if installed
+3. Remove old NanoJet extension if installed
 4. Click gear icon ⚙️ → "Install Add-on From File..."
 5. Select the downloaded .xpi file
 
@@ -102,7 +102,7 @@ Upload these files as release assets:
 2. Fill in the form:
    - **Tag:** `extension-v0.2.3`
    - **Target:** `main`
-   - **Title:** `IDMMac Browser Extension v0.2.3 - Critical Bug Fix`
+   - **Title:** `NanoJet Browser Extension v0.2.3 - Critical Bug Fix`
    - **Description:** Copy the release description above
    - **Attach files:** Upload the 2 files listed above
 
@@ -114,11 +114,11 @@ Upload these files as release assets:
 
 ```bash
 # Make sure you're in the project directory
-cd /Users/ahmed/Documents/IDMMac
+cd /Users/ahmed/Documents/NanoJet
 
 # Create the release
 gh release create extension-v0.2.3 \
-  --title "IDMMac Browser Extension v0.2.3 - Critical Bug Fix" \
+  --title "NanoJet Browser Extension v0.2.3 - Critical Bug Fix" \
   --notes-file Tools/GITHUB_RELEASE_v0.2.3.md \
   Tools/ChromeExtension/artifacts/idmmac_chrome_0.2.3.zip \
   Tools/FirefoxExtension/artifacts-firefox/idmmac_firefox_0.2.3.xpi

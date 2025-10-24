@@ -2,7 +2,7 @@
 
 ## If you see "404 Not Found" error when checking for updates
 
-This means you're running a very early version of IDMMac (before v0.1.1, released Oct 21).
+This means you're running a very early version of NanoJet (before v0.1.1, released Oct 21).
 
 ### How to Update
 
@@ -13,7 +13,7 @@ This means you're running a very early version of IDMMac (before v0.1.1, release
 
 3. **Install the new version**:
    - Unzip the downloaded file
-   - Drag `IDMMacApp.app` to your Applications folder
+   - Drag `NanoJetApp.app` to your Applications folder
    - Open from Applications folder
 
 4. **Future updates will work automatically** - Once you're on v0.1.1 or later, automatic updates will work correctly.
@@ -25,8 +25,8 @@ Early versions of the app were configured with a different update URL that is no
 ### Current Version Check
 
 After updating, verify you're on the latest version:
-- Open IDMMacApp
-- Go to menu: `IDMMacApp → About IDMMacApp`
+- Open NanoJetApp
+- Go to menu: `NanoJetApp → About NanoJetApp`
 - Version should show **0.2.0** or higher
 
 ---

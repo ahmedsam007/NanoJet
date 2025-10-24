@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# IDMMac - Prepare GitHub Release
+# NanoJet - Prepare GitHub Release
 # Everything you need for GitHub-hosted updates
 
 set -e
@@ -16,7 +16,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 
 echo -e "${BLUE}╔════════════════════════════════════════╗${NC}"
-echo -e "${BLUE}║   IDMMac - GitHub Release Prep        ║${NC}"
+echo -e "${BLUE}║   NanoJet - GitHub Release Prep        ║${NC}"
 echo -e "${BLUE}╚════════════════════════════════════════╝${NC}"
 echo
 
@@ -46,7 +46,7 @@ echo
 # Step 2: Sign for Sparkle
 echo -e "${YELLOW}⚙️  Step 2: Generating Sparkle signature...${NC}"
 
-ZIP_FILE="$HOME/Documents/IDMMac/builds/IDMMac-v${VERSION}/IDMMacApp-v${VERSION}.zip"
+ZIP_FILE="$HOME/Documents/NanoJet/builds/NanoJet-v${VERSION}/NanoJetApp-v${VERSION}.zip"
 
 if [ ! -f "$ZIP_FILE" ]; then
     echo -e "${RED}❌ Zip file not found: $ZIP_FILE${NC}"
@@ -83,7 +83,7 @@ echo
 FILE_SIZE=$(stat -f%z "$ZIP_FILE" 2>/dev/null || stat -c%s "$ZIP_FILE" 2>/dev/null)
 FILE_SIZE_HR=$(du -h "$ZIP_FILE" | cut -f1)
 
-OUTPUT_DIR="$HOME/Documents/IDMMac/builds/IDMMac-v${VERSION}"
+OUTPUT_DIR="$HOME/Documents/NanoJet/builds/NanoJet-v${VERSION}"
 
 # Generate appcast entry
 echo -e "${YELLOW}⚙️  Step 3: Generating deployment files...${NC}"
@@ -92,7 +92,7 @@ cat > "$OUTPUT_DIR/appcast-entry.xml" << EOF
         <item>
             <title>Version ${VERSION}</title>
             <description><![CDATA[
-                <h3>What's New in IDMMac ${VERSION}</h3>
+                <h3>What's New in NanoJet ${VERSION}</h3>
                 <ul>
                     <li>Improvements and bug fixes</li>
                 </ul>
@@ -102,7 +102,7 @@ cat > "$OUTPUT_DIR/appcast-entry.xml" << EOF
             <sparkle:shortVersionString>${VERSION}</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
             <enclosure 
-                url="https://github.com/YOUR_USERNAME/idmmac-releases/releases/download/v${VERSION}/IDMMacApp-v${VERSION}.zip"
+                url="https://github.com/YOUR_USERNAME/idmmac-releases/releases/download/v${VERSION}/NanoJetApp-v${VERSION}.zip"
                 length="${FILE_SIZE}"
                 type="application/octet-stream"
                 sparkle:edSignature="${ED_SIGNATURE}" />
@@ -114,9 +114,9 @@ cat > "$OUTPUT_DIR/appcast-template.xml" << EOF
 <?xml version="1.0" encoding="utf-8"?>
 <rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
     <channel>
-        <title>IDMMac Updates</title>
+        <title>NanoJet Updates</title>
         <link>https://YOUR_USERNAME.github.io/idmmac-releases/appcast.xml</link>
-        <description>Updates for IDMMac - Fast macOS Download Manager</description>
+        <description>Updates for NanoJet - Fast macOS Download Manager</description>
         <language>en</language>
         
         <!-- Add new versions here at the top -->
@@ -124,7 +124,7 @@ cat > "$OUTPUT_DIR/appcast-template.xml" << EOF
         <item>
             <title>Version ${VERSION}</title>
             <description><![CDATA[
-                <h3>What's New in IDMMac ${VERSION}</h3>
+                <h3>What's New in NanoJet ${VERSION}</h3>
                 <ul>
                     <li>Improvements and bug fixes</li>
                 </ul>
@@ -134,7 +134,7 @@ cat > "$OUTPUT_DIR/appcast-template.xml" << EOF
             <sparkle:shortVersionString>${VERSION}</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
             <enclosure 
-                url="https://github.com/YOUR_USERNAME/idmmac-releases/releases/download/v${VERSION}/IDMMacApp-v${VERSION}.zip"
+                url="https://github.com/YOUR_USERNAME/idmmac-releases/releases/download/v${VERSION}/NanoJetApp-v${VERSION}.zip"
                 length="${FILE_SIZE}"
                 type="application/octet-stream"
                 sparkle:edSignature="${ED_SIGNATURE}" />
@@ -147,11 +147,11 @@ EOF
 # Generate GitHub instructions
 cat > "$OUTPUT_DIR/GITHUB_INSTRUCTIONS.txt" << EOF
 ╔══════════════════════════════════════════════════════════════╗
-║       IDMMac v${VERSION} - GitHub Deployment Guide               ║
+║       NanoJet v${VERSION} - GitHub Deployment Guide               ║
 ╚══════════════════════════════════════════════════════════════╝
 
 📦 FILES READY:
-   ✓ IDMMacApp-v${VERSION}.zip (${FILE_SIZE_HR})
+   ✓ NanoJetApp-v${VERSION}.zip (${FILE_SIZE_HR})
    ✓ Sparkle Signature: ${ED_SIGNATURE:0:40}...
 
 ╔══════════════════════════════════════════════════════════════╗
@@ -223,7 +223,7 @@ If this is your FIRST release, follow these steps:
 │ 4. Update Info.plist in Your App                             │
 └──────────────────────────────────────────────────────────────┘
 
-1. Open: IDMMacApp/Resources/Info.plist
+1. Open: NanoJetApp/Resources/Info.plist
 
 2. Find: <key>SUFeedURL</key>
 
@@ -249,7 +249,7 @@ Now upload v${VERSION}:
 3. Fill in:
    
    Tag version: v${VERSION}
-   Release title: IDMMac v${VERSION}
+   Release title: NanoJet v${VERSION}
    Description:
    
    ## What's New
@@ -259,12 +259,12 @@ Now upload v${VERSION}:
 
 4. Upload file:
    
-   Drag and drop: IDMMacApp-v${VERSION}.zip
+   Drag and drop: NanoJetApp-v${VERSION}.zip
 
 5. Click "Publish release"
 
 ✅ DONE! The release is now available at:
-   https://github.com/YOUR_USERNAME/idmmac-releases/releases/download/v${VERSION}/IDMMacApp-v${VERSION}.zip
+   https://github.com/YOUR_USERNAME/idmmac-releases/releases/download/v${VERSION}/NanoJetApp-v${VERSION}.zip
 
 ╔══════════════════════════════════════════════════════════════╗
 ║                      TESTING                                 ║
@@ -276,7 +276,7 @@ Test the setup:
 
 2. Install and run the app
 
-3. Menu: IDMMac → Check for Updates...
+3. Menu: NanoJet → Check for Updates...
 
 4. Should say: "You're up to date!" (if this is the latest)
 
@@ -316,7 +316,7 @@ For v0.2.0 and beyond:
 ╚══════════════════════════════════════════════════════════════╝
 
 Version: ${VERSION}
-Zip File: IDMMacApp-v${VERSION}.zip
+Zip File: NanoJetApp-v${VERSION}.zip
 File Size: ${FILE_SIZE} bytes (${FILE_SIZE_HR})
 Signature: ${ED_SIGNATURE}
 
@@ -332,10 +332,10 @@ Important:
 
 Your URLs (replace YOUR_USERNAME):
 • Appcast: https://YOUR_USERNAME.github.io/idmmac-releases/appcast.xml
-• Download: https://github.com/YOUR_USERNAME/idmmac-releases/releases/download/v${VERSION}/IDMMacApp-v${VERSION}.zip
+• Download: https://github.com/YOUR_USERNAME/idmmac-releases/releases/download/v${VERSION}/NanoJetApp-v${VERSION}.zip
 
 Files in this folder:
-• IDMMacApp-v${VERSION}.zip - Upload to GitHub Release
+• NanoJetApp-v${VERSION}.zip - Upload to GitHub Release
 • appcast-entry.xml - Copy to your appcast.xml
 • appcast-template.xml - Complete appcast example
 • README.txt - User installation guide
@@ -356,7 +356,7 @@ echo
 echo -e "${GREEN}📂 Location:${NC} $OUTPUT_DIR"
 echo
 echo -e "${GREEN}📦 Files:${NC}"
-echo "   • IDMMacApp-v${VERSION}.zip (${FILE_SIZE_HR})"
+echo "   • NanoJetApp-v${VERSION}.zip (${FILE_SIZE_HR})"
 echo "   • appcast-entry.xml"
 echo "   • appcast-template.xml"
 echo "   • GITHUB_INSTRUCTIONS.txt"

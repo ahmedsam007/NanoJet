@@ -1,8 +1,8 @@
-# Code Signing Fix for IDMMac
+# Code Signing Fix for NanoJet
 
 ## Problem
 
-When building IDMMac without a Team ID (ad-hoc signing), the app crashes on launch with this error:
+When building NanoJet without a Team ID (ad-hoc signing), the app crashes on launch with this error:
 
 ```
 Library not loaded: @rpath/Sparkle.framework/Versions/B/Sparkle
@@ -29,13 +29,13 @@ The `release.sh` script now automatically re-signs all embedded frameworks after
 If you already have a built app that won't launch, re-sign it manually:
 
 ```bash
-./Tools/resign-frameworks.sh "path/to/IDMMacApp.app"
+./Tools/resign-frameworks.sh "path/to/NanoJetApp.app"
 ```
 
 For example:
 
 ```bash
-./Tools/resign-frameworks.sh "IDMMacApp 2025-10-21 00-56-17/IDMMacApp.app"
+./Tools/resign-frameworks.sh "NanoJetApp 2025-10-21 00-56-17/NanoJetApp.app"
 ```
 
 ## What the Script Does
@@ -60,7 +60,7 @@ If you're building for distribution with a proper Developer ID:
 After re-signing, verify the app signature:
 
 ```bash
-codesign -vvv --deep --strict IDMMacApp.app
+codesign -vvv --deep --strict NanoJetApp.app
 ```
 
 You should see "satisfies its Designated Requirement" with no errors.

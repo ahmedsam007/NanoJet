@@ -1,0 +1,41 @@
+name: IDMMac
+options:
+  deploymentTarget:
+    macOS: "13.0"
+  createIntermediateGroups: true
+packages:
+  DownloadEngine:
+    path: ./DownloadEngine
+  # Sparkle removed - App Store handles updates automatically
+settings:
+  base:
+    PRODUCT_BUNDLE_IDENTIFIER: com.ahmedsam.idmmac
+    DEVELOPMENT_TEAM: "4H548RMBS5"
+    SWIFT_VERSION: 5.9
+    CURRENT_PROJECT_VERSION: 1
+    MARKETING_VERSION: 1.0.0
+    # Automatic code signing for App Store (easier and recommended)
+    CODE_SIGN_STYLE: Automatic
+targets:
+  IDMMacApp:
+    type: application
+    platform: macOS
+    sources:
+      - path: IDMMacApp
+      - path: Tools/ChromeExtension
+    dependencies:
+      - package: DownloadEngine
+        product: DownloadEngine
+      # Sparkle removed for App Store
+    settings:
+      base:
+        INFOPLIST_FILE: IDMMacApp/Resources/Info.plist
+        CODE_SIGN_ENTITLEMENTS: IDMMacApp/App/IDMMacApp.entitlements
+        ENABLE_APP_SANDBOX: YES
+      configs:
+        Release:
+          ENABLE_HARDENED_RUNTIME: YES
+        
+    scheme:
+      testTargets: []
+

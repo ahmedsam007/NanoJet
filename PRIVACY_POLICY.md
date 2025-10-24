@@ -1,28 +1,28 @@
-# Privacy Policy for IDMMac Browser Extension
+# Privacy Policy for NanoJet Browser Extension
 
 **Last Updated:** October 22, 2025
 
 ## Introduction
 
-IDMMac ("we", "our", or "the extension") is a browser extension that helps users download media files using the IDMMac desktop application. This privacy policy explains how the extension handles data.
+NanoJet ("we", "our", or "the extension") is a browser extension that helps users download media files using the NanoJet desktop application. This privacy policy explains how the extension handles data.
 
 ## Our Commitment to Your Privacy
 
 **We do NOT collect, store, transmit, or share any personal information or user data.**
 
-The IDMMac extension operates entirely locally on your device and does not communicate with any external servers, analytics services, or third-party services.
+The NanoJet extension operates entirely locally on your device and does not communicate with any external servers, analytics services, or third-party services.
 
 ## What the Extension Does
 
-The IDMMac extension:
+The NanoJet extension:
 
 1. **Detects downloadable media** on web pages you visit
 2. **Extracts download URLs** from video and audio elements
-3. **Sends download information to your local IDMMac app** using the `idmmac://` custom URL scheme
+3. **Sends download information to your local NanoJet app** using the `idmmac://` custom URL scheme
 4. **Reads cookies** from websites (only to pass them to your local app for authenticated downloads)
 5. **Adds a download button overlay** on video elements for your convenience
 
-All of these operations happen **locally on your device**. No data leaves your computer except to communicate with your own IDMMac desktop application running on the same machine.
+All of these operations happen **locally on your device**. No data leaves your computer except to communicate with your own NanoJet desktop application running on the same machine.
 
 ## Data Collection and Usage
 
@@ -42,13 +42,13 @@ All of these operations happen **locally on your device**. No data leaves your c
 
 The extension accesses the following data **only locally** to perform its function:
 
-1. **Cookies**: Read from websites to enable authenticated downloads (e.g., downloading private videos). These cookies are passed directly to your local IDMMac app and are never sent anywhere else.
+1. **Cookies**: Read from websites to enable authenticated downloads (e.g., downloading private videos). These cookies are passed directly to your local NanoJet app and are never sent anywhere else.
 
 2. **Page Content**: Scans web pages for `<video>`, `<audio>`, and media URLs to detect downloadable content. This information stays in your browser and is only used to show you download options.
 
 3. **Network Requests**: Monitors network requests on pages to detect media URLs (e.g., .mp4, .webm files). This data is processed locally and never transmitted externally.
 
-4. **User-Agent and Referrer Headers**: These are read from your browser and passed to your local IDMMac app to ensure successful downloads. No external servers receive this information.
+4. **User-Agent and Referrer Headers**: These are read from your browser and passed to your local NanoJet app to ensure successful downloads. No external servers receive this information.
 
 ## Permissions Explained
 
@@ -56,11 +56,11 @@ The extension requires certain browser permissions to function. Here's what each
 
 ### Required Permissions:
 
-- **`downloads`**: To intercept browser downloads and redirect them to IDMMac app
+- **`downloads`**: To intercept browser downloads and redirect them to NanoJet app
 - **`tabs`**: To open the `idmmac://` custom URL scheme in a new tab to communicate with your local app
 - **`cookies`**: To read cookies from websites and pass them to your local app for authenticated downloads
 - **`storage`**: To save your extension settings (e.g., enabled/disabled state) locally in your browser
-- **`contextMenus`**: To add "Download with IDMMac" option to right-click menus
+- **`contextMenus`**: To add "Download with NanoJet" option to right-click menus
 - **`<all_urls>` / Host Permissions**: To detect downloadable media on any website you visit
 
 **All permissions are used exclusively for local operations. No data is sent to external servers.**
@@ -92,7 +92,7 @@ This data:
 
 The extension communicates **only** with:
 
-1. **Your local IDMMac desktop application** running on your computer via the `idmmac://` custom URL scheme
+1. **Your local NanoJet desktop application** running on your computer via the `idmmac://` custom URL scheme
 2. **Websites you visit** to detect downloadable media (standard browser behavior)
 
 The extension does **NOT** communicate with:
@@ -126,7 +126,7 @@ Your privacy is inherently protected because we simply don't collect any data.
 
 ## Open Source
 
-The IDMMac extension is open source. You can review the source code at:
+The NanoJet extension is open source. You can review the source code at:
 
 **GitHub Repository:** https://github.com/ahmedsam007/IdmMac
 
@@ -149,11 +149,11 @@ If you have any questions or concerns about this privacy policy, please contact 
 - ✅ All operations are local to your device
 - ✅ Your privacy is fully protected
 
-The IDMMac extension is designed with privacy as a top priority. It performs its function entirely on your device without collecting or transmitting any user data.
+The NanoJet extension is designed with privacy as a top priority. It performs its function entirely on your device without collecting or transmitting any user data.
 
 ---
 
-**By using the IDMMac extension, you agree to this privacy policy.**
+**By using the NanoJet extension, you agree to this privacy policy.**
 
 For the full terms of use, please visit: https://github.com/ahmedsam007/IdmMac
 

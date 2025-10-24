@@ -1,5 +1,5 @@
 (() => {
-  const post = (u) => { try { window.postMessage({ __idmmac_media: true, url: u }, '*'); } catch (e) {} };
+  const post = (u) => { try { window.postMessage({ __nanojet_media: true, url: u }, '*'); } catch (e) {} };
   try {
     const of = window.fetch;
     window.fetch = async function(...args) {
@@ -58,7 +58,7 @@
       (resp.adaptiveFormats || []).forEach(push);
       if (resp.hlsManifestUrl) formats.push({ url: resp.hlsManifestUrl, label: 'HLS playlist' });
       if (formats.length) {
-        window.postMessage({ __idmmac_yt_formats: true, formats }, '*');
+        window.postMessage({ __nanojet_yt_formats: true, formats }, '*');
       }
     } catch {}
   }

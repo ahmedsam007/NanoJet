@@ -1,8 +1,8 @@
-.idmmac-overlay {
+.nanojet-overlay {
   position: absolute;
   pointer-events: none;
 }
-.idmmac-overlay .idmmac-btn {
+.nanojet-overlay .nanojet-btn {
   pointer-events: auto;
   background: rgba(0, 122, 255, 0.95);
   color: #fff;
@@ -13,7 +13,7 @@
   cursor: pointer;
   box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
-.idmmac-menu {
+.nanojet-menu {
   position: absolute;
   background: #fff;
   color: #111;
@@ -24,16 +24,16 @@
   box-shadow: 0 6px 18px rgba(0,0,0,0.15);
   z-index: 2147483001;
 }
-.idmmac-menu-item {
+.nanojet-menu-item {
   padding: 8px 12px;
   font-size: 13px;
   cursor: pointer;
 }
-.idmmac-menu-item:hover {
+.nanojet-menu-item:hover {
   background: rgba(0,0,0,0.06);
 }
 
-.idmmac-global-btn {
+.nanojet-global-btn {
   position: fixed;
   bottom: 20px;
   right: 20px;

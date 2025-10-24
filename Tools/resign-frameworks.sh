@@ -7,7 +7,7 @@ set -e
 
 if [ -z "$1" ]; then
     echo "Usage: $0 <path-to-app>"
-    echo "Example: $0 IDMMacApp.app"
+    echo "Example: $0 NanoJetApp.app"
     exit 1
 fi
 

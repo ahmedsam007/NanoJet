@@ -135,7 +135,7 @@ Build successful with no new errors. The fix addresses:
    - Added `enqueueWithBookmark()` method
    - Updated `enqueue()` to delegate to `enqueueWithBookmark()`
 
-2. `IDMMacApp/App/AppViewModel.swift`
+2. `NanoJetApp/App/AppViewModel.swift`
    - Simplified `retryDownload()` to use `enqueueWithBookmark()`
    - Updated all `coordinator.enqueue()` calls to use `enqueueWithBookmark()`
    - Removed race-prone bookmark update logic

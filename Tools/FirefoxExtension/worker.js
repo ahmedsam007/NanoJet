@@ -1,7 +1,7 @@
 // Firefox MV2 uses browser.*
 const api = (typeof browser !== 'undefined' ? browser : chrome);
 
-// Intercept new downloads and redirect to idmmac:// scheme
+// Intercept new downloads and redirect to nanojet:// scheme
 api.downloads.onCreated.addListener(async (item) => {
   try {
     // Only intercept http/https
@@ -12,9 +12,9 @@ api.downloads.onCreated.addListener(async (item) => {
 
     const encoded = encodeURIComponent(item.url);
     // Attempt to open the custom scheme; on macOS this will route to the app
-    await api.tabs.create({ url: `idmmac://add?url=${encoded}` });
+    await api.tabs.create({ url: `nanojet://add?url=${encoded}` });
   } catch (e) {
-    console.warn('IDMMac intercept error:', e);
+    console.warn('NanoJet intercept error:', e);
   }
 });
 
@@ -22,13 +22,13 @@ api.downloads.onCreated.addListener(async (item) => {
 api.runtime.onInstalled.addListener(() => {
   try {
     api.contextMenus.create({
-      id: 'idmmac_download_link',
-      title: 'Download with IDMMac',
+      id: 'nanojet_download_link',
+      title: 'Download with NanoJet',
       contexts: ['link']
     });
     api.contextMenus.create({
-      id: 'idmmac_download_media',
-      title: 'Download video with IDMMac',
+      id: 'nanojet_download_media',
+      title: 'Download video with NanoJet',
       contexts: ['video', 'audio']
     });
   } catch (e) {
@@ -39,16 +39,16 @@ api.runtime.onInstalled.addListener(() => {
 api.contextMenus.onClicked.addListener(async (info, tab) => {
   try {
     let targetUrl = null;
-    if (info.menuItemId === 'idmmac_download_link' && info.linkUrl) {
+    if (info.menuItemId === 'nanojet_download_link' && info.linkUrl) {
       targetUrl = info.linkUrl;
-    } else if (info.menuItemId === 'idmmac_download_media' && info.srcUrl) {
+    } else if (info.menuItemId === 'nanojet_download_media' && info.srcUrl) {
       targetUrl = info.srcUrl;
     }
     if (!targetUrl || !/^https?:/i.test(targetUrl)) return;
     const headers = await buildHeadersForUrl(targetUrl, tab?.url);
     const headersB64 = encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(headers)))));
     const encoded = encodeURIComponent(targetUrl);
-    await api.tabs.create({ url: `idmmac://add?url=${encoded}&headers=${headersB64}` });
+    await api.tabs.create({ url: `nanojet://add?url=${encoded}&headers=${headersB64}` });
   } catch (e) {
     console.warn('Context menu click error:', e);
   }
@@ -57,13 +57,13 @@ api.contextMenus.onClicked.addListener(async (info, tab) => {
 // Handle cookie/header requests and lightweight HEAD size probe from content scripts
 api.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (!message || !message.type) return;
-  if (message.type === 'idmmac_getCookies' && message.url) {
+  if (message.type === 'nanojet_getCookies' && message.url) {
     buildCookieHeader(message.url).then((cookieHeader) => {
       sendResponse({ cookie: cookieHeader });
     }).catch(() => sendResponse({ cookie: '' }));
     return true; // keep the channel open for async response
   }
-  if (message.type === 'idmmac_head' && message.url) {
+  if (message.type === 'nanojet_head' && message.url) {
     (async () => {
       try {
         const headers = new Headers();

@@ -1,10 +1,10 @@
 # Sparkle 2 Update Setup Guide
 
-This guide explains how to set up automatic updates for IDMMac using Sparkle 2 framework.
+This guide explains how to set up automatic updates for NanoJet using Sparkle 2 framework.
 
 ## Overview
 
-IDMMac now includes Sparkle 2 for secure automatic updates:
+NanoJet now includes Sparkle 2 for secure automatic updates:
 - ✅ HTTPS update feed checking
 - ✅ EdDSA signature verification
 - ✅ One-click updates for users
@@ -40,7 +40,7 @@ This creates:
 
 ### Update Info.plist
 
-Replace `YOUR_SPARKLE_PUBLIC_KEY_HERE` in `IDMMacApp/Resources/Info.plist` with your public key:
+Replace `YOUR_SPARKLE_PUBLIC_KEY_HERE` in `NanoJetApp/Resources/Info.plist` with your public key:
 
 ```xml
 <key>SUPublicEDKey</key>
@@ -75,7 +75,7 @@ Update the `SUFeedURL` in `Info.plist` to point to your appcast feed:
 
 2. **Create ZIP of your app**:
    ```bash
-   ditto -c -k --keepParent IDMMacApp.app IDMMacApp-0.1.0.zip
+   ditto -c -k --keepParent NanoJetApp.app NanoJetApp-0.1.0.zip
    ```
 
 ## Step 5: Sign Your Update
@@ -83,7 +83,7 @@ Update the `SUFeedURL` in `Info.plist` to point to your appcast feed:
 Sign the release ZIP with your private key:
 
 ```bash
-./sign_update IDMMacApp-0.1.0.zip -f ~/.sparkle_private_key
+./sign_update NanoJetApp-0.1.0.zip -f ~/.sparkle_private_key
 ```
 
 This outputs an **EdDSA signature** - save this for the appcast.
@@ -96,15 +96,15 @@ Create an `appcast.xml` file on your server:
 <?xml version="1.0" encoding="utf-8"?>
 <rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
     <channel>
-        <title>IDMMac Updates</title>
+        <title>NanoJet Updates</title>
         <link>https://ahmedsam.com/idmmac/appcast.xml</link>
-        <description>Most recent updates for IDMMac</description>
+        <description>Most recent updates for NanoJet</description>
         <language>en</language>
         
         <item>
             <title>Version 0.1.0</title>
             <description><![CDATA[
-                <h3>What's New in IDMMac 0.1.0</h3>
+                <h3>What's New in NanoJet 0.1.0</h3>
                 <ul>
                     <li>Initial release</li>
                     <li>Segmented multi-connection downloads</li>
@@ -118,7 +118,7 @@ Create an `appcast.xml` file on your server:
             <sparkle:shortVersionString>0.1.0</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
             <enclosure 
-                url="https://ahmedsam.com/idmmac/downloads/IDMMacApp-0.1.0.zip"
+                url="https://ahmedsam.com/idmmac/downloads/NanoJetApp-0.1.0.zip"
                 length="12345678"
                 type="application/octet-stream"
                 sparkle:edSignature="YOUR_SIGNATURE_FROM_SIGN_UPDATE" />
@@ -133,7 +133,7 @@ Create an `appcast.xml` file on your server:
 - **sparkle:version**: Build number (CFBundleVersion)
 - **sparkle:shortVersionString**: Marketing version (0.1.0)
 - **enclosure url**: Direct download URL for the ZIP
-- **length**: File size in bytes (`ls -l IDMMacApp-0.1.0.zip`)
+- **length**: File size in bytes (`ls -l NanoJetApp-0.1.0.zip`)
 - **sparkle:edSignature**: Signature from `sign_update` command
 
 ## Step 7: Upload to Your Server
@@ -142,7 +142,7 @@ Upload to your web server:
 
 ```bash
 # Upload files
-scp IDMMacApp-0.1.0.zip user@ahmedsam.com:/var/www/idmmac/downloads/
+scp NanoJetApp-0.1.0.zip user@ahmedsam.com:/var/www/idmmac/downloads/
 scp appcast.xml user@ahmedsam.com:/var/www/idmmac/
 ```
 
@@ -169,15 +169,15 @@ PRIVATE_KEY="~/.sparkle_private_key"
 
 # 1. Build app (assumes already archived)
 echo "Creating ZIP..."
-ditto -c -k --keepParent IDMMacApp.app "IDMMacApp-${VERSION}.zip"
+ditto -c -k --keepParent NanoJetApp.app "NanoJetApp-${VERSION}.zip"
 
 # 2. Sign update
 echo "Signing update..."
-SIGNATURE=$(./Sparkle/bin/sign_update "IDMMacApp-${VERSION}.zip" -f "$PRIVATE_KEY")
+SIGNATURE=$(./Sparkle/bin/sign_update "NanoJetApp-${VERSION}.zip" -f "$PRIVATE_KEY")
 echo "Signature: $SIGNATURE"
 
 # 3. Get file size
-SIZE=$(stat -f%z "IDMMacApp-${VERSION}.zip")
+SIZE=$(stat -f%z "NanoJetApp-${VERSION}.zip")
 echo "Size: $SIZE bytes"
 
 # 4. Generate appcast entry
@@ -192,7 +192,7 @@ Add this to your appcast.xml:
     <sparkle:shortVersionString>${VERSION}</sparkle:shortVersionString>
     <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
     <enclosure 
-        url="https://ahmedsam.com/idmmac/downloads/IDMMacApp-${VERSION}.zip"
+        url="https://ahmedsam.com/idmmac/downloads/NanoJetApp-${VERSION}.zip"
         length="${SIZE}"
         type="application/octet-stream"
         sparkle:edSignature="${SIGNATURE}" />
@@ -200,7 +200,7 @@ Add this to your appcast.xml:
 
 EOF
 
-echo "Done! Upload IDMMacApp-${VERSION}.zip and update appcast.xml"
+echo "Done! Upload NanoJetApp-${VERSION}.zip and update appcast.xml"
 ```
 
 ## Update Frequency

@@ -20,12 +20,12 @@ The "Test Connection" button now displays:
 ### 3. Implementation Details
 
 #### Files Added:
-- `IDMMacApp/Utilities/NetworkSpeedMonitor.swift` - Core monitoring functionality
+- `NanoJetApp/Utilities/NetworkSpeedMonitor.swift` - Core monitoring functionality
 
 #### Files Modified:
-- `IDMMacApp/App/AppViewModel.swift` - Integrated speed monitoring
-- `IDMMacApp/UI/ContentView.swift` - Updated UI to display speeds
-- `IDMMac.xcodeproj/project.pbxproj` - Added new file to project
+- `NanoJetApp/App/AppViewModel.swift` - Integrated speed monitoring
+- `NanoJetApp/UI/ContentView.swift` - Updated UI to display speeds
+- `NanoJet.xcodeproj/project.pbxproj` - Added new file to project
 
 ### 4. How It Works
 

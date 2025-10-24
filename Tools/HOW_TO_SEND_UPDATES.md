@@ -1,10 +1,10 @@
 # How to Send Updates to Existing Users
 
-This guide explains how to send automatic updates to users who already have IDMMac installed.
+This guide explains how to send automatic updates to users who already have NanoJet installed.
 
 ## Overview
 
-IDMMac uses **Sparkle 2** for automatic updates. When you release a new version:
+NanoJet uses **Sparkle 2** for automatic updates. When you release a new version:
 1. Users with the old version will be automatically notified
 2. They can download and install the update with one click
 3. The app updates itself without needing to re-download manually
@@ -20,7 +20,7 @@ IDMMac uses **Sparkle 2** for automatic updates. When you release a new version:
 
 ### Step 1: Update Version Number in Xcode
 
-1. Open `IDMMac.xcodeproj` in Xcode
+1. Open `NanoJet.xcodeproj` in Xcode
 2. Select the **project** (not target) in the navigator
 3. Go to the **Build Settings** tab
 4. Search for `MARKETING_VERSION`
@@ -32,7 +32,7 @@ IDMMac uses **Sparkle 2** for automatic updates. When you release a new version:
 Run the automated script:
 
 ```bash
-cd /Users/ahmed/Documents/IDMMac
+cd /Users/ahmed/Documents/NanoJet
 ./Tools/create-update.sh 0.2.0
 ```
 
@@ -50,7 +50,7 @@ You need to upload two files:
 
 **A. Upload the app zip:**
 ```bash
-scp ~/Desktop/IDMMac-Update-v0.2.0/IDMMacApp-0.2.0.zip user@ahmedsam.com:/var/www/idmmac/downloads/
+scp ~/Desktop/NanoJet-Update-v0.2.0/NanoJetApp-0.2.0.zip user@ahmedsam.com:/var/www/idmmac/downloads/
 ```
 
 **B. Upload the appcast.xml** (after editing it in step 4):
@@ -70,7 +70,7 @@ scp Tools/appcast.xml user@ahmedsam.com:/var/www/idmmac/
 **Example appcast.xml structure:**
 ```xml
 <channel>
-    <title>IDMMac Updates</title>
+    <title>NanoJet Updates</title>
     ...
     
     <!-- NEWEST VERSION FIRST -->
@@ -109,19 +109,19 @@ If you prefer to do it manually without the script:
 
 ```bash
 # 1. Build
-xcodebuild -scheme IDMMacApp -configuration Release build
+xcodebuild -scheme NanoJetApp -configuration Release build
 
 # 2. Find the built app
-cd ~/Library/Developer/Xcode/DerivedData/IDMMac-*/Build/Products/Release/
+cd ~/Library/Developer/Xcode/DerivedData/NanoJet-*/Build/Products/Release/
 
 # 3. Re-sign frameworks
-/path/to/resign-frameworks.sh IDMMacApp.app
+/path/to/resign-frameworks.sh NanoJetApp.app
 
 # 4. Create zip
-ditto -c -k --keepParent IDMMacApp.app IDMMacApp-0.2.0.zip
+ditto -c -k --keepParent NanoJetApp.app NanoJetApp-0.2.0.zip
 
 # 5. Sign with Sparkle
-/path/to/bin/sign_update IDMMacApp-0.2.0.zip
+/path/to/bin/sign_update NanoJetApp-0.2.0.zip
 
 # 6. Copy signature and add to appcast.xml
 ```
@@ -170,8 +170,8 @@ Or remove the `releaseNotesLink` and use inline `<description>` instead.
 /var/www/idmmac/
 ├── appcast.xml                    # Update feed
 ├── downloads/
-│   ├── IDMMacApp-0.1.0.zip       # Old version
-│   └── IDMMacApp-0.2.0.zip       # New version
+│   ├── NanoJetApp-0.1.0.zip       # Old version
+│   └── NanoJetApp-0.2.0.zip       # New version
 └── releases/                      # Optional release notes
     ├── 0.1.0.html
     └── 0.2.0.html

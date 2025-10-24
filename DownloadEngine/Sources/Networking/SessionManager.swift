@@ -58,7 +58,7 @@ public final class BackgroundSessionManager: NSObject, URLSessionManaging {
         DownloadLogger.log(itemId: item.id, "pauseDownload")
         // For background tasks, use cancellation with resume data (async API)
         for (tid, iid) in taskIdToItemId where iid == item.id {
-            if let task = taskFor(identifier: tid) as? URLSessionDownloadTask {
+            if let task = await taskFor(identifier: tid) as? URLSessionDownloadTask {
                 let data = await task.cancelByProducingResumeData()
                 if let data { itemIdToResumeData[item.id] = data }
                 if let coordinator = coordinatorRef, var current = await coordinator.getItem(id: item.id) {
@@ -85,19 +85,17 @@ public final class BackgroundSessionManager: NSObject, URLSessionManaging {
     public func cancelDownload(for item: DownloadItem) async {
         DownloadLogger.log(itemId: item.id, "cancelDownload")
         for (tid, iid) in taskIdToItemId where iid == item.id {
-            taskFor(identifier: tid)?.cancel()
+            await taskFor(identifier: tid)?.cancel()
         }
     }
 
-    private func taskFor(identifier: Int) -> URLSessionTask? {
-        var found: URLSessionTask?
-        let semaphore = DispatchSemaphore(value: 0)
-        session.getAllTasks { tasks in
-            found = tasks.first(where: { $0.taskIdentifier == identifier })
-            semaphore.signal()
+    private func taskFor(identifier: Int) async -> URLSessionTask? {
+        await withCheckedContinuation { continuation in
+            session.getAllTasks { tasks in
+                let found = tasks.first(where: { $0.taskIdentifier == identifier })
+                continuation.resume(returning: found)
+            }
         }
-        semaphore.wait()
-        return found
     }
 }
 
@@ -108,49 +106,54 @@ extension BackgroundSessionManager: URLSessionDownloadDelegate {
         }
         // Move to user-preferred folder if available, else Downloads
         let fileName = downloadTask.response?.suggestedFilename
-        // Resolve preferred directory without prematurely closing security scope
-        var preferredDir: URL? = nil
-        if let itemId = taskIdToItemId[downloadTask.taskIdentifier] {
-            let semaphore = DispatchSemaphore(value: 0)
-            Task {
+        guard let itemId = taskIdToItemId[downloadTask.taskIdentifier] else { return }
+        
+        // Move to a safe temporary location first (synchronously, before system deletes the download temp file)
+        // Then async resolve preferred directory and move to final location
+        let safeTempURL = FileManager.default.temporaryDirectory.appendingPathComponent("download_\(itemId.uuidString)_\(fileName ?? "file")")
+        do {
+            // Copy to safe temp location first
+            try FileManager.default.copyItem(at: location, to: safeTempURL)
+            DownloadLogger.log(itemId: itemId, "moved to safe temp: \(safeTempURL.path)")
+            
+            // Now do the async work to resolve preferred directory and move to final location
+            Task { [weak self] in
+                guard let self else { return }
+                var preferredDir: URL? = nil
                 if let coord = self.coordinatorRef, let item = await coord.getItem(id: itemId), let bookmark = item.destinationDirBookmark {
                     var isStale = false
                     if let dir = try? URL(resolvingBookmarkData: bookmark, options: [.withSecurityScope], relativeTo: nil, bookmarkDataIsStale: &isStale) {
                         preferredDir = dir
                     }
                 }
-                semaphore.signal()
-            }
-            semaphore.wait()
-        }
-        // Perform move while security scope is active
-        let started = preferredDir?.startAccessingSecurityScopedResource() ?? false
-        let finalURL = try? FileMover.move(location: location, suggestedFileName: fileName, preferredDirectory: preferredDir)
-        if started { preferredDir?.stopAccessingSecurityScopedResource() }
-        if let itemId = taskIdToItemId[downloadTask.taskIdentifier] {
-            if let finalURL { DownloadLogger.log(itemId: itemId, "movedTo: \(finalURL.path)") } else { DownloadLogger.log(itemId: itemId, "moveFailed") }
-        }
-        if let itemId = taskIdToItemId[downloadTask.taskIdentifier] {
-            Task {
-                if let coordinator = coordinatorRef, var item = await coordinator.getItem(id: itemId) {
-                    item.status = .completed
-                    item.speedBytesPerSec = 0
-                    if let finalURL {
+                
+                let started = preferredDir?.startAccessingSecurityScopedResource() ?? false
+                defer { if started { preferredDir?.stopAccessingSecurityScopedResource() } }
+                
+                do {
+                    let finalURL = try FileMover.move(location: safeTempURL, suggestedFileName: fileName, preferredDirectory: preferredDir)
+                    DownloadLogger.log(itemId: itemId, "movedTo: \(finalURL.path)")
+                    
+                    if let coordinator = self.coordinatorRef, var item = await coordinator.getItem(id: itemId) {
+                        item.status = .completed
+                        item.speedBytesPerSec = 0
                         item.finalFileName = finalURL.lastPathComponent
                         let dir = finalURL.deletingLastPathComponent()
                         let bookmark = try? dir.bookmarkData(options: [.withSecurityScope], includingResourceValuesForKeys: nil, relativeTo: nil)
                         if let bookmark { item.destinationDirBookmark = bookmark }
+                        await coordinator.handleProgressUpdate(item)
+                        
                         // Compute SHA-256 in background
                         Task { [weak self] in
                             guard let self else { return }
                             do {
                                 let hash = try sha256Hex(of: finalURL)
-                                if let coord = self.coordinatorRef, var current = await coord.getItem(id: item.id) {
+                                if let coord = self.coordinatorRef, var current = await coord.getItem(id: itemId) {
                                     current.checksumSHA256 = hash
                                     await coord.handleProgressUpdate(current)
                                 }
                             } catch {
-                                if let coord = self.coordinatorRef, var current = await coord.getItem(id: item.id) {
+                                if let coord = self.coordinatorRef, var current = await coord.getItem(id: itemId) {
                                     let suffix = "\nHash error: \(error.localizedDescription)"
                                     current.lastError = (current.lastError ?? "") + suffix
                                     await coord.handleProgressUpdate(current)
@@ -158,6 +161,24 @@ extension BackgroundSessionManager: URLSessionDownloadDelegate {
                             }
                         }
                     }
+                } catch {
+                    DownloadLogger.log(itemId: itemId, "moveFailed: \(error.localizedDescription)")
+                    // Clean up safe temp file on error
+                    try? FileManager.default.removeItem(at: safeTempURL)
+                    if let coordinator = self.coordinatorRef, var item = await coordinator.getItem(id: itemId) {
+                        item.status = .failed
+                        item.lastError = "Failed to move file: \(error.localizedDescription)"
+                        await coordinator.handleProgressUpdate(item)
+                    }
+                }
+            }
+        } catch {
+            DownloadLogger.log(itemId: itemId, "safe temp copy error: \(error.localizedDescription)")
+            Task { [weak self] in
+                guard let self else { return }
+                if let coordinator = self.coordinatorRef, var item = await coordinator.getItem(id: itemId) {
+                    item.status = .failed
+                    item.lastError = "Failed to save download: \(error.localizedDescription)"
                     await coordinator.handleProgressUpdate(item)
                 }
             }

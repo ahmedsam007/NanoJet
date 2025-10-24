@@ -1,10 +1,10 @@
-# 🔄 IDMMac Update System - Visual Workflow
+# 🔄 NanoJet Update System - Visual Workflow
 
 ## 📱 User Experience Flow
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  User's Mac Running IDMMac v0.1.0                           │
+│  User's Mac Running NanoJet v0.1.0                           │
 └─────────────────────────────────────────────────────────────┘
                            │
                            │ (Every 24 hours or manual check)
@@ -89,7 +89,7 @@
 │  4. Sign Update                                             │
 │     • ./Tools/sign_update.sh YourApp.app 0.2.0             │
 │     • Generates EdDSA signature                            │
-│     • Creates IDMMacApp-0.2.0.zip                          │
+│     • Creates NanoJetApp-0.2.0.zip                          │
 └─────────────────────────────────────────────────────────────┘
                            │
                            ▼
@@ -104,7 +104,7 @@
                            ▼
 ┌─────────────────────────────────────────────────────────────┐
 │  6. Upload to Server                                        │
-│     • scp IDMMacApp-0.2.0.zip → server/downloads/          │
+│     • scp NanoJetApp-0.2.0.zip → server/downloads/          │
 │     • scp appcast.xml → server/                            │
 └─────────────────────────────────────────────────────────────┘
                            │
@@ -146,15 +146,15 @@
          │    with private key    │    distributed app
          ▼                        ▼
 ┌─────────────────┐      ┌────────────────────┐
-│  IDMMac-0.2.0   │      │  User's Mac        │
-│  + Signature    │      │  Running IDMMac    │
+│  NanoJet-0.2.0   │      │  User's Mac        │
+│  + Signature    │      │  Running NanoJet    │
 └────────┬────────┘      └─────────┬──────────┘
          │                         │
          │ 4. Upload to server     │ 5. Download update
          ▼                         ▼
 ┌──────────────────────────────────────────────┐
 │  ahmedsam.com/idmmac/                        │
-│  • IDMMacApp-0.2.0.zip                       │
+│  • NanoJetApp-0.2.0.zip                       │
 │  • appcast.xml (with signature)              │
 └──────────────────────┬───────────────────────┘
                        │
@@ -193,9 +193,9 @@
 │  │                         check here first)           │
 │  │                                                      │
 │  └── downloads/                                        │
-│      ├── IDMMacApp-0.1.0.zip    (411 KB)              │
-│      ├── IDMMacApp-0.2.0.zip    (412 KB)              │
-│      ├── IDMMacApp-0.3.0.zip    (415 KB)              │
+│      ├── NanoJetApp-0.1.0.zip    (411 KB)              │
+│      ├── NanoJetApp-0.2.0.zip    (412 KB)              │
+│      ├── NanoJetApp-0.3.0.zip    (415 KB)              │
 │      └── ...                                           │
 └────────────────────────────────────────────────────────┘
          ▲                                ▲
@@ -209,7 +209,7 @@
          ▲                                ▲
          │                                │
     ┌────┴──────────────────────────────┴────┐
-    │  User's Mac Running IDMMac              │
+    │  User's Mac Running NanoJet              │
     │  • Checks appcast.xml periodically      │
     │  • Downloads only if update available   │
     │  • Verifies signature before installing │
@@ -279,7 +279,7 @@ Current Version: 0.1.0 (Build 1)
 │  https://ahmedsam.com/idmmac/       │
 │  ├── appcast.xml                    │
 │  └── downloads/                     │
-│      └── IDMMacApp-0.2.0.zip        │
+│      └── NanoJetApp-0.2.0.zip        │
 └─────────────────────────────────────┘
          ▲
          │ Info.plist SUFeedURL:
@@ -300,7 +300,7 @@ Current Version: 0.1.0 (Build 1)
 | **Build & Sign Release** | `./Tools/release.sh 0.2.0` |
 | **Sign Update Only** | `./Tools/sign_update.sh App.app 0.2.0` |
 | **Start Test Server** | `cd Tools && python3 -m http.server 8000` |
-| **Check Current Version** | `defaults read /Applications/IDMMacApp.app/Contents/Info CFBundleShortVersionString` |
+| **Check Current Version** | `defaults read /Applications/NanoJetApp.app/Contents/Info CFBundleShortVersionString` |
 | **Validate Appcast XML** | `xmllint --noout Tools/appcast.xml` |
 | **Test Production URL** | `curl -I https://ahmedsam.com/idmmac/appcast.xml` |
 | **Upload to Server** | `scp file.zip user@ahmedsam.com:/path/` |

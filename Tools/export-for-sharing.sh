@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# IDMMac - Export for Sharing
+# NanoJet - Export for Sharing
 # Creates a properly signed, shareable version of the app
 
 set -e
@@ -17,7 +17,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 
 echo -e "${BLUE}╔════════════════════════════════════════╗${NC}"
-echo -e "${BLUE}║   IDMMac - Export for Sharing          ║${NC}"
+echo -e "${BLUE}║   NanoJet - Export for Sharing          ║${NC}"
 echo -e "${BLUE}╚════════════════════════════════════════╝${NC}"
 echo
 
@@ -27,8 +27,8 @@ VERSION="${1:-0.1.0}"
 echo -e "${BLUE}📦 Version: ${VERSION}${NC}"
 echo
 
-# Create output directory in Documents/IDMMac
-OUTPUT_DIR="$HOME/Documents/IDMMac/builds/IDMMac-v${VERSION}"
+# Create output directory in Documents/NanoJet
+OUTPUT_DIR="$HOME/Documents/NanoJet/builds/NanoJet-v${VERSION}"
 mkdir -p "$OUTPUT_DIR"
 
 echo -e "${YELLOW}⚙️  Step 1: Building app...${NC}"
@@ -36,7 +36,7 @@ echo -e "${YELLOW}⚙️  Step 1: Building app...${NC}"
 cd "$PROJECT_DIR"
 
 # Build the app
-xcodebuild -scheme IDMMacApp \
+xcodebuild -scheme NanoJetApp \
     -configuration Release \
     -derivedDataPath "$OUTPUT_DIR/DerivedData" \
     build \
@@ -51,7 +51,7 @@ echo -e "${GREEN}✅ Build succeeded${NC}"
 echo
 
 # Find the built app
-BUILT_APP="$OUTPUT_DIR/DerivedData/Build/Products/Release/IDMMacApp.app"
+BUILT_APP="$OUTPUT_DIR/DerivedData/Build/Products/Release/NanoJetApp.app"
 
 if [ ! -d "$BUILT_APP" ]; then
     echo -e "${RED}❌ Built app not found at: $BUILT_APP${NC}"
@@ -72,7 +72,7 @@ echo
 
 # Re-sign frameworks
 echo -e "${YELLOW}⚙️  Step 3: Re-signing frameworks...${NC}"
-"$SCRIPT_DIR/resign-frameworks.sh" "$OUTPUT_DIR/IDMMacApp.app"
+"$SCRIPT_DIR/resign-frameworks.sh" "$OUTPUT_DIR/NanoJetApp.app"
 
 if [ $? -ne 0 ]; then
     echo -e "${RED}❌ Re-signing failed!${NC}"
@@ -85,8 +85,8 @@ echo
 echo -e "${YELLOW}⚙️  Step 4: Creating zip file...${NC}"
 
 cd "$OUTPUT_DIR"
-ZIP_NAME="IDMMacApp-v${VERSION}.zip"
-ditto -c -k --keepParent "IDMMacApp.app" "$ZIP_NAME"
+ZIP_NAME="NanoJetApp-v${VERSION}.zip"
+ditto -c -k --keepParent "NanoJetApp.app" "$ZIP_NAME"
 
 if [ $? -ne 0 ]; then
     echo -e "${RED}❌ Failed to create zip file${NC}"
@@ -114,7 +114,7 @@ echo -e "   ${ZIP_NAME} (${ZIP_SIZE})"
 echo
 echo -e "${YELLOW}📝 To share with friends:${NC}"
 echo "   1. Send them the zip file: $ZIP_NAME"
-echo "   2. They should extract it and drag IDMMacApp.app to Applications"
+echo "   2. They should extract it and drag NanoJetApp.app to Applications"
 echo "   3. On first launch, they need to right-click → Open"
 echo "      (This bypasses Gatekeeper for unsigned apps)"
 echo

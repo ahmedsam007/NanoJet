@@ -1,4 +1,4 @@
-# 🚀 IDMMac Update Deployment Guide
+# 🚀 NanoJet Update Deployment Guide
 
 This guide explains how to test updates locally and deploy them to real users.
 
@@ -23,24 +23,24 @@ This guide explains how to test updates locally and deploy them to real users.
 # 2. Wait for archive to complete
 # 3. In Organizer → Select your archive
 # 4. Click "Distribute App" → "Copy App"
-# 5. Choose a location (e.g., ~/Desktop/IDMMacApp-Test)
+# 5. Choose a location (e.g., ~/Desktop/NanoJetApp-Test)
 ```
 
 Or use command line:
 
 ```bash
-cd /Users/ahmed/Documents/IDMMac
+cd /Users/ahmed/Documents/NanoJet
 
 # Build for release
 xcodebuild archive \
-  -scheme IDMMacApp \
-  -archivePath ~/Desktop/IDMMacApp.xcarchive \
+  -scheme NanoJetApp \
+  -archivePath ~/Desktop/NanoJetApp.xcarchive \
   -configuration Release
 
 # Export the app
 xcodebuild -exportArchive \
-  -archivePath ~/Desktop/IDMMacApp.xcarchive \
-  -exportPath ~/Desktop/IDMMacApp-Export \
+  -archivePath ~/Desktop/NanoJetApp.xcarchive \
+  -exportPath ~/Desktop/NanoJetApp-Export \
   -exportOptionsPlist ExportOptions.plist
 ```
 
@@ -50,29 +50,29 @@ xcodebuild -exportArchive \
 cd ~/Desktop
 
 # Create a test version 0.2.0
-cp -r IDMMacApp-Export/IDMMacApp.app ./IDMMacApp-0.2.0.app
+cp -r NanoJetApp-Export/NanoJetApp.app ./NanoJetApp-0.2.0.app
 
 # Manually change the version (or rebuild with incremented version)
 # Edit Info.plist inside the app bundle:
 /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString 0.2.0" \
-  IDMMacApp-0.2.0.app/Contents/Info.plist
+  NanoJetApp-0.2.0.app/Contents/Info.plist
 
 /usr/libexec/PlistBuddy -c "Set :CFBundleVersion 2" \
-  IDMMacApp-0.2.0.app/Contents/Info.plist
+  NanoJetApp-0.2.0.app/Contents/Info.plist
 
 # Zip it
-cd /Users/ahmed/Documents/IDMMac
-./Tools/sign_update.sh ~/Desktop/IDMMacApp-0.2.0.app 0.2.0
+cd /Users/ahmed/Documents/NanoJet
+./Tools/sign_update.sh ~/Desktop/NanoJetApp-0.2.0.app 0.2.0
 ```
 
 ### Step 3: Set Up Local Test Server
 
 ```bash
 # The test files should be in Tools/ directory
-cd /Users/ahmed/Documents/IDMMac/Tools
+cd /Users/ahmed/Documents/NanoJet/Tools
 
 # Move the signed update here
-mv ~/Desktop/IDMMacApp-0.2.0.zip ./test-update-real.zip
+mv ~/Desktop/NanoJetApp-0.2.0.zip ./test-update-real.zip
 
 # Update test-appcast-UPDATE-AVAILABLE.xml with the output from sign_update.sh
 
@@ -84,9 +84,9 @@ python3 -m http.server 8000
 ### Step 4: Test the Update Flow
 
 1. **Install the OLD version (0.1.0)**:
-   - Quit any running IDMMac instances
-   - Delete existing app: `rm -rf /Applications/IDMMacApp.app`
-   - Copy v0.1.0 to Applications: `cp -r ~/Desktop/IDMMacApp-Export/IDMMacApp.app /Applications/`
+   - Quit any running NanoJet instances
+   - Delete existing app: `rm -rf /Applications/NanoJetApp.app`
+   - Copy v0.1.0 to Applications: `cp -r ~/Desktop/NanoJetApp-Export/NanoJetApp.app /Applications/`
    - Launch from Applications
 
 2. **Check for Updates**:
@@ -99,7 +99,7 @@ python3 -m http.server 8000
    - App will quit and relaunch with new version
 
 4. **Verify New Version**:
-   - App menu → About IDMMac
+   - App menu → About NanoJet
    - Should show version 0.2.0
 
 ---
@@ -119,15 +119,15 @@ ahmedsam.com/
 └── idmmac/
     ├── appcast.xml           (update feed)
     └── downloads/
-        ├── IDMMacApp-0.1.0.zip
-        ├── IDMMacApp-0.2.0.zip
+        ├── NanoJetApp-0.1.0.zip
+        ├── NanoJetApp-0.2.0.zip
         └── ... (future versions)
 ```
 
 ### Step 2: Update Info.plist for Production
 
 ```bash
-cd /Users/ahmed/Documents/IDMMac/IDMMacApp/Resources
+cd /Users/ahmed/Documents/NanoJet/NanoJetApp/Resources
 ```
 
 Edit `Info.plist` and ensure the `SUFeedURL` points to production:
@@ -142,7 +142,7 @@ Edit `Info.plist` and ensure the `SUFeedURL` points to production:
 ### Step 3: Build Release Version
 
 ```bash
-cd /Users/ahmed/Documents/IDMMac
+cd /Users/ahmed/Documents/NanoJet
 
 # Increment version number first in project.yml or Xcode
 # Then build for release
@@ -153,13 +153,13 @@ cd /Users/ahmed/Documents/IDMMac
 
 # Option B: Command Line
 xcodebuild archive \
-  -scheme IDMMacApp \
-  -archivePath ~/Desktop/IDMMacApp-Release.xcarchive \
+  -scheme NanoJetApp \
+  -archivePath ~/Desktop/NanoJetApp-Release.xcarchive \
   -configuration Release
 
 xcodebuild -exportArchive \
-  -archivePath ~/Desktop/IDMMacApp-Release.xcarchive \
-  -exportPath ~/Desktop/IDMMacApp-Release \
+  -archivePath ~/Desktop/NanoJetApp-Release.xcarchive \
+  -exportPath ~/Desktop/NanoJetApp-Release \
   -exportOptionsPlist ExportOptions.plist
 ```
 
@@ -167,11 +167,11 @@ xcodebuild -exportArchive \
 
 ```bash
 # Sign your new release
-cd /Users/ahmed/Documents/IDMMac
-./Tools/sign_update.sh ~/Desktop/IDMMacApp-Release/IDMMacApp.app 0.2.0
+cd /Users/ahmed/Documents/NanoJet
+./Tools/sign_update.sh ~/Desktop/NanoJetApp-Release/NanoJetApp.app 0.2.0
 
 # This will output:
-# - IDMMacApp-0.2.0.zip (the signed package)
+# - NanoJetApp-0.2.0.zip (the signed package)
 # - Appcast XML entry with signature
 ```
 
@@ -182,7 +182,7 @@ cd /Users/ahmed/Documents/IDMMac
     <sparkle:version>2</sparkle:version>
     <sparkle:shortVersionString>0.2.0</sparkle:shortVersionString>
     <enclosure 
-        url="https://ahmedsam.com/idmmac/downloads/IDMMacApp-0.2.0.zip"
+        url="https://ahmedsam.com/idmmac/downloads/NanoJetApp-0.2.0.zip"
         length="12345678"
         type="application/octet-stream"
         sparkle:edSignature="abc123...xyz789" />
@@ -194,7 +194,7 @@ cd /Users/ahmed/Documents/IDMMac
 Edit `Tools/appcast.xml`:
 
 ```bash
-cd /Users/ahmed/Documents/IDMMac/Tools
+cd /Users/ahmed/Documents/NanoJet/Tools
 nano appcast.xml
 ```
 
@@ -204,16 +204,16 @@ Add the new release **at the top** (most recent first):
 <?xml version="1.0" encoding="utf-8"?>
 <rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
     <channel>
-        <title>IDMMac Updates</title>
+        <title>NanoJet Updates</title>
         <link>https://ahmedsam.com/idmmac/appcast.xml</link>
-        <description>Most recent updates for IDMMac</description>
+        <description>Most recent updates for NanoJet</description>
         <language>en</language>
         
         <!-- NEW RELEASE - Add at the top -->
         <item>
             <title>Version 0.2.0</title>
             <description><![CDATA[
-                <h3>🎉 What's New in IDMMac 0.2.0</h3>
+                <h3>🎉 What's New in NanoJet 0.2.0</h3>
                 <ul>
                     <li>✨ Dark mode support</li>
                     <li>🔄 Automatic updates</li>
@@ -225,7 +225,7 @@ Add the new release **at the top** (most recent first):
             <sparkle:shortVersionString>0.2.0</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
             <enclosure 
-                url="https://ahmedsam.com/idmmac/downloads/IDMMacApp-0.2.0.zip"
+                url="https://ahmedsam.com/idmmac/downloads/NanoJetApp-0.2.0.zip"
                 length="PASTE_LENGTH_HERE"
                 type="application/octet-stream"
                 sparkle:edSignature="PASTE_SIGNATURE_HERE" />
@@ -245,7 +245,7 @@ Add the new release **at the top** (most recent first):
 
 ```bash
 # Upload the signed ZIP
-scp ~/Desktop/IDMMacApp-0.2.0.zip user@ahmedsam.com:/path/to/idmmac/downloads/
+scp ~/Desktop/NanoJetApp-0.2.0.zip user@ahmedsam.com:/path/to/idmmac/downloads/
 
 # Upload the updated appcast
 scp Tools/appcast.xml user@ahmedsam.com:/path/to/idmmac/appcast.xml
@@ -264,7 +264,7 @@ curl -I https://ahmedsam.com/idmmac/appcast.xml
 # Should return: HTTP/1.1 200 OK
 
 # Download the update package
-curl -I https://ahmedsam.com/idmmac/downloads/IDMMacApp-0.2.0.zip
+curl -I https://ahmedsam.com/idmmac/downloads/NanoJetApp-0.2.0.zip
 
 # Should return: HTTP/1.1 200 OK
 ```
@@ -299,8 +299,8 @@ git push origin main --tags
 ```bash
 # Build for release (Xcode: Product → Archive)
 # Then use the sign script:
-cd /Users/ahmed/Documents/IDMMac
-./Tools/sign_update.sh ~/Desktop/IDMMacApp-Release/IDMMacApp.app 0.2.0
+cd /Users/ahmed/Documents/NanoJet
+./Tools/sign_update.sh ~/Desktop/NanoJetApp-Release/NanoJetApp.app 0.2.0
 
 # Save the output (signature and length)
 ```
@@ -322,7 +322,7 @@ cd /Users/ahmed/Documents/IDMMac
 
 ```bash
 # Upload signed ZIP to your server
-scp IDMMacApp-0.2.0.zip user@ahmedsam.com:/idmmac/downloads/
+scp NanoJetApp-0.2.0.zip user@ahmedsam.com:/idmmac/downloads/
 
 # Upload updated appcast.xml
 scp Tools/appcast.xml user@ahmedsam.com:/idmmac/appcast.xml
@@ -332,7 +332,7 @@ scp Tools/appcast.xml user@ahmedsam.com:/idmmac/appcast.xml
 
 ```bash
 # On a test Mac with old version installed:
-# 1. Open IDMMacApp
+# 1. Open NanoJetApp
 # 2. Gear icon → Check for Updates
 # 3. Verify update is detected
 # 4. Install and verify it works
@@ -374,7 +374,7 @@ scp Tools/appcast.xml user@ahmedsam.com:/idmmac/appcast.xml
 
 **Solutions**:
 1. Check file permissions on server (should be readable)
-2. Verify ZIP file is not corrupted: `unzip -t IDMMacApp-0.2.0.zip`
+2. Verify ZIP file is not corrupted: `unzip -t NanoJetApp-0.2.0.zip`
 3. Ensure `length` attribute in appcast matches actual file size
 
 ### App Won't Launch After Update
@@ -402,7 +402,7 @@ xmllint --noout appcast.xml
 
 # Check version in built app
 /usr/libexec/PlistBuddy -c "Print :CFBundleShortVersionString" \
-  /Applications/IDMMacApp.app/Contents/Info.plist
+  /Applications/NanoJetApp.app/Contents/Info.plist
 
 # Upload to server
 scp file.zip user@server.com:/path/

@@ -1,6 +1,6 @@
 # ✅ Sparkle Updates - Fully Configured!
 
-Your IDMMac app is now fully configured for automatic updates using Sparkle 2! 🎉
+Your NanoJet app is now fully configured for automatic updates using Sparkle 2! 🎉
 
 ## 📋 What Was Done
 
@@ -52,25 +52,25 @@ Located in `bin/` directory:
 2. Archive in Xcode:
    - Product → Archive
    - Distribute App → Developer ID
-   - Export and save as `IDMMacApp.app`
+   - Export and save as `NanoJetApp.app`
 
 3. **Important**: Notarize your app:
    ```bash
-   xcrun notarytool submit IDMMacApp.zip \
+   xcrun notarytool submit NanoJetApp.zip \
      --keychain-profile AC_PROFILE --wait
-   xcrun stapler staple IDMMacApp.app
+   xcrun stapler staple NanoJetApp.app
    ```
 
 ### Step 2: Sign the Update
 
-Place `IDMMacApp.app` in the project root, then run:
+Place `NanoJetApp.app` in the project root, then run:
 
 ```bash
 ./Tools/sign_update.sh 0.1.0
 ```
 
 This will:
-- ✅ Create `IDMMacApp-0.1.0.zip`
+- ✅ Create `NanoJetApp-0.1.0.zip`
 - ✅ Sign it with your private key
 - ✅ Generate the appcast XML entry
 - ✅ Show file size and signature
@@ -80,7 +80,7 @@ This will:
 Upload to your server:
 ```bash
 # Upload the ZIP
-scp IDMMacApp-0.1.0.zip user@ahmedsam.com:/path/to/downloads/
+scp NanoJetApp-0.1.0.zip user@ahmedsam.com:/path/to/downloads/
 
 # Update appcast.xml with the generated entry
 # Upload appcast.xml to https://ahmedsam.com/idmmac/appcast.xml
@@ -96,7 +96,7 @@ scp IDMMacApp-0.1.0.zip user@ahmedsam.com:/path/to/downloads/
 ## 📁 Files Created/Modified
 
 ```
-IDMMac/
+NanoJet/
 ├── bin/                              # Sparkle signing tools
 │   ├── sign_update                  # Sign releases
 │   ├── generate_appcast             # Auto-generate appcast
@@ -104,7 +104,7 @@ IDMMac/
 ├── Tools/
 │   ├── sign_update.sh               # ✨ NEW: Easy signing script
 │   └── appcast.xml                  # ✨ NEW: Appcast template
-├── IDMMacApp/
+├── NanoJetApp/
 │   ├── Resources/
 │   │   └── Info.plist               # ✅ Updated with public key
 │   └── Utilities/
@@ -211,7 +211,7 @@ For Sparkle-specific issues:
 - GitHub: https://github.com/sparkle-project/Sparkle
 - Documentation: https://sparkle-project.org
 
-For IDMMac issues:
+For NanoJet issues:
 - Contact: ahmed@ahmedsam.com
 
 ---

@@ -1,4 +1,4 @@
-# 🔄 IDMMac Update System - Complete Summary
+# 🔄 NanoJet Update System - Complete Summary
 
 ## ✅ What's Been Set Up
 
@@ -9,7 +9,7 @@ Your app now has a **complete automatic update system** powered by Sparkle 2.
 ## 📁 Files Created
 
 ### Configuration Files
-- **`IDMMacApp/Resources/Info.plist`** - Sparkle configuration
+- **`NanoJetApp/Resources/Info.plist`** - Sparkle configuration
   - `SUFeedURL`: https://ahmedsam.com/idmmac/appcast.xml
   - `SUPublicEDKey`: Your EdDSA public key for signature verification
   - `SUEnableAutomaticChecks`: Automatic checks every 24 hours
@@ -33,9 +33,9 @@ Your app now has a **complete automatic update system** powered by Sparkle 2.
 - **`Tools/UPDATE_SYSTEM_SUMMARY.md`** - This file (NEW!)
 
 ### Code Files
-- **`IDMMacApp/Utilities/UpdaterManager.swift`** - Sparkle integration
-- **`IDMMacApp/UI/ContentView.swift`** - "Check for Updates" menu item
-- **`IDMMacApp/App/IDMMacApp.swift`** - Menu bar update check
+- **`NanoJetApp/Utilities/UpdaterManager.swift`** - Sparkle integration
+- **`NanoJetApp/UI/ContentView.swift`** - "Check for Updates" menu item
+- **`NanoJetApp/App/NanoJetApp.swift`** - Menu bar update check
 
 ---
 
@@ -74,11 +74,11 @@ Your EdDSA key pair is stored securely:
 
 ```bash
 # One command to build, sign, and prepare release
-cd /Users/ahmed/Documents/IDMMac
+cd /Users/ahmed/Documents/NanoJet
 ./Tools/release.sh 0.2.0
 
 # Then upload to server:
-scp ~/Desktop/IDMMac-Release-0.2.0/IDMMacApp-0.2.0.zip user@ahmedsam.com:/idmmac/downloads/
+scp ~/Desktop/NanoJet-Release-0.2.0/NanoJetApp-0.2.0.zip user@ahmedsam.com:/idmmac/downloads/
 scp Tools/appcast.xml user@ahmedsam.com:/idmmac/appcast.xml
 ```
 
@@ -101,7 +101,7 @@ Detailed instructions: **`Tools/DEPLOYMENT_GUIDE.md`**
 
 ```bash
 # Start HTTP server
-cd /Users/ahmed/Documents/IDMMac/Tools
+cd /Users/ahmed/Documents/NanoJet/Tools
 python3 -m http.server 8000
 
 # In Info.plist, temporarily set:
@@ -146,8 +146,8 @@ ahmedsam.com/
 └── idmmac/
     ├── appcast.xml           ← Update feed (must be HTTPS)
     └── downloads/
-        ├── IDMMacApp-0.1.0.zip
-        ├── IDMMacApp-0.2.0.zip
+        ├── NanoJetApp-0.1.0.zip
+        ├── NanoJetApp-0.2.0.zip
         └── ...
 ```
 

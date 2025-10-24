@@ -22,24 +22,24 @@ This URL points to your comprehensive privacy policy that clearly states:
 
 **Extension Name:**
 ```
-IDMMac Interceptor
+NanoJet Interceptor
 ```
 
 **Short Description (132 characters max):**
 ```
-Download videos and files using the IDMMac desktop app. Seamlessly intercepts downloads and sends them to your local app.
+Download videos and files using the NanoJet desktop app. Seamlessly intercepts downloads and sends them to your local app.
 ```
 
 **Detailed Description:**
 
 ```
-IDMMac Interceptor is a companion browser extension for the IDMMac desktop download manager application.
+NanoJet Interceptor is a companion browser extension for the NanoJet desktop download manager application.
 
 Features:
 • Automatically detect downloadable videos and media on web pages
 • One-click download button overlay on video elements
 • Right-click context menu for links and media files
-• Automatic download interception - send downloads to IDMMac app instead of browser
+• Automatic download interception - send downloads to NanoJet app instead of browser
 • Support for authenticated downloads with cookie forwarding
 • Works with YouTube, Facebook, Instagram, Twitter, and many other sites
 
@@ -50,14 +50,14 @@ Privacy & Security:
 • Open source - view our code on GitHub
 
 How it works:
-1. Install the extension and the IDMMac desktop app
+1. Install the extension and the NanoJet desktop app
 2. Visit any website with downloadable media
 3. Click the "Download" button that appears on videos
-4. Or right-click any link and select "Download with IDMMac"
-5. Downloads are automatically sent to your IDMMac app for fast, reliable downloading
+4. Or right-click any link and select "Download with NanoJet"
+5. Downloads are automatically sent to your NanoJet app for fast, reliable downloading
 
 Requirements:
-• IDMMac desktop application must be installed on macOS
+• NanoJet desktop application must be installed on macOS
 • Download the app from: https://github.com/ahmedsam007/IdmMac
 
 This extension is completely free and open source. No subscriptions, no ads, no data collection.
@@ -86,7 +86,7 @@ https://github.com/ahmedsam007/IdmMac/blob/main/PRIVACY_POLICY.md
 
 ### Single Purpose Description
 ```
-This extension detects downloadable media on web pages and sends download requests to the user's local IDMMac desktop application for enhanced download management.
+This extension detects downloadable media on web pages and sends download requests to the user's local NanoJet desktop application for enhanced download management.
 ```
 
 ### Permission Justifications
@@ -95,17 +95,17 @@ When Chrome Web Store asks why you need each permission, use these explanations:
 
 **`downloads` permission:**
 ```
-Required to intercept browser downloads and redirect them to the IDMMac desktop application for better download management.
+Required to intercept browser downloads and redirect them to the NanoJet desktop application for better download management.
 ```
 
 **`tabs` permission:**
 ```
-Needed to open the idmmac:// custom URL scheme in a new tab to communicate with the local IDMMac desktop application.
+Needed to open the idmmac:// custom URL scheme in a new tab to communicate with the local NanoJet desktop application.
 ```
 
 **`cookies` permission:**
 ```
-Required to read website cookies and pass them to the local IDMMac app to enable authenticated downloads from sites where the user is logged in (e.g., private videos, member-only content).
+Required to read website cookies and pass them to the local NanoJet app to enable authenticated downloads from sites where the user is logged in (e.g., private videos, member-only content).
 ```
 
 **`storage` permission:**
@@ -115,7 +115,7 @@ Used to store extension settings and user preferences locally in the browser.
 
 **`contextMenus` permission:**
 ```
-Allows adding a "Download with IDMMac" option to the browser's right-click context menu for convenient access.
+Allows adding a "Download with NanoJet" option to the browser's right-click context menu for convenient access.
 ```
 
 **`notifications` permission:**
@@ -145,7 +145,7 @@ You already have these in your extension:
 Chrome Web Store requires promotional images:
 
 **Small Promotional Tile (440x280 pixels)** - Required
-- Create a banner with your app icon and text: "IDMMac - Enhanced Download Manager"
+- Create a banner with your app icon and text: "NanoJet - Enhanced Download Manager"
 
 **Large Promotional Tile (920x680 pixels)** - Optional but recommended
 - Create a larger banner showcasing features
@@ -155,9 +155,9 @@ Chrome Web Store requires promotional images:
 
 **Screenshots (1280x800 or 640x400)** - At least 1 required, up to 5 recommended
 - Screenshot 1: Extension overlay on a video showing the download button
-- Screenshot 2: Context menu with "Download with IDMMac" option
+- Screenshot 2: Context menu with "Download with NanoJet" option
 - Screenshot 3: Extension popup or settings (if you have one)
-- Screenshot 4: Download in progress in IDMMac app
+- Screenshot 4: Download in progress in NanoJet app
 - Screenshot 5: Successful download completed
 
 ---
@@ -173,7 +173,7 @@ Tools/ChromeExtension/artifacts/idmmac_chrome_0.2.3.zip
 
 ```bash
 # Prepare the package for Chrome Web Store
-cd /Users/ahmed/Documents/IDMMac/Tools/ChromeExtension
+cd /Users/ahmed/Documents/NanoJet/Tools/ChromeExtension
 unzip -q artifacts/idmmac_chrome_0.2.3.zip -d temp_extract
 cd temp_extract
 zip -r ../chrome_web_store_package.zip *
@@ -243,7 +243,7 @@ Free
    - Our privacy policy clearly states we collect NO data
 
 4. **Single Purpose Violation** ✅ SOLVED
-   - Our extension has a single, clear purpose: send downloads to IDMMac app
+   - Our extension has a single, clear purpose: send downloads to NanoJet app
 
 5. **Insufficient Description** ✅ SOLVED
    - We have a detailed description explaining all features

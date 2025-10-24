@@ -1,14 +1,14 @@
 # Extension Context Invalidation Fix - v0.2.3
 
 ## Problem
-Users encountered the error "Extension context invalidated" when using the IDMMac Chrome/Firefox extension. This error occurred when:
+Users encountered the error "Extension context invalidated" when using the NanoJet Chrome/Firefox extension. This error occurred when:
 - The extension was reloaded or updated
 - The extension was disabled and re-enabled
 - Content scripts were still running on web pages after the extension was reloaded
 
 The error appeared in the console as:
 ```
-IDMMac build/open error Error: Extension context invalidated.
+NanoJet build/open error Error: Extension context invalidated.
 ```
 
 ## Root Cause
@@ -67,10 +67,10 @@ Implemented a robust fallback mechanism in both Chrome and Firefox extensions th
 1. Install the new extension
 2. Navigate to a video site (e.g., Facebook, YouTube, Vimeo)
 3. Click the "Download" button on a video
-4. The download should open in IDMMac
+4. The download should open in NanoJet
 5. **To test the fix specifically:**
    - With a video page open, go to chrome://extensions/
-   - Click the reload button on the IDMMac extension
+   - Click the reload button on the NanoJet extension
    - Go back to the video page (DO NOT reload the page)
    - Click the "Download" button again
    - Previously: Would show "Extension context invalidated" error
@@ -79,7 +79,7 @@ Implemented a robust fallback mechanism in both Chrome and Firefox extensions th
 ## User Impact
 - **Before**: Extension would completely fail after being reloaded, requiring users to reload all open web pages
 - **After**: Extension continues to work with graceful degradation (missing HttpOnly cookies only)
-- Users will see a helpful console message: "IDMMac: Extension context invalidated. Using fallback method. Please reload the page for full functionality."
+- Users will see a helpful console message: "NanoJet: Extension context invalidated. Using fallback method. Please reload the page for full functionality."
 
 ## Technical Notes
 - The fallback method cannot access HttpOnly cookies (requires background script)

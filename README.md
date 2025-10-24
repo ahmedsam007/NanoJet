@@ -1,4 +1,4 @@
-# IDMMac
+# NanoJet
 
 A fast, lightweight macOS download manager with segmented downloading, pause/resume, and a simple Chrome extension handoff.
 
@@ -13,7 +13,7 @@ A fast, lightweight macOS download manager with segmented downloading, pause/res
 
 ## Build
 - macOS 13+, Xcode 15+
-- Open `IDMMac.xcodeproj` → scheme `IDMMacApp` → Run
+- Open `NanoJet.xcodeproj` → scheme `NanoJetApp` → Run
 
 ## Distribute (direct download)
 1) Create a Release build
@@ -24,19 +24,19 @@ A fast, lightweight macOS download manager with segmented downloading, pause/res
 - You can use the helper script `Tools/release-notarize.sh` (see header in the file for usage)
 - Or manually:
   - Sign the .app with your Developer ID Application certificate
-  - Zip the app: `ditto -c -k --keepParent IDMMacApp.app IDMMacApp.zip`
-  - Notarize: `xcrun notarytool submit IDMMacApp.zip --keychain-profile AC_PROFILE --wait`
-  - Staple: `xcrun stapler staple IDMMacApp.app`
+  - Zip the app: `ditto -c -k --keepParent NanoJetApp.app NanoJetApp.zip`
+  - Notarize: `xcrun notarytool submit NanoJetApp.zip --keychain-profile AC_PROFILE --wait`
+  - Staple: `xcrun stapler staple NanoJetApp.app`
 
 3) Publish
-- Upload the stapled `IDMMacApp.zip` to your website
+- Upload the stapled `NanoJetApp.zip` to your website
 - Provide SHA-256 checksum alongside the download
 
 Note: For best UX, consider shipping a `.dmg` with a drag-to-Applications window. The script can generate both `.zip` and `.dmg`.
 
 ## Automatic Updates (Sparkle 2)
 
-IDMMac includes Sparkle 2 for secure automatic updates:
+NanoJet includes Sparkle 2 for secure automatic updates:
 - HTTPS update feed checking
 - EdDSA signature verification  
 - One-click updates for users
@@ -60,7 +60,7 @@ See [SPARKLE_SETUP.md](SPARKLE_SETUP.md) for complete instructions on:
 - chrome://extensions → Developer Mode → Load unpacked
 
 ## Structure
-- `IDMMacApp/` SwiftUI app and UI
+- `NanoJetApp/` SwiftUI app and UI
 - `DownloadEngine/` SwiftPM engine
 - `Tools/ChromeExtension/` MV3 extension
 

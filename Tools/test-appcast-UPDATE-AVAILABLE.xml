@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
     <channel>
-        <title>IDMMac Updates - TEST</title>
+        <title>NanoJet Updates - TEST</title>
         <link>http://localhost:8000/test-appcast-UPDATE-AVAILABLE.xml</link>
-        <description>Test appcast for IDMMac - UPDATE AVAILABLE scenario</description>
+        <description>Test appcast for NanoJet - UPDATE AVAILABLE scenario</description>
         <language>en</language>
         
         <!-- This version (0.2.0) is NEWER than your current version (0.1.0) -->
         <item>
             <title>Version 0.2.0 - Test Update</title>
             <description><![CDATA[
-                <h3>🎉 What's New in IDMMac 0.2.0</h3>
+                <h3>🎉 What's New in NanoJet 0.2.0</h3>
                 <ul>
                     <li>✨ <b>New Feature</b>: Dark mode support added</li>
                     <li>🔄 <b>Improvement</b>: Sparkle 2 automatic updates</li>

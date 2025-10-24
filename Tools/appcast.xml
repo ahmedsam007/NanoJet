@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
     <channel>
-        <title>IDMMac Updates</title>
+        <title>NanoJet Updates</title>
         <link>https://ahmedsam007.github.io/IdmMac/appcast.xml</link>
-        <description>Most recent updates for IDMMac - Fast, lightweight macOS download manager</description>
+        <description>Most recent updates for NanoJet - Fast, lightweight macOS download manager</description>
         <language>en</language>
         
         <!-- Version 0.1.1 - Re-download feature and improvements -->
         <item>
             <title>Version 0.1.1</title>
             <description><![CDATA[
-                <h3>What's New in IDMMac 0.1.1</h3>
+                <h3>What's New in NanoJet 0.1.1</h3>
                 <ul>
                     <li>✨ Added "Re-Download File" feature for completed downloads - perfect for corrupted or damaged files</li>
                     <li>🔄 Added retry functionality for failed downloads with one-click re-download option</li>
@@ -23,7 +23,7 @@
             <sparkle:shortVersionString>0.1.1</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
             <enclosure 
-                url="https://github.com/ahmedsam007/IdmMac/releases/download/v0.1.1/IDMMacApp-v0.1.1.zip"
+                url="https://github.com/ahmedsam007/IdmMac/releases/download/v0.1.1/NanoJetApp-v0.1.1.zip"
                 length="7327115"
                 type="application/octet-stream"
                 sparkle:edSignature="X3WOYUHmnifAed8ZNdwp0tF4P/h7kQJqbrNozy57qy4UTVoq1HVbMQZtXYINcVwApJZaAnR3RdnVzHK48Q5bCg==" />
@@ -33,7 +33,7 @@
         <item>
             <title>Version 0.1.0</title>
             <description><![CDATA[
-                <h3>What's New in IDMMac 0.1.0</h3>
+                <h3>What's New in NanoJet 0.1.0</h3>
                 <ul>
                     <li>🚀 Initial release</li>
                     <li>⚡ Segmented multi-connection downloads for maximum speed</li>
@@ -59,7 +59,7 @@
             <sparkle:shortVersionString>0.1.0</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
             <enclosure 
-                url="https://ahmedsam.com/idmmac/downloads/IDMMacApp-0.1.0.zip"
+                url="https://ahmedsam.com/idmmac/downloads/NanoJetApp-0.1.0.zip"
                 length="REPLACE_WITH_FILE_SIZE"
                 type="application/octet-stream"
                 sparkle:edSignature="REPLACE_WITH_SIGNATURE_FROM_SIGN_UPDATE" />

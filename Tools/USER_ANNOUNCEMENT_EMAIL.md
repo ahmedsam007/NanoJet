@@ -4,16 +4,16 @@
 
 ## Subject Line Options:
 
-1. `🚨 Important: Update Your IDMMac Extension (Bug Fix)`
-2. `IDMMac Extension Update v0.2.3 - Please Update`
-3. `Critical Bug Fix Available for IDMMac Extension`
+1. `🚨 Important: Update Your NanoJet Extension (Bug Fix)`
+2. `NanoJet Extension Update v0.2.3 - Please Update`
+3. `Critical Bug Fix Available for NanoJet Extension`
 
 ---
 
 ## Email/Message Body:
 
 ```
-Hi IDMMac Users! 👋
+Hi NanoJet Users! 👋
 
 We've released an important update to fix a bug that some of you may have experienced.
 
@@ -35,8 +35,8 @@ Full installation instructions are included on the release page.
 
 ✅ CHECK YOUR VERSION:
 
-Chrome: Go to chrome://extensions/ and look for "IDMMac Interceptor"
-Firefox: Go to about:addons and look for "IDMMac Interceptor"
+Chrome: Go to chrome://extensions/ and look for "NanoJet Interceptor"
+Firefox: Go to about:addons and look for "NanoJet Interceptor"
 
 If your version is older than 0.2.3, please update!
 
@@ -52,12 +52,12 @@ If your version is older than 0.2.3, please update!
 If you have any questions or issues, please visit:
 https://github.com/ahmedsam007/IdmMac/issues
 
-Thank you for using IDMMac! 🙏
+Thank you for using NanoJet! 🙏
 
 ---
 
 Best regards,
-The IDMMac Team
+The NanoJet Team
 ```
 
 ---
@@ -65,14 +65,14 @@ The IDMMac Team
 ## Short Social Media Post:
 
 ```
-🚨 IDMMac Extension Update v0.2.3 is now available!
+🚨 NanoJet Extension Update v0.2.3 is now available!
 
 Fixed: "Extension context invalidated" error
 Improved: Stability and error handling
 
 Download now: https://github.com/ahmedsam007/IdmMac/releases/tag/extension-v0.2.3
 
-#IDMMac #DownloadManager #BrowserExtension
+#NanoJet #DownloadManager #BrowserExtension
 ```
 
 ---
@@ -80,7 +80,7 @@ Download now: https://github.com/ahmedsam007/IdmMac/releases/tag/extension-v0.2.
 ## Discord/Slack Announcement:
 
 ```
-@everyone 📢 IDMMac Extension Update Available!
+@everyone 📢 NanoJet Extension Update Available!
 
 **Version 0.2.3** is now released with an important bug fix.
 
@@ -106,11 +106,11 @@ See the release page for full installation instructions.
 ## Reddit/Forum Post:
 
 ```
-Title: [UPDATE] IDMMac Browser Extension v0.2.3 - Bug Fix Release
+Title: [UPDATE] NanoJet Browser Extension v0.2.3 - Bug Fix Release
 
 Hi everyone!
 
-I've released version 0.2.3 of the IDMMac browser extension with an important bug fix.
+I've released version 0.2.3 of the NanoJet browser extension with an important bug fix.
 
 **What was fixed:**
 
@@ -142,7 +142,7 @@ Let me know if you have any questions!
 ## WhatsApp/Telegram Message:
 
 ```
-📢 *IDMMac Update Available!*
+📢 *NanoJet Update Available!*
 
 Version 0.2.3 is now released 🎉
 

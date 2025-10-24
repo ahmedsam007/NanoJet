@@ -1,4 +1,4 @@
-# How to Install IDMMac Extension Update (v0.2.3)
+# How to Install NanoJet Extension Update (v0.2.3)
 
 ## What's Fixed in v0.2.3?
 - **Fixed "Extension context invalidated" error** that appeared when the extension was reloaded
@@ -22,8 +22,8 @@
 
 4. **Enable "Developer mode"** (toggle in top-right corner)
 
-5. **Remove the old IDMMac extension** (if you have it installed):
-   - Click "Remove" on the old IDMMac Interceptor extension
+5. **Remove the old NanoJet extension** (if you have it installed):
+   - Click "Remove" on the old NanoJet Interceptor extension
 
 6. **Click "Load unpacked"**
 
@@ -40,7 +40,7 @@
    - Type `about:addons` in the address bar
 
 3. **Remove the old extension** (if you have it installed):
-   - Find "IDMMac Interceptor" and click "Remove"
+   - Find "NanoJet Interceptor" and click "Remove"
 
 4. **Install the new version:**
    - Click the gear icon ⚙️ in the top-right
@@ -56,7 +56,7 @@ To verify the update worked:
 
 1. Visit a video site (e.g., https://www.facebook.com/reel/...)
 2. You should see a "Download" button appear on videos
-3. Click it - IDMMac should open with the download
+3. Click it - NanoJet should open with the download
 
 ## If You Still See Errors
 
@@ -69,6 +69,6 @@ If you previously had the error:
 
 If you still encounter issues:
 - Check the browser console (F12) for any error messages
-- Make sure the IDMMac app is running
+- Make sure the NanoJet app is running
 - Verify the extension is enabled in your browser's extension page
 

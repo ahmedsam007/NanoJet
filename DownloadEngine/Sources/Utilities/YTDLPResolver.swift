@@ -57,7 +57,7 @@ public enum YTDLPResolver {
         let err = Pipe()
         proc.standardOutput = out
         proc.standardError = err
-        try proc.run()
+        _ = try proc.run()
         proc.waitUntilExit()
         if proc.terminationStatus != 0 {
             return ""

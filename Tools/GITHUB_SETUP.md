@@ -1,4 +1,4 @@
-# IDMMac Updates with GitHub Only
+# NanoJet Updates with GitHub Only
 
 ## 100% Free GitHub Solution
 
@@ -46,15 +46,15 @@ Create `appcast.xml` in the root:
 <?xml version="1.0" encoding="utf-8"?>
 <rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
     <channel>
-        <title>IDMMac Updates</title>
+        <title>NanoJet Updates</title>
         <link>https://YOUR_USERNAME.github.io/idmmac-releases/appcast.xml</link>
-        <description>Updates for IDMMac - Fast macOS Download Manager</description>
+        <description>Updates for NanoJet - Fast macOS Download Manager</description>
         <language>en</language>
         
         <item>
             <title>Version 0.1.0</title>
             <description><![CDATA[
-                <h3>IDMMac 0.1.0</h3>
+                <h3>NanoJet 0.1.0</h3>
                 <ul>
                     <li>Initial release</li>
                     <li>Fast multi-connection downloads</li>
@@ -67,7 +67,7 @@ Create `appcast.xml` in the root:
             <sparkle:shortVersionString>0.1.0</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
             <enclosure 
-                url="https://github.com/YOUR_USERNAME/idmmac-releases/releases/download/v0.1.0/IDMMacApp-v0.1.0.zip"
+                url="https://github.com/YOUR_USERNAME/idmmac-releases/releases/download/v0.1.0/NanoJetApp-v0.1.0.zip"
                 length="FILE_SIZE_HERE"
                 type="application/octet-stream"
                 sparkle:edSignature="SIGNATURE_HERE" />
@@ -90,7 +90,7 @@ git push
 1. Go to Releases tab
 2. Create new release
 3. Tag: `v0.1.0`
-4. Upload: `IDMMacApp-v0.1.0.zip`
+4. Upload: `NanoJetApp-v0.1.0.zip`
 5. Publish
 
 ### Step 7: Update Info.plist
@@ -133,16 +133,16 @@ Same setup as Option 1, but skip enabling GitHub Pages.
 
 ```bash
 # 1. Build and sign
-cd /Users/ahmed/Documents/IDMMac
+cd /Users/ahmed/Documents/NanoJet
 ./Tools/export-for-sharing.sh 0.1.0
 
 # 2. Sign for Sparkle
-./bin/sign_update ~/Desktop/IDMMac-v0.1.0/IDMMacApp-v0.1.0.zip
+./bin/sign_update ~/Desktop/NanoJet-v0.1.0/NanoJetApp-v0.1.0.zip
 
 # Copy the signature from output
 
 # 3. Get file size
-ls -l ~/Desktop/IDMMac-v0.1.0/IDMMacApp-v0.1.0.zip | awk '{print $5}'
+ls -l ~/Desktop/NanoJet-v0.1.0/NanoJetApp-v0.1.0.zip | awk '{print $5}'
 
 # 4. Update appcast.xml with signature and file size
 
@@ -153,7 +153,7 @@ git commit -m "Release v0.1.0"
 git push
 
 # 6. Create GitHub Release
-# Upload IDMMacApp-v0.1.0.zip
+# Upload NanoJetApp-v0.1.0.zip
 
 # 7. Update Info.plist with GitHub Pages URL
 
@@ -169,7 +169,7 @@ git push
 ./Tools/export-for-sharing.sh 0.2.0
 
 # 3. Sign it
-./bin/sign_update ~/Desktop/IDMMac-v0.2.0/IDMMacApp-v0.2.0.zip
+./bin/sign_update ~/Desktop/NanoJet-v0.2.0/NanoJetApp-v0.2.0.zip
 
 # 4. Edit appcast.xml - add new entry at the TOP
 cd ~/projects/idmmac-releases
@@ -181,7 +181,7 @@ git commit -m "Release v0.2.0"
 git push
 
 # 6. Create GitHub Release v0.2.0
-# Upload IDMMacApp-v0.2.0.zip
+# Upload NanoJetApp-v0.2.0.zip
 
 # Done! Users get automatic updates
 ```
@@ -241,8 +241,8 @@ idmmac-releases/
 │   ├── 0.1.0.html
 │   └── 0.2.0.html
 └── Downloads via GitHub Releases:
-    ├── v0.1.0/IDMMacApp-v0.1.0.zip
-    ├── v0.2.0/IDMMacApp-v0.2.0.zip
+    ├── v0.1.0/NanoJetApp-v0.1.0.zip
+    ├── v0.2.0/NanoJetApp-v0.2.0.zip
     └── ...
 ```
 

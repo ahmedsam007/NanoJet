@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<!-- REQUIRED for Mac App Store -->
+	<key>com.apple.security.app-sandbox</key>
+	<true/>
+	
+	<!-- Network access for downloading files -->
+	<key>com.apple.security.network.client</key>
+	<true/>
+	
+	<!-- Access to Downloads folder -->
+	<key>com.apple.security.files.downloads.read-write</key>
+	<true/>
+	
+	<!-- User-selected files (for saving to custom locations) -->
+	<key>com.apple.security.files.user-selected.read-write</key>
+	<true/>
+	
+	<!-- Apple Events for system shutdown feature -->
+	<key>com.apple.security.automation.apple-events</key>
+	<true/>
+	
+	<!-- Note: Do NOT include com.apple.application-identifier -->
+	<!-- It will be automatically added by the provisioning profile -->
+</dict>
+</plist>
+

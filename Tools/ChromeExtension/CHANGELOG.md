@@ -1,4 +1,4 @@
-# IDMMac Browser Extension Changelog
+# NanoJet Browser Extension Changelog
 
 ## Version 0.2.3 (2025-10-22)
 

@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle">
     <channel>
-        <title>IDMMac Updates - TEST</title>
-        <link>file:///Users/ahmed/Documents/IDMMac/Tools/test-appcast-UP-TO-DATE.xml</link>
-        <description>Test appcast for IDMMac - UP TO DATE scenario</description>
+        <title>NanoJet Updates - TEST</title>
+        <link>file:///Users/ahmed/Documents/NanoJet/Tools/test-appcast-UP-TO-DATE.xml</link>
+        <description>Test appcast for NanoJet - UP TO DATE scenario</description>
         <language>en</language>
         
         <!-- This version (0.0.9) is OLDER than your current version (0.1.0) -->
         <item>
             <title>Version 0.0.9</title>
             <description><![CDATA[
-                <h3>IDMMac 0.0.9</h3>
+                <h3>NanoJet 0.0.9</h3>
                 <ul>
                     <li>Initial beta release</li>
                 </ul>
@@ -20,7 +20,7 @@
             <sparkle:shortVersionString>0.0.9</sparkle:shortVersionString>
             <sparkle:minimumSystemVersion>13.0</sparkle:minimumSystemVersion>
             <enclosure 
-                url="https://example.com/IDMMacApp-0.0.9.zip"
+                url="https://example.com/NanoJetApp-0.0.9.zip"
                 length="14000000"
                 type="application/octet-stream" />
         </item>

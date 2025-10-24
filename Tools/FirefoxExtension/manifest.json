@@ -1,8 +1,8 @@
 {
   "manifest_version": 2,
-  "name": "IDMMac Interceptor",
+  "name": "NanoJet Interceptor",
   "version": "0.2.3",
-  "description": "Intercept downloads and hand off to IDMMac app.",
+  "description": "Intercept downloads and hand off to NanoJet app.",
   "permissions": ["downloads", "storage", "notifications", "tabs", "contextMenus", "cookies"],
   "content_scripts": [
     {
@@ -23,7 +23,7 @@
   },
   "browser_specific_settings": {
     "gecko": {
-      "id": "idmmac@local",
+      "id": "nanojet@local",
       "strict_min_version": "78.0"
     }
   },
@@ -37,7 +37,7 @@
   },
   "browser_action": {
     "default_icon": "icons/icon32.png",
-    "default_title": "IDMMac Interceptor"
+    "default_title": "NanoJet Interceptor"
   }
 }
 

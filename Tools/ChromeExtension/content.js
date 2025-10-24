@@ -2,8 +2,8 @@
   const api = (typeof browser !== 'undefined' ? browser : chrome);
 
   // Simple in-page store of candidate media URLs observed via <video> and network
-  const idmmacCandidates = new Set();
-  const idmmacMeta = Object.create(null); // url -> { label, size, mime, hasAudio, hasVideo }
+  const nanojetCandidates = new Set();
+  const nanojetMeta = Object.create(null); // url -> { label, size, mime, hasAudio, hasVideo }
   let hasAnyVideo = false;
   let globalBtn;
 
@@ -27,15 +27,15 @@
   window.addEventListener('message', (ev) => {
     try {
       const d = ev.data;
-      if (d && d.__idmmac_media && typeof d.url === 'string') {
+      if (d && d.__nanojet_media && typeof d.url === 'string') {
         tryCaptureURL(d.url);
       }
-      if (d && d.__idmmac_yt_formats && Array.isArray(d.formats)) {
+      if (d && d.__nanojet_yt_formats && Array.isArray(d.formats)) {
         d.formats.forEach((f) => {
           if (f && f.url) {
-            idmmacCandidates.add(f.url);
+            nanojetCandidates.add(f.url);
             const meta = { label: f.label || inferLabel(f.url), size: f.size || extractSizeFromUrl(f.url), mime: f.mime || '', hasAudio: !!f.hasAudio, hasVideo: !!f.hasVideo, width: f.width || null, height: f.height || null, itag: f.itag || null };
-            idmmacMeta[f.url] = meta;
+            nanojetMeta[f.url] = meta;
           }
         });
       }
@@ -49,17 +49,17 @@
       const hasExt = (/\.(mp4|m4v|webm|mov|m3u8)(\?|#|$)/i).test(url);
       const isTelegramStream = (/web\.telegram\.org\/.+\/stream\//i).test(url) || (/mimeType%22:%22video\//i).test(url);
       if (hasExt || isTelegramStream) {
-        idmmacCandidates.add(url);
+        nanojetCandidates.add(url);
       }
     } catch {}
   }
 
   function createOverlay(video) {
     const wrapper = document.createElement('div');
-    wrapper.className = 'idmmac-overlay';
+    wrapper.className = 'nanojet-overlay';
     const button = document.createElement('button');
-    button.className = 'idmmac-btn';
-    button.title = 'Download with IDMMac';
+    button.className = 'nanojet-btn';
+    button.title = 'Download with NanoJet';
     button.textContent = 'Download';
     button.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -91,7 +91,7 @@
   function tryOpenMenu(video, anchorButton) {
     const sources = collectVideoSources(video);
     // Merge with network-observed candidates
-    idmmacCandidates.forEach((u) => {
+    nanojetCandidates.forEach((u) => {
       if (!sources.some((s) => s.url === u)) {
         sources.push({ url: u, label: inferLabel(u) });
       }
@@ -132,15 +132,15 @@
   function showMenu(anchor, sources) {
     closeMenu();
     const menu = document.createElement('div');
-    menu.className = 'idmmac-menu';
+    menu.className = 'nanojet-menu';
     const api = (typeof browser !== 'undefined' ? browser : chrome);
     sources.forEach((s) => {
       const url = s.url;
-      const meta = idmmacMeta[url] || {};
+      const meta = nanojetMeta[url] || {};
       const size = meta.size || extractSizeFromUrl(url) || null;
       const label = buildLabel(s.label || meta.label || inferLabel(url), size, meta);
       const item = document.createElement('div');
-      item.className = 'idmmac-menu-item';
+      item.className = 'nanojet-menu-item';
       item.textContent = `Download ${label}`;
       item.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -158,7 +158,7 @@
       // Enrich size via HEAD if unknown
       if (!size && isExtensionContextValid()) {
         try {
-          api.runtime.sendMessage({ type: 'idmmac_head', url, referer: location.href }, (resp) => {
+          api.runtime.sendMessage({ type: 'nanojet_head', url, referer: location.href }, (resp) => {
             // Check for context invalidation
             if (api.runtime.lastError) {
               return; // Silently fail - size enrichment is optional
@@ -183,7 +183,7 @@
   }
 
   function closeMenu() {
-    const m = document.querySelector('.idmmac-menu');
+    const m = document.querySelector('.nanojet-menu');
     if (m) m.remove();
   }
 
@@ -204,7 +204,7 @@
       
       // If extension context is invalid, use direct fallback
       if (!isExtensionContextValid()) {
-        console.warn('IDMMac: Extension context invalidated. Using fallback method. Please reload the page for full functionality.');
+        console.warn('NanoJet: Extension context invalidated. Using fallback method. Please reload the page for full functionality.');
         buildAndOpenDirect(url, extras);
         return;
       }
@@ -227,10 +227,10 @@
           const b64 = btoa(unescape(encodeURIComponent(json)));
           const extraParam = extras ? `&x=${encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(extras)))))}` : '';
           // Prefer messaging the service worker to open the custom scheme; some sites block window.open
-          api.runtime.sendMessage({ type: 'idmmac_open', url, headersB64: b64, extras: extras || null }, (resp) => {
+          api.runtime.sendMessage({ type: 'nanojet_open', url, headersB64: b64, extras: extras || null }, (resp) => {
             // Check if the message sending itself failed (context invalidated during call)
             if (api.runtime.lastError) {
-              console.warn('IDMMac: Message failed, using fallback:', api.runtime.lastError.message);
+              console.warn('NanoJet: Message failed, using fallback:', api.runtime.lastError.message);
               buildAndOpenDirect(url, extras);
               return;
             }
@@ -239,24 +239,24 @@
               try {
                 const urlParam = encodeURIComponent(url);
                 const headersParam = encodeURIComponent(b64);
-                window.open(`idmmac://add?url=${urlParam}&headers=${headersParam}${extraParam}`,'_blank');
+                window.open(`nanojet://add?url=${urlParam}&headers=${headersParam}${extraParam}`,'_blank');
               } catch (e) {
-                console.warn('IDMMac fallback open error', e);
+                console.warn('NanoJet fallback open error', e);
               }
             }
           });
         } catch (e) {
-          console.warn('IDMMac build/open error', e);
+          console.warn('NanoJet build/open error', e);
           // Try direct fallback on any error
           buildAndOpenDirect(url, extras);
         }
       };
       // Ask background for cookies (can include HttpOnly)
       try {
-        api.runtime.sendMessage({ type: 'idmmac_getCookies', url }, (resp) => {
+        api.runtime.sendMessage({ type: 'nanojet_getCookies', url }, (resp) => {
           // Check for context invalidation
           if (api.runtime.lastError) {
-            console.warn('IDMMac: Failed to get cookies, using fallback:', api.runtime.lastError.message);
+            console.warn('NanoJet: Failed to get cookies, using fallback:', api.runtime.lastError.message);
             buildAndOpen('');
             return;
           }
@@ -267,7 +267,7 @@
         buildAndOpen('');
       }
     } catch (e) {
-      console.warn('IDMMac video send error', e);
+      console.warn('NanoJet video send error', e);
       // Final fallback
       buildAndOpenDirect(url, extras);
     }
@@ -294,9 +294,9 @@
       const extraParam = extras ? `&x=${encodeURIComponent(btoa(unescape(encodeURIComponent(JSON.stringify(extras)))))}` : '';
       const urlParam = encodeURIComponent(url);
       const headersParam = encodeURIComponent(b64);
-      window.open(`idmmac://add?url=${urlParam}&headers=${headersParam}${extraParam}`, '_blank');
+      window.open(`nanojet://add?url=${urlParam}&headers=${headersParam}${extraParam}`, '_blank');
     } catch (e) {
-      console.error('IDMMac direct fallback error', e);
+      console.error('NanoJet direct fallback error', e);
     }
   }
 
@@ -304,8 +304,8 @@
     try {
       root.querySelectorAll('video').forEach((v) => {
         hasAnyVideo = true;
-        if (v.dataset.idmmacBound) return;
-        v.dataset.idmmacBound = '1';
+        if (v.dataset.nanojetBound) return;
+        v.dataset.nanojetBound = '1';
         createOverlay(v);
       });
     } catch {}
@@ -334,7 +334,7 @@
     try {
       // Show the floating button only when there are no <video> elements,
       // but we have detected downloadable media via network hooks.
-      const shouldShow = (!hasAnyVideo && idmmacCandidates.size > 0);
+      const shouldShow = (!hasAnyVideo && nanojetCandidates.size > 0);
       if (globalBtn) {
         globalBtn.style.display = shouldShow ? 'block' : 'none';
         return;
@@ -347,13 +347,13 @@
       }
       
       globalBtn = document.createElement('button');
-      globalBtn.className = 'idmmac-global-btn';
+      globalBtn.className = 'nanojet-global-btn';
       // Build icon + label for clarity
       try {
         const iconUrl = api.runtime.getURL('icons/icon24.png');
         const img = document.createElement('img');
         img.src = iconUrl;
-        img.alt = 'IDMMac';
+        img.alt = 'NanoJet';
         img.style.width = '16px';
         img.style.height = '16px';
         img.style.display = 'inline-block';
@@ -366,7 +366,7 @@
       span.textContent = 'Download Video';
       span.style.marginLeft = '6px';
       globalBtn.appendChild(span);
-      globalBtn.title = 'Download with IDMMac';
+      globalBtn.title = 'Download with NanoJet';
       Object.assign(globalBtn.style, {
         position: 'fixed',
         right: '12px',
@@ -396,7 +396,7 @@
 
   function collectGlobalSources() {
     const sources = [];
-    idmmacCandidates.forEach((u) => sources.push({ url: u, label: inferLabel(u) }));
+    nanojetCandidates.forEach((u) => sources.push({ url: u, label: inferLabel(u) }));
     try {
       document.querySelectorAll('video').forEach((v) => {
         if (v.currentSrc) sources.push({ url: v.currentSrc, label: inferLabel(v.currentSrc) });

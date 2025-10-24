@@ -224,23 +224,30 @@ public final class SegmentedSessionManager: NSObject, URLSessionManaging {
             }
         } else {
             // Fallback single download: cancel with resume data
-            let semaphore = DispatchSemaphore(value: 0)
-            session.getAllTasks { tasks in
-                let tasksForItem = tasks.filter { self.taskIdToItemId[$0.taskIdentifier] == itemId }
-                if tasksForItem.isEmpty { semaphore.signal(); return }
-                for t in tasksForItem {
-                    if let dlt = t as? URLSessionDownloadTask {
-                        dlt.cancel(byProducingResumeData: { data in
-                            if let data { self.itemIdToResumeData[itemId] = data }
-                            semaphore.signal()
-                        })
-                    } else {
-                        t.cancel()
-                        semaphore.signal()
+            await withCheckedContinuation { (continuation: CheckedContinuation<Void, Never>) in
+                session.getAllTasks { tasks in
+                    let tasksForItem = tasks.filter { self.taskIdToItemId[$0.taskIdentifier] == itemId }
+                    if tasksForItem.isEmpty { 
+                        continuation.resume()
+                        return 
+                    }
+                    let group = DispatchGroup()
+                    for t in tasksForItem {
+                        if let dlt = t as? URLSessionDownloadTask {
+                            group.enter()
+                            dlt.cancel(byProducingResumeData: { data in
+                                if let data { self.itemIdToResumeData[itemId] = data }
+                                group.leave()
+                            })
+                        } else {
+                            t.cancel()
+                        }
+                    }
+                    group.notify(queue: .main) {
+                        continuation.resume()
                     }
                 }
             }
-            semaphore.wait()
             await updateItem(itemId) { i in i.status = .paused }
         }
     }
@@ -786,7 +793,7 @@ extension SegmentedSessionManager: URLSessionDataDelegate {
                 let endVal = endStr.flatMap { Int64($0) } ?? -1
                 DownloadLogger.log(itemId: itemId, "accepted response: seg=#\(segIndex) range=\(startVal)-\(endVal) status=\(status)")
                 // Track successful range acceptance
-                if var inflight = itemIdToInflight[itemId] {
+                if itemIdToInflight[itemId] != nil {
                     if itemIdToRetryCounts[itemId]?[segIndex] ?? 0 > 0 {
                         // Reset retry count on successful resume
                         itemIdToRetryCounts[itemId]?[segIndex] = 0
@@ -1097,41 +1104,53 @@ extension SegmentedSessionManager: URLSessionDownloadDelegate {
                }).first { return name.trimmingCharacters(in: CharacterSet(charactersIn: "\"")) }
             return downloadTask.originalRequest?.url?.lastPathComponent ?? "download.bin"
         }()
-        // Move to preferred directory if present (must move synchronously before returning; temp file is deleted afterwards)
-        let coord = self.coordinatorRef
-        var preferredDir: URL? = nil
-        if coord != nil {
-            let semaphore = DispatchSemaphore(value: 0)
-            Task {
-                if let item = await coord?.getItem(id: itemId), let bookmark = item.destinationDirBookmark {
+        // Move to a safe temporary location first (synchronously, before system deletes the download temp file)
+        // Then async resolve preferred directory and move to final location
+        let safeTempURL = FileManager.default.temporaryDirectory.appendingPathComponent("download_\(itemId.uuidString)_\(filename)")
+        do {
+            // Copy to safe temp location first
+            try FileManager.default.copyItem(at: location, to: safeTempURL)
+            DownloadLogger.log(itemId: itemId, "moved to safe temp: \(safeTempURL.path)")
+            
+            // Now do the async work to resolve preferred directory and move to final location
+            Task { [weak self] in
+                guard let self else { return }
+                var preferredDir: URL? = nil
+                if let coord = self.coordinatorRef, let item = await coord.getItem(id: itemId), let bookmark = item.destinationDirBookmark {
                     var isStale = false
                     if let dir = try? URL(resolvingBookmarkData: bookmark, options: [.withSecurityScope], relativeTo: nil, bookmarkDataIsStale: &isStale) {
                         preferredDir = dir
                     }
                 }
-                semaphore.signal()
-            }
-            semaphore.wait()
-        }
-        let started = preferredDir?.startAccessingSecurityScopedResource() ?? false
-        defer { if started { preferredDir?.stopAccessingSecurityScopedResource() } }
-        do {
-            let final = try FileMover.move(location: location, suggestedFileName: filename, preferredDirectory: preferredDir)
-            DownloadLogger.log(itemId: itemId, "single-task finalized file: \(final.path)")
-            Task { [weak self] in
-                await self?.updateItem(itemId) { item in
-                    item.status = .completed
-                    item.finalFileName = final.lastPathComponent
-                    if let sz = (try? FileManager.default.attributesOfItem(atPath: final.path)[.size] as? NSNumber)?.int64Value {
-                        item.totalBytes = sz
-                        item.receivedBytes = sz
+                
+                let started = preferredDir?.startAccessingSecurityScopedResource() ?? false
+                defer { if started { preferredDir?.stopAccessingSecurityScopedResource() } }
+                
+                do {
+                    let final = try FileMover.move(location: safeTempURL, suggestedFileName: filename, preferredDirectory: preferredDir)
+                    DownloadLogger.log(itemId: itemId, "single-task finalized file: \(final.path)")
+                    await self.updateItem(itemId) { item in
+                        item.status = .completed
+                        item.finalFileName = final.lastPathComponent
+                        if let sz = (try? FileManager.default.attributesOfItem(atPath: final.path)[.size] as? NSNumber)?.int64Value {
+                            item.totalBytes = sz
+                            item.receivedBytes = sz
+                        }
+                        item.speedBytesPerSec = 0
+                        item.etaSeconds = 0
                     }
-                    item.speedBytesPerSec = 0
-                    item.etaSeconds = 0
+                } catch {
+                    DownloadLogger.log(itemId: itemId, "single-task finalize error: \(error.localizedDescription)")
+                    // Clean up safe temp file on error
+                    try? FileManager.default.removeItem(at: safeTempURL)
+                    await self.updateItem(itemId) { item in
+                        item.status = .failed
+                        item.lastError = error.localizedDescription
+                    }
                 }
             }
         } catch {
-            DownloadLogger.log(itemId: itemId, "single-task finalize error: \(error.localizedDescription)")
+            DownloadLogger.log(itemId: itemId, "single-task safe temp copy error: \(error.localizedDescription)")
             Task { [weak self] in
                 await self?.updateItem(itemId) { item in
                     item.status = .failed

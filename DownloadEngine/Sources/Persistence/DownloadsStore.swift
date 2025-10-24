@@ -15,7 +15,7 @@ public final class JSONDownloadsStore: DownloadsPersisting {
             self.fileURL = fileURL
         } else {
             let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
-            let dir = appSupport.appendingPathComponent("IDMMac", isDirectory: true)
+            let dir = appSupport.appendingPathComponent("NanoJet", isDirectory: true)
             try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
             self.fileURL = dir.appendingPathComponent("downloads.json", isDirectory: false)
         }

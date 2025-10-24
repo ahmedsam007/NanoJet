@@ -9,7 +9,7 @@ Your Sparkle update signing keys have been generated and configured!
 yV8yqP+FQ12R82ya1T/khpSwar0R9JadjTK9ITUbCkY=
 ```
 
-This key is now in your `IDMMacApp/Resources/Info.plist` file and will be used to verify update signatures.
+This key is now in your `NanoJetApp/Resources/Info.plist` file and will be used to verify update signatures.
 
 ### Private Key (Stored in macOS Keychain)
 
@@ -30,11 +30,11 @@ You can view it in **Keychain Access.app** → **login** keychain.
 
 1. **Export your built app** from Xcode:
    - Product → Archive → Distribute App → Developer ID
-   - Place `IDMMacApp.app` in the project root
+   - Place `NanoJetApp.app` in the project root
 
 2. **Run the signing script**:
    ```bash
-   cd /Users/ahmed/Documents/IDMMac
+   cd /Users/ahmed/Documents/NanoJet
    ./Tools/sign_update.sh 0.1.0
    ```
 
@@ -48,10 +48,10 @@ You can view it in **Keychain Access.app** → **login** keychain.
 
 ```bash
 # Create ZIP
-ditto -c -k --keepParent IDMMacApp.app IDMMacApp-0.1.0.zip
+ditto -c -k --keepParent NanoJetApp.app NanoJetApp-0.1.0.zip
 
 # Sign (private key will be read from Keychain automatically)
-./bin/sign_update IDMMacApp-0.1.0.zip
+./bin/sign_update NanoJetApp-0.1.0.zip
 
 # Output will be your EdDSA signature
 ```
