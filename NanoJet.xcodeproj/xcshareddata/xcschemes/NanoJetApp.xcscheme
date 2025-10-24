@@ -15,7 +15,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "C9DEA8E0B93B9C96DB317BF8"
+               BlueprintIdentifier = "88E28CC0B5584ADBF94CBF65"
                BuildableName = "NanoJetApp.app"
                BlueprintName = "NanoJetApp"
                ReferencedContainer = "container:NanoJet.xcodeproj">
@@ -32,7 +32,7 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "C9DEA8E0B93B9C96DB317BF8"
+            BlueprintIdentifier = "88E28CC0B5584ADBF94CBF65"
             BuildableName = "NanoJetApp.app"
             BlueprintName = "NanoJetApp"
             ReferencedContainer = "container:NanoJet.xcodeproj">
@@ -57,7 +57,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "C9DEA8E0B93B9C96DB317BF8"
+            BlueprintIdentifier = "88E28CC0B5584ADBF94CBF65"
             BuildableName = "NanoJetApp.app"
             BlueprintName = "NanoJetApp"
             ReferencedContainer = "container:NanoJet.xcodeproj">
@@ -76,7 +76,7 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "C9DEA8E0B93B9C96DB317BF8"
+            BlueprintIdentifier = "88E28CC0B5584ADBF94CBF65"
             BuildableName = "NanoJetApp.app"
             BlueprintName = "NanoJetApp"
             ReferencedContainer = "container:NanoJet.xcodeproj">
