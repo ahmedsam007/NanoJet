@@ -377,12 +377,6 @@ struct ContentView: View {
                                 return hdr.ascending ? (ea < eb) : (ea > eb)
                             }
                         }
-                    } else if historyFilter == .all {
-                        // Default for "All" tab: newest first so recent items are visible at the top
-                        return filteredItems.sorted { a, b in
-                            if a.createdAt == b.createdAt { return nameAsc(a, b) }
-                            return a.createdAt > b.createdAt
-                        }
                     } else {
                         return filteredItems.sorted { a, b in
                             switch sortKey {
