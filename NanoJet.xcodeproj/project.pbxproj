@@ -258,12 +258,6 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1640;
-				TargetAttributes = {
-					88E28CC0B5584ADBF94CBF65 = {
-						DevelopmentTeam = 4H548RMBS5;
-						ProvisioningStyle = Manual;
-					};
-				};
 			};
 			buildConfigurationList = AF248C3989D8C056F94CE2EC /* Build configuration list for PBXProject "NanoJet" */;
 			compatibilityVersion = "Xcode 14.0";
@@ -344,8 +338,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = NanoJetApp/App/NanoJetApp.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = 4H548RMBS5;
 				ENABLE_APP_SANDBOX = YES;
 				INFOPLIST_FILE = NanoJetApp/Resources/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -353,6 +350,7 @@
 					"@executable_path/../Frameworks",
 				);
 				PRODUCT_NAME = NanoJet;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 			};
 			name = Debug;
@@ -419,7 +417,7 @@
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.ahmedsam.idmmac;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ahmedsam.nanojet;
 				PRODUCT_NAME = NanoJet;
 				SDKROOT = macosx;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
@@ -483,7 +481,7 @@
 				MARKETING_VERSION = 0.1.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.ahmedsam.idmmac;
+				PRODUCT_BUNDLE_IDENTIFIER = com.ahmedsam.nanojet;
 				PRODUCT_NAME = NanoJet;
 				PROVISIONING_PROFILE_SPECIFIER = "NanoJet Distribution Profile";
 				SDKROOT = macosx;
@@ -498,8 +496,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = NanoJetApp/App/NanoJetApp.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = 4H548RMBS5;
 				ENABLE_APP_SANDBOX = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				INFOPLIST_FILE = NanoJetApp/Resources/Info.plist;
@@ -508,6 +509,7 @@
 					"@executable_path/../Frameworks",
 				);
 				PRODUCT_NAME = NanoJet;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 			};
 			name = Release;
