@@ -160,6 +160,7 @@ struct ContentView: View {
     @State private var feedbackText: String = ""
     @State private var feedbackSending: Bool = false
     @State private var feedbackError: String? = nil
+    @State private var isResolvingURL: Bool = false
 
     var body: some View {
         VStack(spacing: 8) {
@@ -769,13 +770,44 @@ private extension ContentView {
     func submitURL() {
         let trimmed = inputURL.trimmingCharacters(in: .whitespacesAndNewlines)
         guard let url = AppViewModel.validDownloadURL(from: trimmed) else { return }
+        
+        // Check if it's a YouTube URL and external downloader is enabled
+        let host = url.host?.lowercased() ?? ""
+        let isYouTubeURL = host.contains("youtube.com") || host.contains("youtu.be")
+        let useExternalDownloader = UserDefaults.standard.bool(forKey: "useExternalDownloader")
+        
+        if isYouTubeURL && useExternalDownloader {
+            isResolvingURL = true
+            NotificationManager.shared.showInfo(
+                title: "Resolving YouTube URL",
+                message: "Using yt-dlp to get direct video URL...",
+                autoDismiss: false
+            )
+        }
+        
         // Always allow duplicate downloads - user may want to download same file multiple times
         appModel.enqueue(urlString: url.absoluteString, allowDuplicate: true) { success, errorMsg in
+                isResolvingURL = false
+                NotificationManager.shared.dismissAll()
                 if !success, let errorMsg = errorMsg {
                     // Determine notification type and actions based on error message
-                    if errorMsg.lowercased().contains("yt-dlp not found") {
+                    if errorMsg.lowercased().contains("external downloader is not enabled") {
+                        let settingsAction = NotificationAction(
+                            title: "Open Settings",
+                            style: .primary
+                        ) {
+                            // Show settings window
+                            NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
+                        }
+                        
+                        NotificationManager.shared.showWarning(
+                            title: "External Downloader Required",
+                            message: errorMsg,
+                            actions: [settingsAction]
+                        )
+                    } else if errorMsg.lowercased().contains("yt-dlp not found") {
                         let installAction = NotificationAction(
-                            title: "Install yt-dlp",
+                            title: "Setup Guide",
                             style: .primary
                         ) {
                             NotificationCenter.default.post(name: .showYouTubeSetup, object: nil)

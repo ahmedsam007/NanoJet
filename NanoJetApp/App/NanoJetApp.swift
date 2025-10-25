@@ -133,7 +133,7 @@ private final class AppDelegate: NSObject, NSApplicationDelegate {
 private struct AboutCreditsView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("NanoJet – Internet Download Manager for macOS")
+            Text("NanoJet – Internet Download Manager")
                 .font(.headline)
             Text("A fast, reliable download manager with segmented downloads, pause/resume, file integrity verification, and browser integration.")
                 .font(.subheadline)

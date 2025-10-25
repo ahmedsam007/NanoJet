@@ -3,6 +3,13 @@ import Foundation
 public enum YTDLPResolver {
     /// Try to locate a yt-dlp binary on the system PATH or common install locations
     public static func findBinary() -> String? {
+        // Check if external downloader is enabled in preferences
+        let useExternalDownloader = UserDefaults.standard.bool(forKey: "useExternalDownloader")
+        guard useExternalDownloader else { 
+            // External downloader not enabled, don't use yt-dlp
+            return nil 
+        }
+        
         let candidates = [
             "/opt/homebrew/bin/yt-dlp",
             "/usr/local/bin/yt-dlp",

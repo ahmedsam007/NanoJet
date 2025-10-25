@@ -89,15 +89,36 @@ final class AppViewModel: ObservableObject {
                 }
                 guard !isDuplicateActive else { return }
             }
-            // For YouTube/Telegram pages, try resolving a direct media URL via yt-dlp first
+            
+            // Determine source URL for file hosting services
+            var sourceURL: URL? = nil
+            if let host = url.host?.lowercased() {
+                // For MediaFire direct links, try to get the original page URL from referer
+                if host.contains("download") && host.contains("mediafire") {
+                    // The direct download URL, use referer as source
+                    if let referer = headers?.first(where: { $0.key.caseInsensitiveCompare("Referer") == .orderedSame })?.value,
+                       let refererURL = URL(string: referer),
+                       refererURL.host?.lowercased().contains("mediafire.com") == true {
+                        sourceURL = refererURL
+                    }
+                } else if host.contains("mediafire.com") && url.pathComponents.contains("file") {
+                    // This is already a MediaFire page URL, use it as source
+                    sourceURL = url
+                }
+            }
+            
+            // Check if external downloader is enabled
+            let useExternalDownloader = UserDefaults.standard.bool(forKey: "useExternalDownloader")
+            
+            // For YouTube/Telegram pages, try resolving a direct media URL via yt-dlp first (if enabled)
             let host = url.host?.lowercased() ?? ""
-            if host.contains("youtube.com") || host.contains("youtu.be") || host.contains("web.telegram.org") {
+            if useExternalDownloader && (host.contains("youtube.com") || host.contains("youtu.be") || host.contains("web.telegram.org")) {
                 // If a specific itag was requested (from our picker), ask yt-dlp for that itag
                 let bookmark = UserDefaults.standard.data(forKey: "downloadDirectoryBookmark")
                 if let itag = (extras?["itag"] as? NSNumber)?.intValue ?? (extras?["itag"] as? Int) {
                     if let resolved = await resolveBestURLViaYTDLP(for: url, headers: headers, itag: itag) {
                         DownloadLogger.log(itemId: UUID(), "yt-dlp resolved itag=\(itag): \(resolved.absoluteString)")
-                        await coordinator.enqueueWithBookmark(url: resolved, headers: headers, bookmark: bookmark)
+                        await coordinator.enqueueWithBookmark(url: resolved, sourceURL: sourceURL ?? url, headers: headers, bookmark: bookmark)
                         self.items = await coordinator.allItems()
                         await MainActor.run { completion?(true, nil) }
                         return
@@ -105,21 +126,21 @@ final class AppViewModel: ObservableObject {
                 }
                 if let resolved = await resolveBestURLViaYTDLP(for: url, headers: headers) {
                     DownloadLogger.log(itemId: UUID(), "yt-dlp resolved: \(resolved.absoluteString)")
-                    await coordinator.enqueueWithBookmark(url: resolved, headers: headers, bookmark: bookmark)
+                    await coordinator.enqueueWithBookmark(url: resolved, sourceURL: sourceURL ?? url, headers: headers, bookmark: bookmark)
                     self.items = await coordinator.allItems()
                     return
                 }
                 // If yt-dlp failed, fallback to the direct target URL provided by the extension (if any)
                 if let targetStr = extras?["target"] as? String, let targetURL = URL(string: targetStr) {
                     DownloadLogger.log(itemId: UUID(), "yt-dlp failed; using extension-provided target URL: \(targetURL.absoluteString)")
-                    await coordinator.enqueueWithBookmark(url: targetURL, headers: headers, bookmark: bookmark)
+                    await coordinator.enqueueWithBookmark(url: targetURL, sourceURL: sourceURL ?? url, headers: headers, bookmark: bookmark)
                     self.items = await coordinator.allItems()
                     return
                 }
                 // Finally, try resolving again without headers to get a public signed URL from yt-dlp
                 if let resolvedNoHdr = await resolveBestURLViaYTDLP(for: url, headers: nil) {
                     DownloadLogger.log(itemId: UUID(), "yt-dlp resolved (no-headers): \(resolvedNoHdr.absoluteString)")
-                    await coordinator.enqueueWithBookmark(url: resolvedNoHdr, headers: headers, bookmark: bookmark)
+                    await coordinator.enqueueWithBookmark(url: resolvedNoHdr, sourceURL: sourceURL ?? url, headers: headers, bookmark: bookmark)
                     self.items = await coordinator.allItems()
                     return
                 }
@@ -132,8 +153,11 @@ final class AppViewModel: ObservableObject {
                     detailedError = err
                 }
                 let errorMsg: String = {
+                    if !useExternalDownloader {
+                        return "External downloader is not enabled. To download from YouTube, enable 'External Downloader' in Settings and install yt-dlp."
+                    }
                     if !ytdlpInstalled {
-                        return "yt-dlp not found. YouTube downloads require yt-dlp. Click 'Install Now' to set it up automatically."
+                        return "yt-dlp not found. Please install yt-dlp manually (brew install yt-dlp) and enable 'External Downloader' in Settings."
                     }
                     if let d = detailedError, !d.isEmpty {
                         return "YouTube: \(d)"
@@ -144,21 +168,21 @@ final class AppViewModel: ObservableObject {
                 return
             }
             // If we received a direct googlevideo link but we have a YouTube Referer header,
-            // attempt to resolve using the Referer watch URL instead (to get a signed stream URL)
-            if host.contains("googlevideo.com") {
+            // attempt to resolve using the Referer watch URL instead (to get a signed stream URL) - if enabled
+            if useExternalDownloader && host.contains("googlevideo.com") {
                 if let ref = headers?.first(where: { $0.key.caseInsensitiveCompare("Referer") == .orderedSame })?.value,
                    let refURL = URL(string: ref), (refURL.host?.contains("youtube.com") ?? false) {
                     let bookmark = UserDefaults.standard.data(forKey: "downloadDirectoryBookmark")
                     if let itag = (extras?["itag"] as? NSNumber)?.intValue ?? (extras?["itag"] as? Int), let resolved = await resolveBestURLViaYTDLP(for: refURL, headers: headers, itag: itag) {
                         DownloadLogger.log(itemId: UUID(), "yt-dlp resolved from referer itag=\(itag): \(resolved.absoluteString)")
-                        await coordinator.enqueueWithBookmark(url: resolved, headers: headers, bookmark: bookmark)
+                        await coordinator.enqueueWithBookmark(url: resolved, sourceURL: sourceURL ?? refURL, headers: headers, bookmark: bookmark)
                         self.items = await coordinator.allItems()
                         await MainActor.run { completion?(true, nil) }
                         return
                     }
                     if let resolved = await resolveBestURLViaYTDLP(for: refURL, headers: headers) {
                         DownloadLogger.log(itemId: UUID(), "yt-dlp resolved from referer: \(resolved.absoluteString)")
-                        await coordinator.enqueueWithBookmark(url: resolved, headers: headers, bookmark: bookmark)
+                        await coordinator.enqueueWithBookmark(url: resolved, sourceURL: sourceURL ?? refURL, headers: headers, bookmark: bookmark)
                         self.items = await coordinator.allItems()
                         await MainActor.run { completion?(true, nil) }
                         return
@@ -166,14 +190,14 @@ final class AppViewModel: ObservableObject {
                     // If resolving from referer failed, resolve from the watch URL without headers to get a public signed URL
                     if let itag = (extras?["itag"] as? NSNumber)?.intValue ?? (extras?["itag"] as? Int), let resolved2 = await resolveBestURLViaYTDLP(for: refURL, headers: nil, itag: itag) {
                         DownloadLogger.log(itemId: UUID(), "yt-dlp resolved (no-headers) from referer itag=\(itag): \(resolved2.absoluteString)")
-                        await coordinator.enqueueWithBookmark(url: resolved2, headers: headers, bookmark: bookmark)
+                        await coordinator.enqueueWithBookmark(url: resolved2, sourceURL: sourceURL ?? refURL, headers: headers, bookmark: bookmark)
                         self.items = await coordinator.allItems()
                         await MainActor.run { completion?(true, nil) }
                         return
                     }
                     if let resolved2 = await resolveBestURLViaYTDLP(for: refURL, headers: nil) {
                         DownloadLogger.log(itemId: UUID(), "yt-dlp resolved (no-headers) from referer: \(resolved2.absoluteString)")
-                        await coordinator.enqueueWithBookmark(url: resolved2, headers: headers, bookmark: bookmark)
+                        await coordinator.enqueueWithBookmark(url: resolved2, sourceURL: sourceURL ?? refURL, headers: headers, bookmark: bookmark)
                         self.items = await coordinator.allItems()
                         await MainActor.run { completion?(true, nil) }
                         return
@@ -183,7 +207,7 @@ final class AppViewModel: ObservableObject {
             // Fallback: enqueue the original URL
             // Pass the bookmark upfront to avoid race conditions
             let bookmark = UserDefaults.standard.data(forKey: "downloadDirectoryBookmark")
-            await coordinator.enqueueWithBookmark(url: url, headers: headers, bookmark: bookmark)
+            await coordinator.enqueueWithBookmark(url: url, sourceURL: sourceURL, headers: headers, bookmark: bookmark)
             self.items = await coordinator.allItems()
             await MainActor.run { completion?(true, nil) }
         }
@@ -197,28 +221,109 @@ final class AppViewModel: ObservableObject {
 
     // Detailed resolver that also returns a concise stderr-derived error if resolution fails
     private func resolveBestURLViaYTDLPDetailed(for pageURL: URL, headers: [String: String]?, itag: Int? = nil) async -> (URL?, String?) {
-        guard let bin = findYTDLPBinary() else { return (nil, "yt-dlp not found") }
-        var args: [String] = ["-g"]
-        if let itag { args += ["-f", "itag==\(itag)"] } else { args += ["-f", "best"] }
+        guard let bin = findYTDLPBinary() else { 
+            print("❌ yt-dlp binary not found")
+            return (nil, "yt-dlp not found") 
+        }
+        
+        var args: [String] = [
+            "--ignore-config",         // Ensure user configs don't change behavior
+            "--no-playlist",           // Do not expand playlists when a watch URL includes list=
+            "-g",
+            "--no-check-certificate",  // Skip SSL verification
+            "--no-warnings",            // Reduce output noise  
+            "--quiet",                  // Suppress non-error messages
+            "--no-cache-dir",           // Don't use cache (faster cold starts can be slower, but ensures consistency)
+            "--socket-timeout", "15"   // Reduce per-socket stall to avoid long hangs
+        ]
+        if let itag {
+            // Allow only progressive itags (contain both audio and video)
+            let progressiveItags: Set<Int> = [18, 22, 37, 38, 59, 82, 83, 84, 85]
+            if progressiveItags.contains(itag) {
+                args += ["-f", "itag==\(itag)"]
+            } else {
+                print("ℹ️ Requested itag=\(itag) is not progressive; falling back to progressive format selection")
+                args += [
+                    "-f",
+                    "best[acodec!=none][vcodec!=none][protocol^=http][protocol!=m3u8_native][protocol!=m3u8][protocol!=dash][ext!=m3u8]/best[ext=mp4][acodec!=none][vcodec!=none][protocol^=http]/22/18/best[acodec!=none][vcodec!=none]"
+                ]
+            }
+        } else {
+            // Prefer a single-file progressive HTTP URL (avoid HLS/DASH manifests)
+            // 1) best with both audio+video, HTTP(S), not HLS/DASH; 2) best progressive MP4; 3) common progressive itags; 4) last resort: best with A+V
+            args += [
+                "-f",
+                "best[acodec!=none][vcodec!=none][protocol^=http][protocol!=m3u8_native][protocol!=m3u8][protocol!=dash][ext!=m3u8]/best[ext=mp4][acodec!=none][vcodec!=none][protocol^=http]/22/18/best[acodec!=none][vcodec!=none]"
+            ]
+        }
         args.append(pageURL.absoluteString)
         if let headers, !headers.isEmpty {
             for (k, v) in headers {
                 args.insert(contentsOf: ["--add-header", "\(k): \(v)"], at: 0)
             }
         }
+        
+        print("🔄 Running yt-dlp: \(bin) \(args.joined(separator: " "))")
+        
+        // Run yt-dlp on a background task to avoid blocking
         do {
-            let result = try runProcess(bin: bin, arguments: args)
+            let result = try await runProcess(bin: bin, arguments: args)
+            print("📊 yt-dlp exit status: \(result.status)")
+            
             if result.status == 0 {
+                print("📝 yt-dlp output: \(result.out.prefix(500))")
                 let lines = result.out
                     .split(whereSeparator: { $0 == "\n" || $0 == "\r\n" })
                     .map { String($0) }
                     .filter { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
-                if let first = lines.first, let url = URL(string: first) { return (url, nil) }
-                return (nil, parseYTDLPErrorMessage(result.err.isEmpty ? result.out : result.err))
+
+                func pickNonManifest(from urls: [String]) -> String? {
+                    // Prefer direct GoogleVideo videoplayback URLs or obvious file URLs
+                    if let direct = urls.first(where: { u in
+                        let s = u.lowercased()
+                        return s.contains("googlevideo.com/videoplayback") || s.contains("mime=video/mp4") || s.hasSuffix(".mp4")
+                    }) { return direct }
+                    // Otherwise, pick the first that is not a manifest
+                    return urls.first { u in
+                        let s = u.lowercased()
+                        return !(s.contains(".m3u8") || s.contains("manifest") || s.contains("playlist.m3u8"))
+                    }
+                }
+
+                if let chosen = pickNonManifest(from: lines), let url = URL(string: chosen) {
+                    print("✅ yt-dlp resolved URL: \(url.absoluteString)")
+                    return (url, nil)
+                }
+
+                // If only manifests were returned, retry once with stricter progressive-only formats
+                print("↪️ yt-dlp returned only HLS/DASH manifests; retrying with progressive-only format set...")
+                var retryArgs = args
+                if let fIdx = retryArgs.firstIndex(of: "-f"), fIdx + 1 < retryArgs.count {
+                    retryArgs[fIdx + 1] = "22/18/best[ext=mp4][acodec!=none][vcodec!=none][protocol^=http]/best[protocol^=http][ext!=m3u8]"
+                } else {
+                    // Should not happen, but ensure -f exists
+                    retryArgs.insert(contentsOf: ["-f", "22/18/best[ext=mp4][acodec!=none][vcodec!=none][protocol^=http]/best[protocol^=http][ext!=m3u8]"], at: 0)
+                }
+                let result2 = try await runProcess(bin: bin, arguments: retryArgs)
+                if result2.status == 0 {
+                    let lines2 = result2.out
+                        .split(whereSeparator: { $0 == "\n" || $0 == "\r\n" })
+                        .map { String($0) }
+                        .filter { !$0.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
+                    if let chosen2 = pickNonManifest(from: lines2), let url2 = URL(string: chosen2) {
+                        print("✅ yt-dlp resolved (retry) URL: \(url2.absoluteString)")
+                        return (url2, nil)
+                    }
+                }
+
+                print("⚠️ yt-dlp succeeded but only returned manifests")
+                return (nil, "Received only streaming manifest (HLS/DASH). Try a lower quality (itag 22/18) or sign in via extension.")
             } else {
+                print("❌ yt-dlp failed with error: \(result.err.prefix(500))")
                 return (nil, parseYTDLPErrorMessage(result.err))
             }
         } catch {
+            print("❌ yt-dlp process error: \(error.localizedDescription)")
             return (nil, error.localizedDescription)
         }
     }
@@ -228,21 +333,165 @@ final class AppViewModel: ObservableObject {
         return YTDLPManager.shared.getYTDLPPath()
     }
 
-    private func runProcess(bin: String, arguments: [String]) throws -> (out: String, err: String, status: Int32) {
+    private func runProcess(bin: String, arguments: [String]) async throws -> (out: String, err: String, status: Int32) {
         let proc = Process()
-        proc.executableURL = URL(fileURLWithPath: bin)
-        proc.arguments = arguments
-        let out = Pipe()
-        let err = Pipe()
-        proc.standardOutput = out
-        proc.standardError = err
-        _ = try proc.run()
-        proc.waitUntilExit()
-        let outData = out.fileHandleForReading.readDataToEndOfFile()
-        let errData = err.fileHandleForReading.readDataToEndOfFile()
-        let outStr = String(data: outData, encoding: .utf8) ?? ""
-        let errStr = String(data: errData, encoding: .utf8) ?? ""
-        return (outStr, errStr, proc.terminationStatus)
+        
+        // Extract Python path from shebang if yt-dlp
+        var actualBin = bin
+        var actualArgs = arguments
+        
+        if bin.contains("yt-dlp") {
+            // Read shebang to get Python interpreter
+            do {
+                let content = try String(contentsOfFile: bin, encoding: .utf8)
+                if let shebang = content.split(separator: "\n").first, shebang.hasPrefix("#!") {
+                    let pythonPath = String(shebang.dropFirst(2)).trimmingCharacters(in: .whitespaces)
+                    print("📖 Found shebang: \(pythonPath)")
+                    
+                    if FileManager.default.fileExists(atPath: pythonPath) {
+                        print("✅ Python exists at: \(pythonPath)")
+                        actualBin = pythonPath
+                        actualArgs = [bin] + arguments
+                    } else {
+                        print("❌ Python NOT found at: \(pythonPath)")
+                    }
+                }
+            } catch {
+                print("⚠️ Could not read yt-dlp file: \(error)")
+            }
+        }
+        
+        // Run via shell
+        proc.executableURL = URL(fileURLWithPath: "/bin/sh")
+        
+        // Escape arguments for shell
+        let escapedArgs = actualArgs.map { arg in
+            "'\(arg.replacingOccurrences(of: "'", with: "'\\''"))'"
+        }.joined(separator: " ")
+        
+        let shellCommand = "\(actualBin) \(escapedArgs)"
+        proc.arguments = ["-c", shellCommand]
+        
+        // Set environment to help yt-dlp work in sandbox
+        var env = ProcessInfo.processInfo.environment
+        env["PYTHONUNBUFFERED"] = "1"  // Ensure unbuffered output
+        env["YTDLP_NO_UPDATE"] = "1"   // Disable auto-update check
+        env["PATH"] = "/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin"  // Ensure PATH is set
+        proc.environment = env
+        
+        print("🐚 Shell command: \(shellCommand)")
+        
+        // Test if basic process execution works
+        if bin.contains("yt-dlp") {
+            print("🧪 Testing basic process execution with /bin/echo...")
+            let testProc = Process()
+            testProc.executableURL = URL(fileURLWithPath: "/bin/echo")
+            testProc.arguments = ["test"]
+            let testOut = Pipe()
+            testProc.standardOutput = testOut
+            try? testProc.run()
+            testProc.waitUntilExit()
+            let testData = testOut.fileHandleForReading.readDataToEndOfFile()
+            let testResult = String(data: testData, encoding: .utf8) ?? ""
+            print("🧪 Test result: '\(testResult.trimmingCharacters(in: .whitespacesAndNewlines))' (status: \(testProc.terminationStatus))")
+        }
+        
+        let outPipe = Pipe()
+        let errPipe = Pipe()
+        let inPipe = Pipe()
+        
+        proc.standardOutput = outPipe
+        proc.standardError = errPipe
+        proc.standardInput = inPipe  // Provide stdin to prevent hanging
+        
+        // Close stdin immediately so yt-dlp doesn't wait for input
+        try? inPipe.fileHandleForWriting.close()
+        
+        print("▶️ Starting process...")
+        
+        // Use async/await with timeout
+        return try await withCheckedThrowingContinuation { continuation in
+            var hasResumed = false
+            let resumeLock = NSLock()
+            
+            // Set up timeout (yt-dlp can take longer). Allow override via UserDefaults: ytdlpTimeoutSec
+            let defaultYTDLPTimeout: TimeInterval = 120.0
+            let userTimeout = UserDefaults.standard.double(forKey: "ytdlpTimeoutSec")
+            let timeoutSec: TimeInterval = (bin.contains("yt-dlp") ? (userTimeout > 0 ? userTimeout : defaultYTDLPTimeout) : 30.0)
+            let timeoutTimer = DispatchSource.makeTimerSource(queue: .global(qos: .userInitiated))
+            timeoutTimer.schedule(deadline: .now() + timeoutSec)
+            timeoutTimer.setEventHandler {
+                resumeLock.lock()
+                if !hasResumed {
+                    hasResumed = true
+                    resumeLock.unlock()
+                    print("⏱️ Process timed out after \(Int(timeoutSec)) seconds (PID: \(proc.processIdentifier))")
+                    print("⏱️ Process isRunning: \(proc.isRunning)")
+                    
+                    // Try terminating gracefully first
+                    proc.terminate()
+                    Thread.sleep(forTimeInterval: 1.0)
+                    
+                    // If still running, force kill
+                    if proc.isRunning {
+                        print("💀 Force killing process...")
+                        kill(proc.processIdentifier, SIGKILL)
+                    }
+                    
+                    let msg = bin.contains("yt-dlp") ? "yt-dlp timed out after \(Int(timeoutSec)) seconds" : "process timed out after \(Int(timeoutSec)) seconds"
+                    continuation.resume(throwing: NSError(domain: "YTDLPError", code: -1, userInfo: [NSLocalizedDescriptionKey: msg]))
+                } else {
+                    resumeLock.unlock()
+                }
+            }
+            timeoutTimer.resume()
+            
+            // Set up termination handler before starting process
+            proc.terminationHandler = { process in
+                print("✓ Process terminated with status: \(process.terminationStatus)")
+                timeoutTimer.cancel()
+                
+                resumeLock.lock()
+                if !hasResumed {
+                    hasResumed = true
+                    resumeLock.unlock()
+                    
+                    // Read output data after process completes
+                    let outData = outPipe.fileHandleForReading.readDataToEndOfFile()
+                    let errData = errPipe.fileHandleForReading.readDataToEndOfFile()
+                    
+                    print("📏 Output length: \(outData.count) bytes, Error length: \(errData.count) bytes")
+                    
+                    let result = (
+                        String(data: outData, encoding: .utf8) ?? "",
+                        String(data: errData, encoding: .utf8) ?? "",
+                        process.terminationStatus
+                    )
+                    continuation.resume(returning: result)
+                } else {
+                    resumeLock.unlock()
+                }
+            }
+            
+            DispatchQueue.global(qos: .userInitiated).async {
+                do {
+                    try proc.run()
+                    print("⏳ Process started (PID: \(proc.processIdentifier)), waiting for termination handler...")
+                    // Process will call terminationHandler when done
+                } catch {
+                    timeoutTimer.cancel()
+                    resumeLock.lock()
+                    if !hasResumed {
+                        hasResumed = true
+                        resumeLock.unlock()
+                        print("❌ Process failed to start: \(error)")
+                        continuation.resume(throwing: error)
+                    } else {
+                        resumeLock.unlock()
+                    }
+                }
+            }
+        }
     }
 
     private func parseYTDLPErrorMessage(_ raw: String) -> String {
@@ -384,6 +633,7 @@ final class AppViewModel: ObservableObject {
             // Pass the bookmark upfront to avoid race conditions
             await coordinator.enqueueWithBookmark(
                 url: item.url,
+                sourceURL: item.sourceURL,
                 suggestedFileName: item.finalFileName,
                 headers: item.requestHeaders,
                 bookmark: item.destinationDirBookmark

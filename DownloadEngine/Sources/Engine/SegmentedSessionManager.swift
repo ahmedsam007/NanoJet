@@ -47,6 +47,11 @@ public final class SegmentedSessionManager: NSObject, URLSessionManaging {
     private var itemIdsYTRefreshAttempted: Set<UUID> = []
     // Track items that have partial segment data to prevent overwriting via single download
     private var itemIdsWithPartialSegmentData: Set<UUID> = []
+    // MARK: - External yt-dlp path (use yt-dlp as the actual downloader for YouTube)
+    private var itemIdsUsingYTDLP: Set<UUID> = []
+    private var itemIdToYTDLPProcess: [UUID: Process] = [:]
+    private var itemIdToYTDLPDir: [UUID: URL] = [:]
+    private var itemIdToYTDLPFilename: [UUID: String] = [:]
 
     public func setCoordinator(_ coordinator: DownloadCoordinator) {
         self.coordinatorRef = coordinator
@@ -57,6 +62,11 @@ public final class SegmentedSessionManager: NSObject, URLSessionManaging {
         // Capture headers for reuse across retries and segments
         if let headers = item.requestHeaders { itemIdToRequestHeaders[itemId] = headers } else { itemIdToRequestHeaders[itemId] = [:] }
         DownloadLogger.log(itemId: itemId, "startDownload(segmented): url=\(item.url)")
+        // If external downloader is enabled and this appears to be a YouTube job, use yt-dlp directly
+        if shouldUseExternalYTDLP(for: item) {
+            await startYTDLPDownload(for: item, resume: false)
+            return
+        }
         // Avoid duplicate concurrent starts for the same item. If an inflight download
         // is already active and not canceled/finalized, ignore this call.
         if let existing = stateQueue.sync(execute: { itemIdToInflight[itemId] }), !existing.isCanceled, !existing.isFinalized {
@@ -77,6 +87,25 @@ public final class SegmentedSessionManager: NSObject, URLSessionManaging {
                         return
                     }
                 }
+                
+                // For MediaFire and similar services, try to refresh the link if we have a source URL
+                if let sourceURL = item.sourceURL, MediaFireResolver.isSupportedHost(sourceURL) {
+                    DownloadLogger.log(itemId: itemId, "probe failed; attempting to refresh link from source URL: \(sourceURL)")
+                    if let freshURL = await MediaFireResolver.resolveDirectURL(from: sourceURL) {
+                        DownloadLogger.log(itemId: itemId, "Successfully refreshed download link from source")
+                        await updateItem(itemId) { i in
+                            i.url = freshURL
+                            i.linkExpiryDate = Date().addingTimeInterval(MediaFireResolver.estimatedExpiryTime(for: freshURL) ?? 1800)
+                            i.status = .reconnecting
+                            i.lastError = nil
+                        }
+                        if let updated = await coordinatorRef?.getItem(id: itemId) {
+                            await startDownload(for: updated)
+                            return
+                        }
+                    }
+                }
+                
                 // If we have partial segment data, don't overwrite with single download
                 if itemIdsWithPartialSegmentData.contains(itemId) {
                     DownloadLogger.log(itemId: itemId, "probe failed but partial segment data exists; failing to prevent data loss")
@@ -199,6 +228,16 @@ public final class SegmentedSessionManager: NSObject, URLSessionManaging {
 
     public func pauseDownload(for item: DownloadItem) async {
         let itemId = item.id
+        // yt-dlp path
+        if stateQueue.sync(execute: { itemIdsUsingYTDLP.contains(itemId) }) {
+            DownloadLogger.log(itemId: itemId, "pauseDownload(yt-dlp)")
+            // Terminate the yt-dlp process to create/keep partial file; state will be set to paused
+            if let proc = stateQueue.sync(execute: { itemIdToYTDLPProcess[itemId] }) {
+                proc.terminate()
+            }
+            await updateItem(itemId) { i in i.status = .paused }
+            return
+        }
         DownloadLogger.log(itemId: itemId, "pauseDownload(segmented)")
         if var inflight = itemIdToInflight[itemId] {
             inflight.isCanceled = true
@@ -254,6 +293,12 @@ public final class SegmentedSessionManager: NSObject, URLSessionManaging {
 
     public func resumeDownload(for item: DownloadItem) async {
         let itemId = item.id
+        // yt-dlp path
+        if stateQueue.sync(execute: { itemIdsUsingYTDLP.contains(itemId) }) {
+            DownloadLogger.log(itemId: itemId, "resumeDownload(yt-dlp)")
+            await startYTDLPDownload(for: item, resume: true)
+            return
+        }
         DownloadLogger.log(itemId: itemId, "resumeDownload(segmented)")
         
         // Prevent duplicate resume calls: if already downloading, ignore
@@ -377,6 +422,19 @@ public final class SegmentedSessionManager: NSObject, URLSessionManaging {
 
     public func cancelDownload(for item: DownloadItem) async {
         let itemId = item.id
+        // yt-dlp path
+        if stateQueue.sync(execute: { itemIdsUsingYTDLP.contains(itemId) }) {
+            DownloadLogger.log(itemId: itemId, "cancelDownload(yt-dlp)")
+            if let proc = stateQueue.sync(execute: { itemIdToYTDLPProcess[itemId] }) {
+                proc.terminate()
+            }
+            // Attempt to remove partial files for this item
+            if let dir = stateQueue.sync(execute: { itemIdToYTDLPDir[itemId] }), let name = stateQueue.sync(execute: { itemIdToYTDLPFilename[itemId] }) {
+                removeYTDLPPartials(in: dir, filename: name)
+            }
+            await updateItem(itemId) { i in i.status = .canceled }
+            return
+        }
         DownloadLogger.log(itemId: itemId, "cancelDownload(segmented)")
         if var inflight = itemIdToInflight[itemId] {
             inflight.isCanceled = true
@@ -692,17 +750,43 @@ extension SegmentedSessionManager: URLSessionDataDelegate {
                         DownloadLogger.log(itemId: itemId, "server returned 200 instead of 206 for range request (expected start=\(expectedStart)); link may have expired")
                         dataTask.cancel()
                         completionHandler(.cancel)
-                        // Track how many times this segment has been rejected due to 200 responses
-                        let rejectCount = (itemIdToRangeRejectCounts[itemId]?[segIndex] ?? 0) + 1
-                        itemIdToRangeRejectCounts[itemId]?[segIndex] = rejectCount
                         
-                        // After 2 rejections, fail with a helpful error message
-                        if rejectCount >= 2 {
-                            Task { [weak self] in
-                                guard let self else { return }
+                        // Try to refresh the link if we have a source URL
+                        Task { [weak self] in
+                            guard let self, let coord = self.coordinatorRef else { return }
+                            if let item = await coord.getItem(id: itemId),
+                               let sourceURL = item.sourceURL {
+                                DownloadLogger.log(itemId: itemId, "Attempting to refresh expired link from source URL: \(sourceURL)")
+                                
+                                // Try to get a fresh download link
+                                if let freshURL = await MediaFireResolver.resolveDirectURL(from: sourceURL) {
+                                    DownloadLogger.log(itemId: itemId, "Successfully refreshed download link")
+                                    
+                                    // Update the item with the new URL
+                                    await self.updateItem(itemId) { item in
+                                        item.url = freshURL
+                                        item.linkExpiryDate = Date().addingTimeInterval(MediaFireResolver.estimatedExpiryTime(for: freshURL) ?? 1800)
+                                        item.status = .reconnecting
+                                        item.lastError = nil
+                                    }
+                                    
+                                    // Resume the download with the fresh URL
+                                    if let updatedItem = await coord.getItem(id: itemId) {
+                                        await self.resumeDownload(for: updatedItem)
+                                    }
+                                    return
+                                }
+                            }
+                            
+                            // If refresh failed, track rejections
+                            let rejectCount = (self.itemIdToRangeRejectCounts[itemId]?[segIndex] ?? 0) + 1
+                            self.itemIdToRangeRejectCounts[itemId]?[segIndex] = rejectCount
+                            
+                            // After 2 rejections, fail with a helpful error message
+                            if rejectCount >= 2 {
                                 await self.updateItem(itemId) { item in
                                     item.status = .failed
-                                    item.lastError = "Download link expired or no longer supports resume. This often happens with MediaFire and similar file hosts. Please restart the download with a fresh link."
+                                    item.lastError = "Download link expired and could not be refreshed. Please restart the download with a fresh link from the original page."
                                 }
                             }
                         }
@@ -1197,6 +1281,292 @@ extension SegmentedSessionManager: URLSessionDownloadDelegate {
 
 // MARK: - YouTube helpers
 extension SegmentedSessionManager {
+    // MARK: - yt-dlp integration (as downloader)
+    private func shouldUseExternalYTDLP(for item: DownloadItem) -> Bool {
+        // Use only when external downloader is enabled and yt-dlp exists
+        guard YTDLPResolver.findBinary() != nil else { return false }
+        // Detect YouTube via sourceURL, referer header, or direct page URL
+        if let h = item.sourceURL?.host?.lowercased(), h.contains("youtube.com") || h.contains("youtu.be") { return true }
+        if let referer = (item.requestHeaders ?? [:]).first(where: { $0.key.caseInsensitiveCompare("Referer") == .orderedSame })?.value,
+           let uh = URL(string: referer)?.host?.lowercased(), uh.contains("youtube.com") || uh.contains("youtu.be") { return true }
+        if let h = item.url.host?.lowercased(), h.contains("youtube.com") || h.contains("youtu.be") { return true }
+        return false
+    }
+
+    private func startYTDLPDownload(for item: DownloadItem, resume: Bool) async {
+        let itemId = item.id
+        guard let bin = YTDLPResolver.findBinary() else {
+            await updateItem(itemId) { i in
+                i.status = .failed
+                i.lastError = "yt-dlp not found. Enable 'External Downloader' in Settings and install yt-dlp."
+            }
+            return
+        }
+        // Resolve destination directory
+        guard let destDir = resolvePreferredDirectory(for: item) else {
+            await updateItem(itemId) { i in
+                i.status = .failed
+                i.lastError = "No destination directory available"
+            }
+            return
+        }
+        // Pre-compute final filename using yt-dlp formatting so UI can show title early
+        let pageURL: URL = {
+            if let s = item.sourceURL { return s }
+            if let ref = (item.requestHeaders ?? [:]).first(where: { $0.key.caseInsensitiveCompare("Referer") == .orderedSame })?.value,
+               let u = URL(string: ref), (u.host?.contains("youtube.com") ?? false) || (u.host?.contains("youtu.be") ?? false) { return u }
+            return item.url
+        }()
+        let computedName = ytComputeFilename(bin: bin, pageURL: pageURL, headers: item.requestHeaders)
+        if let computedName {
+            await updateItem(itemId) { i in i.finalFileName = computedName }
+        }
+        // Build arguments
+        var args: [String] = [
+            "--ignore-config",
+            "--no-playlist",
+            "--newline",
+            "--no-cache-dir",
+            "--socket-timeout", "15",
+            // Stream structured progress so we can provide live updates to UI
+            "--progress-template", "download:NJPROG %(progress.downloaded_bytes)s %(progress.total_bytes)s %(progress.total_bytes_estimate)s %(progress.speed)s %(progress.eta)s",
+            // Set output so filename equals YouTube title
+            "-o", destDir.appendingPathComponent("%(title)s.%(ext)s").path
+        ]
+        if resume { args.append("-c") } // allow resume
+        // Prefer progressive HTTP formats to get a single file
+        args += ["-f", "best[acodec!=none][vcodec!=none][protocol^=http][protocol!=m3u8_native][protocol!=m3u8][protocol!=dash][ext!=m3u8]/best[ext=mp4][acodec!=none][vcodec!=none][protocol^=http]/22/18/best[acodec!=none][vcodec!=none]"]
+        // Propagate headers (e.g., cookies)
+        if let headers = item.requestHeaders { for (k, v) in headers { args.insert(contentsOf: ["--add-header", "\(k): \(v)"], at: 0) } }
+        args.append(pageURL.absoluteString)
+
+        let proc = Process()
+        proc.executableURL = URL(fileURLWithPath: bin)
+        proc.arguments = args
+        var env = ProcessInfo.processInfo.environment
+        env["YTDLP_NO_UPDATE"] = "1"
+        env["PYTHONUNBUFFERED"] = "1"
+        env["PATH"] = "/usr/local/bin:/opt/homebrew/bin:/usr/bin:/bin"
+        proc.environment = env
+        let outPipe = Pipe()
+        let errPipe = Pipe()
+        proc.standardOutput = outPipe
+        proc.standardError = errPipe
+
+        // Track maps
+        stateQueue.sync {
+            itemIdsUsingYTDLP.insert(itemId)
+            itemIdToYTDLPDir[itemId] = destDir
+            if let computedName { itemIdToYTDLPFilename[itemId] = computedName }
+            itemIdToYTDLPProcess[itemId] = proc
+        }
+
+        await updateItem(itemId) { i in
+            i.status = resume ? .reconnecting : .fetchingMetadata
+            i.lastError = nil
+            i.segments = nil
+            i.supportsRanges = false
+        }
+
+        // Read progress (best-effort): parse default [download] lines
+        func attachReader(_ handle: FileHandle) {
+            var buffer = Data()
+            handle.readabilityHandler = { [weak self] fh in
+                let chunk = fh.availableData
+                if chunk.isEmpty { return }
+                buffer.append(chunk)
+                while let range = buffer.firstRange(of: Data("\n".utf8)) {
+                    let lineData = buffer.subdata(in: 0..<range.lowerBound)
+                    buffer.removeSubrange(0..<range.upperBound)
+                    if let line = String(data: lineData, encoding: .utf8) {
+                        self?.handleYTDLPProgressLine(itemId: itemId, line: line)
+                    }
+                }
+            }
+        }
+        attachReader(outPipe.fileHandleForReading)
+        attachReader(errPipe.fileHandleForReading)
+
+        proc.terminationHandler = { [weak self] p in
+            guard let self else { return }
+            let status = p.terminationStatus
+            // Stop readers
+            outPipe.fileHandleForReading.readabilityHandler = nil
+            errPipe.fileHandleForReading.readabilityHandler = nil
+            self.stateQueue.sync {
+                self.itemIdToYTDLPProcess[itemId] = nil
+            }
+            if status == 0 {
+                // Resolve final file from recorded filename (fallback to search)
+                let finalURL: URL? = {
+                    if let name = self.stateQueue.sync(execute: { self.itemIdToYTDLPFilename[itemId] }) {
+                        return destDir.appendingPathComponent(name)
+                    }
+                    return self.findYTFile(in: destDir)
+                }()
+                Task { [weak self] in
+                    guard let self else { return }
+                    await self.updateItem(itemId) { item in
+                        item.status = .completed
+                        if let finalURL {
+                            item.finalFileName = finalURL.lastPathComponent
+                            if let sz = (try? FileManager.default.attributesOfItem(atPath: finalURL.path)[.size] as? NSNumber)?.int64Value {
+                                item.totalBytes = sz
+                                item.receivedBytes = sz
+                            }
+                        }
+                        item.speedBytesPerSec = 0
+                        item.etaSeconds = 0
+                    }
+                    // Compute SHA in background
+                    if let finalURL {
+                        do {
+                            let hash = try sha256Hex(of: finalURL)
+                            await self.updateItem(itemId) { item in item.checksumSHA256 = hash }
+                        } catch {
+                            await self.updateItem(itemId) { item in item.lastError = (item.lastError ?? "") + "\nHash error: \(error.localizedDescription)" }
+                        }
+                    }
+                }
+            } else {
+                Task { [weak self] in
+                    guard let self else { return }
+                    await self.updateItem(itemId) { item in
+                        if item.status != .paused && item.status != .canceled {
+                            item.status = .failed
+                            item.lastError = "yt-dlp exited with status \(status)"
+                        }
+                    }
+                }
+            }
+        }
+
+        do {
+            try proc.run()
+            await updateItem(itemId) { i in i.status = .downloading }
+        } catch {
+            await updateItem(itemId) { i in
+                i.status = .failed
+                i.lastError = error.localizedDescription
+            }
+        }
+    }
+
+    private func handleYTDLPProgressLine(itemId: UUID, line: String) {
+        let s = line.trimmingCharacters(in: .whitespacesAndNewlines)
+        // Structured progress line from --progress-template
+        if s.hasPrefix("NJPROG ") {
+            let parts = s.dropFirst("NJPROG ".count).split(separator: " ")
+            // Expected: downloaded total total_est speed eta (as numbers or "None")
+            func parseInt64(_ str: Substring) -> Int64? {
+                let t = str == "None" ? "0" : String(str)
+                return Int64(t)
+            }
+            func parseDouble(_ str: Substring) -> Double? {
+                let t = str == "None" ? "0" : String(str)
+                return Double(t)
+            }
+            var downloaded: Int64? = nil
+            var total: Int64? = nil
+            var totalEst: Int64? = nil
+            var speed: Double? = nil
+            var eta: Double? = nil
+            if parts.count >= 1 { downloaded = parseInt64(parts[0]) }
+            if parts.count >= 2 { total = parseInt64(parts[1]) }
+            if parts.count >= 3 { totalEst = parseInt64(parts[2]) }
+            if parts.count >= 4 { speed = parseDouble(parts[3]) }
+            if parts.count >= 5 { eta = parseDouble(parts[4]) }
+            Task { [weak self] in
+                guard let self else { return }
+                await self.updateItem(itemId) { item in
+                    item.status = .downloading
+                    if let t = total, t > 0 { item.totalBytes = t }
+                    else if let te = totalEst, te > 0 { item.totalBytes = te }
+                    if let d = downloaded { item.receivedBytes = max(item.receivedBytes, d) }
+                    if let sp = speed, sp > 0 { item.speedBytesPerSec = sp }
+                    if let e = eta, e > 0 { item.etaSeconds = e } else { item.etaSeconds = nil }
+                }
+            }
+            return
+        }
+        // Detect destination line to set final filename if unknown
+        if let range = s.range(of: "[download] Destination: ") {
+            let path = String(s[range.upperBound...]).trimmingCharacters(in: .whitespaces)
+            let name = URL(fileURLWithPath: path).lastPathComponent
+            Task { [weak self] in
+                guard let self else { return }
+                self.stateQueue.sync { self.itemIdToYTDLPFilename[itemId] = name }
+                await self.updateItem(itemId) { item in item.finalFileName = name }
+            }
+            return
+        }
+    }
+
+    private func ytComputeFilename(bin: String, pageURL: URL, headers: [String: String]?) -> String? {
+        // Ask yt-dlp to compute final filename with the same -f and -o template
+        var args: [String] = [
+            "--ignore-config",
+            "--no-playlist",
+            "--no-warnings",
+            "--print", "filename",
+            "-o", "%(title)s.%(ext)s",
+            "-f", "best[acodec!=none][vcodec!=none][protocol^=http][protocol!=m3u8_native][protocol!=m3u8][protocol!=dash][ext!=m3u8]/best[ext=mp4][acodec!=none][vcodec!=none][protocol^=http]/22/18/best[acodec!=none][vcodec!=none]",
+            pageURL.absoluteString
+        ]
+        if let headers { for (k, v) in headers { args.insert(contentsOf: ["--add-header", "\(k): \(v)"], at: 0) } }
+        let proc = Process()
+        proc.executableURL = URL(fileURLWithPath: bin)
+        proc.arguments = args
+        let out = Pipe()
+        let err = Pipe()
+        proc.standardOutput = out
+        proc.standardError = err
+        do {
+            try proc.run()
+            proc.waitUntilExit()
+            if proc.terminationStatus != 0 { return nil }
+            let data = out.fileHandleForReading.readDataToEndOfFile()
+            let str = String(data: data, encoding: .utf8) ?? ""
+            let name = str.split(whereSeparator: { $0 == "\n" || $0 == "\r\n" }).first.map(String.init)
+            return name?.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty == false ? name : nil
+        } catch {
+            return nil
+        }
+    }
+
+    private func resolvePreferredDirectory(for item: DownloadItem) -> URL? {
+        if let bookmark = item.destinationDirBookmark {
+            var isStale = false
+            if let dir = try? URL(resolvingBookmarkData: bookmark, options: [.withSecurityScope], relativeTo: nil, bookmarkDataIsStale: &isStale) {
+                let started = dir.startAccessingSecurityScopedResource()
+                // We purposely do not stopAccessing here to keep the scope active during the process run
+                _ = started
+                return dir
+            }
+        }
+        return FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first
+    }
+
+    private func findYTFile(in dir: URL) -> URL? {
+        let fm = FileManager.default
+        guard let entries = try? fm.contentsOfDirectory(at: dir, includingPropertiesForKeys: [.contentModificationDateKey], options: [.skipsHiddenFiles]) else { return nil }
+        let candidates = entries.filter { !$0.lastPathComponent.hasSuffix(".part") }
+        return candidates.sorted { (a, b) -> Bool in
+            let da = (try? a.resourceValues(forKeys: [.contentModificationDateKey]).contentModificationDate) ?? Date.distantPast
+            let db = (try? b.resourceValues(forKeys: [.contentModificationDateKey]).contentModificationDate) ?? Date.distantPast
+            return da < db
+        }.last
+    }
+
+    private func removeYTDLPPartials(in dir: URL, filename: String) {
+        let fm = FileManager.default
+        if let entries = try? fm.contentsOfDirectory(at: dir, includingPropertiesForKeys: nil) {
+            for url in entries {
+                let name = url.lastPathComponent
+                if name == filename || name == filename + ".part" { try? fm.removeItem(at: url) }
+            }
+        }
+    }
     /// If this item looks like a YouTube direct link and we have a Referer pointing to youtube.com,
     /// try to resolve a fresh signed URL with yt-dlp and update the item in coordinator.
     fileprivate func refreshYouTubeURLIfPossible(itemId: UUID) async -> Bool {

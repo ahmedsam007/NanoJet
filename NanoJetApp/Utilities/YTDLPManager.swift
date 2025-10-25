@@ -54,7 +54,7 @@ struct AppNotification: Identifiable, Equatable {
         message: String,
         actions: [NotificationAction] = [],
         autoDismiss: Bool = true,
-        dismissAfter: TimeInterval = 5.0
+        dismissAfter: TimeInterval = 10.0
     ) {
         self.type = type
         self.title = title
@@ -183,6 +183,7 @@ final class YTDLPManager: ObservableObject {
     static let shared = YTDLPManager()
     
     @Published var isInstalled: Bool = false
+    @Published var isUserInstalled: Bool = false  // Tracks if yt-dlp is installed by the user (not managed by the app)
     @Published var isInstalling: Bool = false
     @Published var installProgress: Double = 0.0
     @Published var installStatus: String = ""
@@ -215,6 +216,8 @@ final class YTDLPManager: ObservableObject {
 
         // Check if already installed
         checkInstallation()
+        // Also check for user-installed version
+        checkForUserInstalled()
     }
 
     /// If the app bundles a copy of yt-dlp in its Resources, copy it to our managed location.
@@ -308,25 +311,38 @@ final class YTDLPManager: ObservableObject {
     }
     
     func getYTDLPPath() -> String? {
-        // Prefer our managed installation
-        print("YTDLPManager.getYTDLPPath: Checking managed path: \(ytdlpExecutableURL.path)")
-        if FileManager.default.isExecutableFile(atPath: ytdlpExecutableURL.path) {
-            print("YTDLPManager.getYTDLPPath: Returning managed path: \(ytdlpExecutableURL.path)")
-            return ytdlpExecutableURL.path
-        }
-        // Fallback to non-container legacy managed path
-        if FileManager.default.isExecutableFile(atPath: nonContainerManagedURL.path) {
-            print("YTDLPManager.getYTDLPPath: Returning legacy non-container path: \(nonContainerManagedURL.path)")
-            return nonContainerManagedURL.path
-        }
+        // Check if external downloader is enabled in preferences
+        let useExternalDownloader = UserDefaults.standard.bool(forKey: "useExternalDownloader")
         
-        // Fallback to system installations (common locations + PATH)
-        if let p = resolveSystemYTDLP() {
-            print("YTDLPManager.getYTDLPPath: Returning system path: \(p)")
-            return p
+        if useExternalDownloader {
+            // Only use user-installed versions when external downloader is enabled
+            if let p = resolveSystemYTDLP() {
+                print("YTDLPManager.getYTDLPPath: External downloader enabled, returning user-installed path: \(p)")
+                return p
+            }
+            print("YTDLPManager.getYTDLPPath: External downloader enabled but no user-installed yt-dlp found")
+            return nil
+        } else {
+            // Legacy behavior: prefer app-managed installation
+            print("YTDLPManager.getYTDLPPath: Checking managed path: \(ytdlpExecutableURL.path)")
+            if FileManager.default.isExecutableFile(atPath: ytdlpExecutableURL.path) {
+                print("YTDLPManager.getYTDLPPath: Returning managed path: \(ytdlpExecutableURL.path)")
+                return ytdlpExecutableURL.path
+            }
+            // Fallback to non-container legacy managed path
+            if FileManager.default.isExecutableFile(atPath: nonContainerManagedURL.path) {
+                print("YTDLPManager.getYTDLPPath: Returning legacy non-container path: \(nonContainerManagedURL.path)")
+                return nonContainerManagedURL.path
+            }
+            
+            // Fallback to system installations (common locations + PATH)
+            if let p = resolveSystemYTDLP() {
+                print("YTDLPManager.getYTDLPPath: Returning system path: \(p)")
+                return p
+            }
+            print("YTDLPManager.getYTDLPPath: No yt-dlp found, returning nil")
+            return nil
         }
-        print("YTDLPManager.getYTDLPPath: No yt-dlp found, returning nil")
-        return nil
     }
     
     func installYTDLP() async {
@@ -553,6 +569,23 @@ final class YTDLPManager: ObservableObject {
             return identifier + String(UnicodeScalar(UInt8(value)))
         }
         return identifier
+    }
+    
+    // MARK: - Methods for user-installed yt-dlp only
+    func checkForUserInstalled() {
+        // Only check system locations, not app-managed locations
+        if let path = resolveSystemYTDLP() {
+            isUserInstalled = true
+            print("YTDLPManager: ✓ Found user-installed yt-dlp at: \(path)")
+        } else {
+            isUserInstalled = false
+            print("YTDLPManager: No user-installed yt-dlp found")
+        }
+    }
+    
+    func getUserInstalledPath() -> String? {
+        // Returns the path to user-installed yt-dlp (not app-managed)
+        return resolveSystemYTDLP()
     }
     
     enum YTDLPError: LocalizedError {

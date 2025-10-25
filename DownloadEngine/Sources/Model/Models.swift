@@ -23,6 +23,7 @@ public struct Segment: Codable, Hashable, Sendable {
 public struct DownloadItem: Identifiable, Codable, Hashable, Sendable {
     public var id: UUID
     public var url: URL
+    public var sourceURL: URL?  // Original page URL (e.g., MediaFire page)
     public var finalFileName: String?
     public var destinationDirBookmark: Data?
     public var status: DownloadStatus
@@ -39,10 +40,12 @@ public struct DownloadItem: Identifiable, Codable, Hashable, Sendable {
     public var lastError: String?
     public var previousStatusBeforeDeletion: DownloadStatus?
     public var requestHeaders: [String: String]?
+    public var linkExpiryDate: Date?  // Track when the direct link might expire
 
     public init(
         id: UUID = UUID(),
         url: URL,
+        sourceURL: URL? = nil,
         finalFileName: String? = nil,
         destinationDirBookmark: Data? = nil,
         status: DownloadStatus = .queued,
@@ -58,10 +61,12 @@ public struct DownloadItem: Identifiable, Codable, Hashable, Sendable {
         priority: Int = 0,
         lastError: String? = nil,
         previousStatusBeforeDeletion: DownloadStatus? = nil,
-        requestHeaders: [String: String]? = nil
+        requestHeaders: [String: String]? = nil,
+        linkExpiryDate: Date? = nil
     ) {
         self.id = id
         self.url = url
+        self.sourceURL = sourceURL
         self.finalFileName = finalFileName
         self.destinationDirBookmark = destinationDirBookmark
         self.status = status
@@ -78,6 +83,7 @@ public struct DownloadItem: Identifiable, Codable, Hashable, Sendable {
         self.lastError = lastError
         self.previousStatusBeforeDeletion = previousStatusBeforeDeletion
         self.requestHeaders = requestHeaders
+        self.linkExpiryDate = linkExpiryDate
     }
 }
 

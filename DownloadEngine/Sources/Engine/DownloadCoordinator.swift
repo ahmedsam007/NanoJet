@@ -24,15 +24,19 @@ public actor DownloadCoordinator {
 
     // MARK: Item lifecycle
     @discardableResult
-    public func enqueue(url: URL, suggestedFileName: String? = nil, headers: [String: String]? = nil) async -> DownloadItem {
-        return await enqueueWithBookmark(url: url, suggestedFileName: suggestedFileName, headers: headers, bookmark: nil)
+    public func enqueue(url: URL, sourceURL: URL? = nil, suggestedFileName: String? = nil, headers: [String: String]? = nil) async -> DownloadItem {
+        return await enqueueWithBookmark(url: url, sourceURL: sourceURL, suggestedFileName: suggestedFileName, headers: headers, bookmark: nil)
     }
     
     @discardableResult
-    public func enqueueWithBookmark(url: URL, suggestedFileName: String? = nil, headers: [String: String]? = nil, bookmark: Data? = nil) async -> DownloadItem {
-        var item = DownloadItem(url: url, finalFileName: suggestedFileName)
+    public func enqueueWithBookmark(url: URL, sourceURL: URL? = nil, suggestedFileName: String? = nil, headers: [String: String]? = nil, bookmark: Data? = nil) async -> DownloadItem {
+        var item = DownloadItem(url: url, sourceURL: sourceURL, finalFileName: suggestedFileName)
         item.requestHeaders = headers
         item.destinationDirBookmark = bookmark
+        // Set link expiry for known services (30 minutes for MediaFire)
+        if let host = url.host?.lowercased(), host.contains("mediafire.com") || host.contains("download") {
+            item.linkExpiryDate = Date().addingTimeInterval(30 * 60) // 30 minutes
+        }
         // Set status to fetchingMetadata so UI shows "Preparing..." instead of "Queued"
         // This prevents users from clicking resume before startDownload completes
         item.status = .fetchingMetadata

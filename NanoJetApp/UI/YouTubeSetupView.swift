@@ -4,6 +4,7 @@ struct YouTubeSetupView: View {
     @StateObject private var ytdlpManager = YTDLPManager.shared
     @Environment(\.dismiss) private var dismiss
     @Environment(\.colorScheme) private var colorScheme
+    @AppStorage("useExternalDownloader") private var useExternalDownloader: Bool = false
     
     var body: some View {
         VStack(spacing: 24) {
@@ -14,10 +15,10 @@ struct YouTubeSetupView: View {
                     .foregroundStyle(.red)
                     .symbolRenderingMode(.hierarchical)
                 
-                Text("YouTube Downloads")
+                Text("External Downloader Setup")
                     .font(.title2.bold())
                 
-                Text("To download YouTube videos, we need to install yt-dlp - a free, open-source tool.")
+                Text("To download from YouTube and other sites, you need to install yt-dlp - a free, open-source tool.")
                     .font(.callout)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
@@ -28,7 +29,7 @@ struct YouTubeSetupView: View {
             Divider()
             
             // Installation status
-            if ytdlpManager.isInstalled {
+            if ytdlpManager.isUserInstalled {
                 VStack(spacing: 16) {
                     HStack(spacing: 12) {
                         Image(systemName: "checkmark.circle.fill")
@@ -38,7 +39,7 @@ struct YouTubeSetupView: View {
                         VStack(alignment: .leading, spacing: 4) {
                             Text("yt-dlp is installed")
                                 .font(.headline)
-                            Text("You can now download YouTube videos")
+                            Text("Found at: \(ytdlpManager.getUserInstalledPath() ?? "unknown")")
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                         }
@@ -49,14 +50,24 @@ struct YouTubeSetupView: View {
                     .background(Color.green.opacity(colorScheme == .dark ? 0.2 : 0.1))
                     .cornerRadius(12)
                     
+                    if !useExternalDownloader {
+                        Text("Enable 'External Downloader' in Settings to use yt-dlp")
+                            .font(.callout)
+                            .foregroundStyle(.orange)
+                            .padding(.horizontal)
+                            .padding(.vertical, 8)
+                            .background(Color.orange.opacity(0.15))
+                            .cornerRadius(8)
+                    }
+                    
                     HStack(spacing: 12) {
-                        Button("Check for Updates") {
-                            Task {
-                                await ytdlpManager.updateYTDLP()
+                        Button("Open Settings") {
+                            if let url = URL(string: "x-apple.systempreferences:com.apple.preference") {
+                                NSWorkspace.shared.open(url)
                             }
+                            dismiss()
                         }
                         .buttonStyle(.bordered)
-                        .disabled(ytdlpManager.isInstalling)
                         
                         Button("Done") {
                             dismiss()
@@ -76,36 +87,66 @@ struct YouTubeSetupView: View {
                 .padding()
             } else {
                 VStack(spacing: 20) {
-                    // Benefits list
+                    // Installation instructions
+                    VStack(alignment: .leading, spacing: 16) {
+                        Label("Manual Installation Required", systemImage: "info.circle")
+                            .font(.headline)
+                            .foregroundStyle(.blue)
+                        
+                        Text("For legal compliance, yt-dlp must be installed separately by you. Choose your preferred method:")
+                            .font(.callout)
+                            .foregroundStyle(.secondary)
+                        
                     VStack(alignment: .leading, spacing: 12) {
-                        FeatureRow(icon: "checkmark.circle", text: "Download any YouTube video", color: .green)
-                        FeatureRow(icon: "gauge.high", text: "Best available quality", color: .blue)
-                        FeatureRow(icon: "lock.shield", text: "Safe & secure", color: .purple)
-                        FeatureRow(icon: "arrow.clockwise", text: "Automatic updates", color: .orange)
+                            InstallOptionRow(
+                                method: "Homebrew (Recommended)",
+                                command: "brew install yt-dlp",
+                                icon: "terminal"
+                            )
+                            
+                            InstallOptionRow(
+                                method: "Direct Download",
+                                command: "Visit github.com/yt-dlp/yt-dlp",
+                                icon: "arrow.down.circle",
+                                isLink: true
+                            )
+                            
+                            InstallOptionRow(
+                                method: "Python pip",
+                                command: "pip install yt-dlp",
+                                icon: "chevron.left.forwardslash.chevron.right"
+                            )
+                        }
                     }
                     .padding()
                     .background(Color.secondary.opacity(colorScheme == .dark ? 0.2 : 0.1))
                     .cornerRadius(12)
                     
+                    VStack(spacing: 8) {
+                        Text("⚠️ Important Legal Notice")
+                            .font(.callout.bold())
+                        Text("By using yt-dlp, you agree to comply with all applicable laws and the terms of service of the websites you download from. This app does not endorse copyright infringement.")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.center)
+                    }
+                    .padding()
+                    .background(Color.orange.opacity(0.15))
+                    .cornerRadius(8)
                     
                     HStack(spacing: 12) {
-                        Button("Cancel") {
-                            dismiss()
+                        Button("Refresh") {
+                            ytdlpManager.checkForUserInstalled()
                         }
                         .buttonStyle(.bordered)
                         
-                        Button {
-                            Task {
-                                await ytdlpManager.installYTDLP()
-                            }
-                        } label: {
-                            Label("Install yt-dlp", systemImage: "arrow.down.circle.fill")
+                        Button("Close") {
+                            dismiss()
                         }
                         .buttonStyle(.borderedProminent)
-                        .controlSize(.large)
                     }
                     
-                    Text("yt-dlp is free and open source • [Learn more](https://github.com/yt-dlp/yt-dlp)")
+                    Text("yt-dlp is a third-party tool • [Learn more](https://github.com/yt-dlp/yt-dlp)")
                         .font(.caption2)
                         .foregroundStyle(.secondary)
                 }
@@ -118,7 +159,7 @@ struct YouTubeSetupView: View {
                 .padding(.top, 8)
         }
         .onAppear {
-            ytdlpManager.checkInstallation()
+            ytdlpManager.checkForUserInstalled()
         }
     }
 }
@@ -140,6 +181,45 @@ private struct FeatureRow: View {
             
             Spacer()
         }
+    }
+}
+
+private struct InstallOptionRow: View {
+    let method: String
+    let command: String
+    let icon: String
+    var isLink: Bool = false
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 4) {
+            Label(method, systemImage: icon)
+                .font(.callout.bold())
+            
+            HStack {
+                if isLink {
+                    Link(command, destination: URL(string: "https://github.com/yt-dlp/yt-dlp")!)
+                        .font(.caption)
+                } else {
+                    Text(command)
+                        .font(.system(.caption, design: .monospaced))
+                        .foregroundStyle(.secondary)
+                        .textSelection(.enabled)
+                }
+                
+                if !isLink {
+                    Button {
+                        NSPasteboard.general.clearContents()
+                        NSPasteboard.general.setString(command, forType: .string)
+                    } label: {
+                        Image(systemName: "doc.on.doc")
+                            .font(.caption)
+                    }
+                    .buttonStyle(.plain)
+                    .help("Copy to clipboard")
+                }
+            }
+        }
+        .padding(.vertical, 4)
     }
 }
 

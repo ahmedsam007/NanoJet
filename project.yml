@@ -10,6 +10,7 @@ packages:
 settings:
   base:
     PRODUCT_BUNDLE_IDENTIFIER: com.ahmedsam.idmmac
+    PRODUCT_NAME: NanoJet
     DEVELOPMENT_TEAM: "4H548RMBS5"
     SWIFT_VERSION: 5.9
     CURRENT_PROJECT_VERSION: 1
